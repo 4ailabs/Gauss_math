@@ -33,12 +33,13 @@ declare global {
 }
 
 // Helper component for styled textareas
-const StyledTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
+const StyledTextarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>((props, ref) => (
   <textarea
+    ref={ref}
     {...props}
-    className="w-full h-full p-4 bg-slate-900/50 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none transition-colors text-base"
+    className="w-full h-full bg-transparent border-none outline-none resize-none text-white placeholder-slate-400 p-4 text-sm sm:text-base leading-relaxed"
   />
-);
+));
 
 const TabButton: React.FC<{onClick: () => void; active: boolean; children: React.ReactNode; icon: React.ReactNode}> = ({ onClick, active, children, icon }) => (
     <button
@@ -660,34 +661,91 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           
           {activeView === 'assistant' && (
             <div className="h-full flex flex-col">
-              <div className="flex-grow overflow-hidden">
-                <div className="w-full h-full flex flex-col px-2 sm:px-4">
-                  <div className="flex justify-between items-center mb-2 sm:mb-4 flex-shrink-0">
-                    <div className="text-center flex-1">
-                      <h2 className="text-base sm:text-2xl font-bold text-white mb-1 flex items-center justify-center gap-2 sm:gap-3">
-                        <MessageCircleIcon className="w-4 h-4 sm:w-6 sm:h-6 text-blue-500"/>
-                        Asistente IA
-                      </h2>
-                      <p className="text-slate-400 text-xs sm:text-sm px-1 sm:px-2">Pregúntale cualquier cosa sobre {selectedSubject}</p>
-                    </div>
-                    <button 
-                      onClick={handleResetAssistantChat} 
-                      title="Reiniciar conversación"
-                      className="text-slate-400 hover:text-blue-500 transition-colors disabled:opacity-50 p-1 sm:p-2 hover:bg-slate-800/50 rounded-lg flex-shrink-0"
-                      disabled={isAssistantLoading}
-                    >
-                      <RefreshCwIcon className="w-3 h-3 sm:w-5 sm:h-5"/>
-                    </button>
+              <div className="w-full h-full flex flex-col px-2 sm:px-4">
+                <div className="flex justify-between items-center mb-2 sm:mb-4">
+                  <div className="text-center flex-1">
+                    <h2 className="text-base sm:text-2xl font-bold text-white mb-1 flex items-center justify-center gap-2 sm:gap-3">
+                      <MessageCircleIcon className="w-4 h-4 sm:w-6 sm:h-6 text-blue-500"/>
+                      Asistente IA
+                    </h2>
+                    <p className="text-slate-400 text-xs sm:text-sm px-1 sm:px-2">Pregúntale cualquier cosa sobre {selectedSubject}</p>
                   </div>
-                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-2 sm:p-4 min-h-0" style={{ minHeight: '400px' }}>
-                    <AssistantView 
-                      history={assistantHistory} 
-                      inputValue={assistantInput} 
-                      onInputChange={(e) => setAssistantInput(e.target.value)} 
-                      onSubmit={handleAssistantSubmit} 
-                      isLoading={isAssistantLoading} 
-                      subject={selectedSubject} 
-                    />
+                  <button 
+                    onClick={handleResetAssistantChat} 
+                    title="Reiniciar conversación"
+                    className="text-slate-400 hover:text-blue-500 transition-colors disabled:opacity-50 p-1 sm:p-2 hover:bg-slate-800/50 rounded-lg"
+                    disabled={isAssistantLoading}
+                  >
+                    <RefreshCwIcon className="w-3 h-3 sm:w-5 sm:h-5"/>
+                  </button>
+                </div>
+                
+                <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow p-2 sm:p-4 mb-4">
+                  <div className="h-full flex flex-col">
+                    <div className="flex-grow overflow-y-auto pr-2 space-y-3 mb-4">
+                      {assistantHistory.length === 0 ? (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center space-y-3">
+                            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                              <BrainCircuitIcon className="w-6 h-6 text-white"/>
+                            </div>
+                            <div>
+                              <p className="text-base font-semibold text-white mb-1">Soy tu IA para</p>
+                              <p className="text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">{selectedSubject}</p>
+                              <p className="text-slate-400 mt-1 text-sm">¡Pregúntame cualquier cosa!</p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        assistantHistory.map((msg, index) => (
+                          <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                            {msg.role === 'model' && (
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                                <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                              </div>
+                            )}
+                            <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
+                              msg.role === 'user' 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
+                                : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
+                            }`}>
+                              <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                      {isAssistantLoading && assistantHistory[assistantHistory.length-1]?.role === 'user' && (
+                        <div className="flex items-start gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                            <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                          </div>
+                          <div className="max-w-[85%] p-3 rounded-xl bg-slate-700/50 backdrop-blur-sm border border-slate-600/30 shadow-lg">
+                            <div className="flex items-center gap-2">
+                              <LoaderCircleIcon className="w-4 h-4 animate-spin text-blue-500"/>
+                              <span className="text-slate-300 text-sm">Pensando...</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <form onSubmit={handleAssistantSubmit} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={assistantInput}
+                        onChange={(e) => setAssistantInput(e.target.value)}
+                        placeholder="Pregúntale algo a la IA..."
+                        className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
+                        disabled={isAssistantLoading}
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={isAssistantLoading || !assistantInput.trim()} 
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
+                      >
+                        <SendIcon className="w-4 h-4"/>
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -899,98 +957,6 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
       </div>
     </div>
   );
-};
-
-const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onSubmit: (e: React.FormEvent) => void, isLoading: boolean, subject: string}> = ({ history, inputValue, onInputChange, onSubmit, isLoading, subject }) => {
-     const chatEndRef = useRef<HTMLDivElement>(null);
-     const chatContainerRef = useRef<HTMLDivElement>(null);
-     
-     useEffect(() => {
-        // Scroll suave solo si el usuario está cerca del final
-        if (chatContainerRef.current) {
-            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-            const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-            
-            if (isNearBottom) {
-                chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }
-        }
-     }, [history]);
-
-    return (
-        <div className="flex flex-col h-full">
-            <div 
-                ref={chatContainerRef}
-                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth"
-                style={{ scrollBehavior: 'smooth', minHeight: '300px' }}
-            >
-                {history.length === 0 ? (
-                    <div className="flex items-center justify-center h-full">
-                        <div className="text-center space-y-3">
-                            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                                <BrainCircuitIcon className="w-6 h-6 text-white"/>
-                            </div>
-                            <div>
-                                <p className="text-base font-semibold text-white mb-1">Soy tu IA para</p>
-                                <p className="text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">{subject}</p>
-                                <p className="text-slate-400 mt-1 text-sm">¡Pregúntame cualquier cosa!</p>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    history.map((msg, index) => (
-                        <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                             {msg.role === 'model' && (
-                                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                                     <BrainCircuitIcon className="w-3 h-3 text-white"/>
-                                 </div>
-                             )}
-                            <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
-                                msg.role === 'user' 
-                                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                                    : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
-                            }`}>
-                                <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
-                            </div>
-                        </div>
-                    ))
-                )}
-                {isLoading && history[history.length-1]?.role === 'user' && (
-                    <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                            <BrainCircuitIcon className="w-3 h-3 text-white"/>
-                        </div>
-                        <div className="max-w-[85%] p-3 rounded-xl bg-slate-700/50 backdrop-blur-sm border border-slate-600/30 shadow-lg">
-                           <div className="flex items-center gap-2">
-                               <LoaderCircleIcon className="w-4 h-4 animate-spin text-blue-500"/>
-                               <span className="text-slate-300 text-sm">Pensando...</span>
-                           </div>
-                        </div>
-                    </div>
-                )}
-                 <div ref={chatEndRef} />
-            </div>
-            <div className="mt-4 flex-shrink-0">
-                <form onSubmit={onSubmit} className="flex gap-2">
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={onInputChange}
-                        placeholder="Pregúntale algo a la IA..."
-                        className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
-                        disabled={isLoading}
-                    />
-                    <button 
-                        type="submit" 
-                        disabled={isLoading || !inputValue.trim()} 
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
-                    >
-                        <SendIcon className="w-4 h-4"/>
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
 };
 
 export default App;
