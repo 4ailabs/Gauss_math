@@ -120,8 +120,8 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
             throw new Error("Los apuntes no pueden estar vacíos.");
         }
         
-        if (notes.length > 10000) {
-            throw new Error("Los apuntes son demasiado largos. Máximo 10,000 caracteres.");
+        if (notes.length > 20000) {
+            throw new Error("Los apuntes son demasiado largos. Máximo 20,000 caracteres.");
         }
 
         console.log("Enviando solicitud a Gemini API...");
