@@ -729,7 +729,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       )}
                     </div>
                     
-                    <div className="pb-4 sm:pb-6">
+                    <div className="pb-6 sm:pb-8">
                       <form onSubmit={handleAssistantSubmit} className="flex gap-2">
                         <input
                           type="text"
