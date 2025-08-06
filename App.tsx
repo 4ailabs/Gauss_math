@@ -700,6 +700,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     }
   }, [selectedSubject]);
 
+  // Error boundary para capturar errores de renderizado
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error("Error capturado:", event.error);
+      setRenderError("Ocurrió un error inesperado. Por favor, recarga la página.");
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error("Promesa rechazada:", event.reason);
+      setRenderError("Error en el procesamiento. Por favor, recarga la página.");
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
   // Error boundary para renderizado
   if (renderError) {
     return (
@@ -712,6 +733,25 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
               setRenderError(null);
               window.location.reload();
             }}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            Recargar Página
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Verificar que los datos críticos estén disponibles
+  if (!selectedSubject) {
+    console.error("selectedSubject no está definido");
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="bg-slate-800 rounded-xl p-6 max-w-md text-center">
+          <h2 className="text-xl font-bold text-white mb-4">Error de Configuración</h2>
+          <p className="text-slate-300 mb-4">No se pudo cargar la materia seleccionada</p>
+          <button
+            onClick={() => window.location.reload()}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
           >
             Recargar Página
