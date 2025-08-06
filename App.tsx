@@ -580,6 +580,12 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     console.log("Materia seleccionada:", selectedSubject);
     console.log("Estado actual:", { isAssistantLoading, error });
     
+    // Validar que el mensaje no esté vacío
+    if (!userMessage.trim() && !hasImage) {
+      console.warn("Mensaje vacío, no se procesa");
+      return;
+    }
+    
     // Agregar mensaje del usuario al historial
     const userMsg: ChatMessage = {
       role: 'user',
@@ -611,6 +617,12 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       for await (const chunk of stream) {
         console.log("Chunk recibido:", chunk);
         
+        // Validar que el chunk sea una cadena válida
+        if (typeof chunk !== 'string') {
+          console.warn("Chunk inválido recibido:", chunk);
+          continue;
+        }
+        
         if (isFirstChunk) {
           fullResponse = chunk;
           isFirstChunk = false;
@@ -620,15 +632,22 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
         // Actualizar el historial con debounce para mejor rendimiento
         setTimeout(() => {
-          setAssistantHistory(prev => 
-            prev.map((msg, index) => 
+          setAssistantHistory(prev => {
+            const newHistory = prev.map((msg, index) => 
               index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
-            )
-          );
+            );
+            console.log("Historial actualizado, longitud:", newHistory.length);
+            return newHistory;
+          });
         }, 100);
       }
 
       console.log("Stream completado, respuesta final:", fullResponse);
+
+      // Validar respuesta final
+      if (!fullResponse || typeof fullResponse !== 'string') {
+        throw new Error("Respuesta inválida del asistente");
+      }
 
       // Actualización final
       setAssistantHistory(prev => 
@@ -651,6 +670,19 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       console.error('Stack trace:', error.stack);
       console.error('Error message:', error.message);
       console.error('Error name:', error.name);
+      
+      // Remover el mensaje vacío del modelo si falló
+      setAssistantHistory(prev => {
+        const filteredHistory = prev.filter((msg, index) => {
+          // Mantener todos los mensajes excepto el último si está vacío
+          if (index === prev.length - 1 && msg.content === '') {
+            return false;
+          }
+          return true;
+        });
+        console.log("Historial limpiado después del error, longitud:", filteredHistory.length);
+        return filteredHistory;
+      });
       
       // Agregar mensaje de error al historial
       const errorMsg: ChatMessage = {
@@ -733,6 +765,24 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
+
+  // Limpiar historial corrupto del asistente
+  useEffect(() => {
+    if (assistantHistory.length > 0) {
+      const validHistory = assistantHistory.filter(msg => 
+        msg && 
+        typeof msg === 'object' && 
+        typeof msg.role === 'string' && 
+        typeof msg.content === 'string' &&
+        (msg.role === 'user' || msg.role === 'model')
+      );
+      
+      if (validHistory.length !== assistantHistory.length) {
+        console.warn("Historial corrupto detectado, limpiando...");
+        setAssistantHistory(validHistory);
+      }
+    }
+  }, [assistantHistory]);
 
   // Error boundary para renderizado
   if (renderError) {
@@ -1063,6 +1113,21 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       ) : (
                         assistantHistory.map((msg, index) => {
                           try {
+                            // Validar que el mensaje tenga contenido válido
+                            if (!msg || typeof msg.content !== 'string') {
+                              console.error("Mensaje inválido:", msg);
+                              return (
+                                <div key={index} className="flex items-start gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <AlertCircleIcon className="w-3 h-3 text-white"/>
+                                  </div>
+                                  <div className="max-w-[85%] p-3 rounded-xl text-sm bg-red-900/20 border border-red-500/30">
+                                    <p className="text-red-300">Mensaje inválido</p>
+                                  </div>
+                                </div>
+                              );
+                            }
+
                             return (
                               <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                                 {msg.role === 'model' && (
@@ -1080,7 +1145,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                               </div>
                             );
                           } catch (error) {
-                            console.error("Error renderizando mensaje:", error);
+                            console.error("Error renderizando mensaje:", error, "Mensaje:", msg);
                             return (
                               <div key={index} className="flex items-start gap-2">
                                 <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-1">
