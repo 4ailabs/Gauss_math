@@ -2,11 +2,11 @@ import { GoogleGenAI, Type, Chat, GenerateContentResponse } from "@google/genai"
 import { ProcessedData, ChatMessage } from '../types';
 
 // The app will now handle API key errors gracefully in the UI.
-if (!process.env.API_KEY) {
-  console.error("La variable de entorno API_KEY no está configurada.");
+if (!process.env.GEMINI_API_KEY) {
+  console.error("La variable de entorno GEMINI_API_KEY no está configurada.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const model = "gemini-2.5-flash";
 
 const processNotesSchema = {
@@ -73,7 +73,7 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
     `;
 
     try {
-        if (!process.env.API_KEY) throw new Error("API Key no configurada.");
+        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: model,
             contents: prompt,
@@ -109,7 +109,7 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
     };
     
     try {
-        if (!process.env.API_KEY) throw new Error("API Key no configurada.");
+        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
         
         // Validar que la imagen no esté vacía
         if (!base64Image || base64Image.length < 100) {
@@ -149,16 +149,30 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
 let assistantChatInstance: Chat | null = null;
 
 const initializeAssistantChat = (subject: string): Chat => {
-    const systemInstruction = `Eres una IA experta en "${subject}". Tu propósito es ayudar a los estudiantes a entender conceptos complejos, resolver dudas, y ser más eficientes en su estudio. Puedes responder preguntas generales sobre la materia, ayudar a formular ideas para tomar apuntes, y ofrecer ejemplos prácticos. Sé proactivo, amigable, y pedagógico en tus respuestas. Fomenta el pensamiento crítico haciendo preguntas de seguimiento.`;
+    try {
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error("API Key no configurada.");
+        }
+        
+        const systemInstruction = `Eres una IA experta en "${subject}". Tu propósito es ayudar a los estudiantes a entender conceptos complejos, resolver dudas, y ser más eficientes en su estudio. Puedes responder preguntas generales sobre la materia, ayudar a formular ideas para tomar apuntes, y ofrecer ejemplos prácticos. Sé proactivo, amigable, y pedagógico en tus respuestas. Fomenta el pensamiento crítico haciendo preguntas de seguimiento.`;
 
-    assistantChatInstance = ai.chats.create({
-        model: model,
-        config: {
-            systemInstruction: systemInstruction,
-            temperature: 0.6
-        },
-    });
-    return assistantChatInstance;
+        assistantChatInstance = ai.chats.create({
+            model: model,
+            config: {
+                systemInstruction: systemInstruction,
+                temperature: 0.6
+            },
+        });
+        
+        if (!assistantChatInstance) {
+            throw new Error("No se pudo inicializar el chat.");
+        }
+        
+        return assistantChatInstance;
+    } catch (error) {
+        console.error("Error initializing assistant chat:", error);
+        throw error;
+    }
 };
 
 
@@ -168,12 +182,30 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
     }
 
     try {
-        if (!process.env.API_KEY) throw new Error("API Key no configurada.");
+        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        
         const responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
+        
+        if (!responseStream) {
+            throw new Error("No se pudo obtener respuesta del asistente.");
+        }
+        
         return responseStream;
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error getting assistant response:", error);
-        throw new Error("Lo siento, encontré un error. Por favor, inténtalo de nuevo.");
+        
+        // Manejo específico de errores
+        if (error.message?.includes('API Key')) {
+            throw new Error("Error de configuración: API Key no válida.");
+        } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
+            throw new Error("Se ha excedido la cuota de la API. Inténtalo más tarde.");
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+            throw new Error("Error de conexión. Verifica tu conexión a internet.");
+        } else if (error.message?.includes('invalid')) {
+            throw new Error("Solicitud inválida. Verifica tu pregunta.");
+        } else {
+            throw new Error("Lo siento, encontré un error. Por favor, inténtalo de nuevo.");
+        }
     }
 };
 

@@ -361,7 +361,18 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           ));
       }
     } catch (e: any) {
-      const errorResponse: ChatMessage = { role: 'model', content: "Lo siento, no pude obtener una respuesta. Por favor, inténtalo de nuevo." };
+      console.error("Error en asistente:", e);
+      let errorMessage = "Lo siento, no pude obtener una respuesta. Por favor, inténtalo de nuevo.";
+      
+      if (e.message?.includes('API Key')) {
+        errorMessage = "Error de configuración: API Key no válida. Verifica tu configuración.";
+      } else if (e.message?.includes('quota')) {
+        errorMessage = "Se ha excedido la cuota de la API. Inténtalo más tarde.";
+      } else if (e.message?.includes('network')) {
+        errorMessage = "Error de conexión. Verifica tu conexión a internet.";
+      }
+      
+      const errorResponse: ChatMessage = { role: 'model', content: errorMessage };
       setAssistantHistory(prev => [...prev, errorResponse]);
     } finally {
       setIsAssistantLoading(false);
@@ -379,7 +390,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         <div className="max-w-md text-center bg-slate-900 p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-red-500 mb-4">Error de Configuración</h1>
           <p className="text-slate-300">
-            La variable de entorno <code>API_KEY</code> no está configurada. Por favor, asegúrate de que tu API Key de Google AI está disponible para que la aplicación funcione.
+            La variable de entorno <code>GEMINI_API_KEY</code> no está configurada. Por favor, asegúrate de que tu API Key de Google AI está disponible para que la aplicación funcione.
           </p>
         </div>
       </div>
