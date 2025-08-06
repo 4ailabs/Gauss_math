@@ -98,26 +98,50 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
     }
 };
 
-export const extractTextFromImage = async (base64Image: string): Promise<string> => {
-    const prompt = `Extrae todo el texto de esta imagen, que contiene apuntes de matemáticas. Conserva el formato LaTeX tal como está (ej. \\( ... \\) o \\[ ... \\]). Devuelve únicamente el texto extraído.`;
+export const extractTextFromImage = async (base64Image: string, mimeType: string = 'image/jpeg'): Promise<string> => {
+    const prompt = `Extrae todo el texto de esta imagen, que contiene apuntes de matemáticas. Conserva el formato LaTeX tal como está (ej. \\( ... \\) o \\[ ... \\]). Devuelve únicamente el texto extraído. Si hay fórmulas matemáticas, asegúrate de preservar la sintaxis LaTeX correctamente.`;
     
     const imagePart = {
       inlineData: {
-        mimeType: 'image/jpeg', // The backend will determine the type, but jpeg is a safe default
+        mimeType: mimeType,
         data: base64Image,
       },
     };
     
     try {
         if (!process.env.API_KEY) throw new Error("API Key no configurada.");
+        
+        // Validar que la imagen no esté vacía
+        if (!base64Image || base64Image.length < 100) {
+            throw new Error("La imagen parece estar vacía o ser muy pequeña.");
+        }
+        
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: model,
             contents: { parts: [imagePart, { text: prompt }] },
+            config: {
+                temperature: 0.1, // Baja temperatura para mayor precisión en extracción
+            }
         });
-        return response.text;
-    } catch(error) {
+        
+        if (!response.text || response.text.trim().length === 0) {
+            throw new Error("No se pudo extraer texto de la imagen. Asegúrate de que la imagen contenga texto legible.");
+        }
+        
+        return response.text.trim();
+    } catch(error: any) {
         console.error("Error extracting text from image:", error);
-        throw new Error("No se pudo extraer texto de la imagen.");
+        
+        // Manejo específico de errores
+        if (error.message?.includes('API Key')) {
+            throw new Error("Error de configuración: API Key no válida.");
+        } else if (error.message?.includes('quota')) {
+            throw new Error("Se ha excedido la cuota de la API. Inténtalo más tarde.");
+        } else if (error.message?.includes('invalid')) {
+            throw new Error("Formato de imagen no válido. Usa JPG, PNG o WebP.");
+        } else {
+            throw new Error("No se pudo extraer texto de la imagen. Verifica que la imagen sea clara y contenga texto legible.");
+        }
     }
 };
 

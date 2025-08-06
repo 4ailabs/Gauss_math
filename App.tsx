@@ -270,15 +270,42 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   const handleImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    // Validaciones del archivo
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setError("El archivo es demasiado grande. Máximo 10MB.");
+      return;
+    }
+    
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Formato de imagen no válido. Usa JPG, PNG o WebP.");
+      return;
+    }
+    
     setIsScanning(true);
     setError(null);
+    
     const reader = new FileReader();
     reader.readAsDataURL(file);
+    
     reader.onload = async () => {
         try {
-            const base64String = (reader.result as string).split(',')[1];
-            const extractedText = await extractTextFromImage(base64String);
-            setNotes(prev => `${prev}\n\n${extractedText}`.trim());
+            const result = reader.result as string;
+            const base64String = result.split(',')[1];
+            
+            if (!base64String) {
+                throw new Error("Error al procesar la imagen.");
+            }
+            
+            const extractedText = await extractTextFromImage(base64String, file.type);
+            
+            if (extractedText.trim()) {
+                setNotes(prev => `${prev}\n\n${extractedText}`.trim());
+            } else {
+                setError("No se encontró texto en la imagen. Asegúrate de que sea clara y legible.");
+            }
         } catch(e: any) {
             setError(e.message || "Error al escanear la imagen.");
         } finally {
@@ -286,6 +313,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
             if(imageInputRef.current) imageInputRef.current.value = "";
         }
     };
+    
     reader.onerror = () => {
         setError("Error al leer el archivo de imagen.");
         setIsScanning(false);
@@ -416,8 +444,23 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                         </>
                     )}
                 </button>
-                <button onClick={handleScanClick} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-all">
-                    {isScanning ? <><LoaderCircleIcon className="animate-spin w-5 h-5"/> Escaneando...</> : <><CameraIcon className="w-5 h-5"/> Escanear</>}
+                <button 
+                    onClick={handleScanClick} 
+                    disabled={isLoading || isScanning || isExporting || isRecording} 
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-all"
+                    title="Escanea imágenes de apuntes (JPG, PNG, WebP, máx. 10MB)"
+                >
+                    {isScanning ? (
+                        <>
+                            <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
+                            Escaneando...
+                        </>
+                    ) : (
+                        <>
+                            <CameraIcon className="w-5 h-5"/> 
+                            Escanear
+                        </>
+                    )}
                 </button>
                 <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
             </div>
