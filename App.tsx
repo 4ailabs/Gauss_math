@@ -24,13 +24,11 @@ import {
 } from './components/ui/Icons';
 
 declare global {
-    interface Window {
-        renderMathInElement: (element: HTMLElement, options?: any) => void;
-        jsPDF: any;
-        html2canvas: any;
-        SpeechRecognition: any;
-        webkitSpeechRecognition: any;
-    }
+  interface Window {
+    renderMathInElement: (element: HTMLElement, options?: any) => void;
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
 }
 
 // Helper component for styled textareas
@@ -233,7 +231,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, [notes, selectedSubject]);
   
     const handleExportToPdf = useCallback(async () => {
-    console.log("Iniciando exportación PDF...");
+    console.log("Iniciando exportación...");
     
     if (!processedData) {
       console.error("No hay datos procesados");
@@ -241,100 +239,62 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       return;
     }
 
-    // Verificar que las librerías estén disponibles
-    console.log("Verificando librerías...");
-    console.log("window.jsPDF:", !!window.jsPDF);
-    console.log("window.html2canvas:", !!window.html2canvas);
-    
-    if (!window.jsPDF || !window.html2canvas) {
-      console.error("Librerías no disponibles");
-      setError("Las librerías de PDF no están cargadas. Recarga la página e intenta de nuevo.");
-      return;
-    }
-
-    const { jsPDF } = window.jsPDF;
-    const input = document.getElementById('processed-output-content');
-
-    console.log("Elemento encontrado:", !!input);
-    if (!input) {
-      console.error("Elemento processed-output-content no encontrado");
-      setError("No se pudo encontrar el contenido para exportar.");
-      return;
-    }
-
     setIsExporting(true);
     setError(null);
 
     try {
-      console.log("Esperando renderizado del DOM...");
-      // Esperar un poco para que el DOM se renderice completamente
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Crear contenido formateado
+      let content = `GAUSS MATHMIND - APUNTES PROCESADOS\n`;
+      content += `Materia: ${selectedSubject}\n`;
+      content += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n`;
+      content += `\n${'='.repeat(50)}\n\n`;
 
-      console.log("Iniciando html2canvas...");
-      const canvas = await window.html2canvas(input, {
-        scale: 1.5, // Reducir escala para mejor compatibilidad
-        useCORS: true,
-        backgroundColor: '#1e293b',
-        allowTaint: true,
-        foreignObjectRendering: false, // Desactivar para mejor compatibilidad
-        logging: true, // Activar logging para debug
-        width: input.scrollWidth,
-        height: input.scrollHeight
+      // Resumen
+      content += `📋 RESUMEN\n`;
+      content += `${processedData.summary.replace(/<[^>]*>/g, '')}\n\n`;
+
+      // Conceptos Clave
+      content += `🎯 CONCEPTOS CLAVE\n`;
+      processedData.keyConcepts.forEach((concept, index) => {
+        content += `${index + 1}. ${concept.concept}\n`;
+        content += `   ${concept.definition}\n\n`;
       });
 
-      console.log("Canvas generado:", canvas.width, "x", canvas.height);
-      const imgData = canvas.toDataURL('image/png');
-      console.log("Imagen generada, longitud:", imgData.length);
-
-      console.log("Creando PDF...");
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
+      // Preguntas de Quiz
+      content += `❓ PREGUNTAS DE QUIZ\n`;
+      processedData.quizQuestions.forEach((question, index) => {
+        content += `${index + 1}. ${question.question}\n`;
+        content += `   Respuesta: ${question.answer}\n\n`;
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const ratio = canvasWidth / pdfWidth;
-      const imgHeight = canvasHeight / ratio;
+      // Problemas Relacionados
+      content += `🧮 PROBLEMAS RELACIONADOS\n`;
+      processedData.relatedProblems.forEach((problem, index) => {
+        content += `${index + 1}. ${problem.problem}\n`;
+        content += `   Solución: ${problem.solution}\n\n`;
+      });
 
-      console.log("Dimensiones PDF:", pdfWidth, "x", pdfHeight);
-      console.log("Dimensiones Canvas:", canvasWidth, "x", canvasHeight);
-      console.log("Altura imagen:", imgHeight);
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Primera página
-      console.log("Agregando primera página...");
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pdfHeight;
-
-      // Páginas adicionales si es necesario
-      let pageCount = 1;
-      while (heightLeft > 0) {
-        console.log("Agregando página adicional:", pageCount + 1);
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pdfHeight;
-        pageCount++;
-      }
-
-      // Generar nombre de archivo
-      const fileName = `Gauss_MathMind_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-      console.log("Guardando PDF como:", fileName);
-      pdf.save(fileName);
+      // Crear y descargar archivo
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Gauss_MathMind_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
       
-      console.log("PDF exportado exitosamente");
-      alert('✅ PDF generado exitosamente');
+      // Simular clic para descargar
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Limpiar URL
+      window.URL.revokeObjectURL(url);
+      
+      console.log("Archivo descargado exitosamente");
+      alert('✅ Archivo descargado exitosamente');
       
     } catch (e) {
-      console.error("Error detallado al exportar a PDF:", e);
-      console.error("Stack trace:", e.stack);
-      setError(`Error al generar el PDF: ${e.message}. Verifica que tienes datos procesados e intenta de nuevo.`);
+      console.error("Error al generar archivo:", e);
+      setError(`Error al generar el archivo: ${e.message}. Intenta usar la opción "Copiar" en su lugar.`);
     } finally {
       setIsExporting(false);
     }
@@ -1000,7 +960,7 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
             ) : (
               <>
                 <DownloadIcon className="w-4 h-4" />
-                PDF
+                Descargar
               </>
             )}
           </button>

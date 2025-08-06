@@ -137,30 +137,6 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7XtG4B6d/bS2UcHkC2I9x4wMVRUp7Y2bCFJ5B/p/rZ2d2k2VqGmnamz3_g2fF/y3" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-4wWlVMBKBAxLDBEDIMYEuIkO9R0vjS41kEupQ8B2k1q2aDbV2Bf1O2B2vM3l2G/d" crossorigin="anonymous"></script>
   
-  <!-- jsPDF and html2canvas for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous"></script>
-  
-  <!-- Verificación de librerías -->
-  <script>
-    window.addEventListener('load', function() {
-      console.log('Verificando librerías PDF...');
-      console.log('jsPDF disponible:', typeof window.jsPDF !== 'undefined');
-      console.log('html2canvas disponible:', typeof window.html2canvas !== 'undefined');
-      
-      if (typeof window.jsPDF === 'undefined') {
-        console.error('❌ jsPDF no se cargó correctamente');
-      } else {
-        console.log('✅ jsPDF cargado correctamente');
-      }
-      
-      if (typeof window.html2canvas === 'undefined') {
-        console.error('❌ html2canvas no se cargó correctamente');
-      } else {
-        console.log('✅ html2canvas cargado correctamente');
-      }
-    });
-  </script>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>
