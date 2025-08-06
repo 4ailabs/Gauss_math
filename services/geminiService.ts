@@ -1,12 +1,32 @@
 import { GoogleGenAI, Type, Chat, GenerateContentResponse } from "@google/genai";
 import { ProcessedData, ChatMessage } from '../types';
 
+// Función para verificar la configuración de la API
+const checkApiConfiguration = () => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log("API Key configurada:", apiKey ? "Sí" : "No");
+    console.log("API Key length:", apiKey ? apiKey.length : 0);
+    console.log("API Key preview:", apiKey ? `${apiKey.substring(0, 10)}...` : "No disponible");
+    
+    if (!apiKey) {
+        throw new Error("API Key no configurada. Verifica que GEMINI_API_KEY esté definida en las variables de entorno.");
+    }
+    
+    if (apiKey.length < 20) {
+        throw new Error("API Key parece ser muy corta. Verifica que sea válida.");
+    }
+    
+    return apiKey;
+};
+
 // The app will now handle API key errors gracefully in the UI.
-if (!process.env.GEMINI_API_KEY) {
-  console.error("La variable de entorno GEMINI_API_KEY no está configurada.");
+try {
+    checkApiConfiguration();
+} catch (error) {
+    console.error("Error en configuración de API:", error);
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 const model = "gemini-2.5-flash";
 
 const processNotesSchema = {
@@ -73,9 +93,10 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
     `;
 
     try {
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error("API Key no configurada.");
-        }
+        // Verificar configuración de API
+        const apiKey = checkApiConfiguration();
+        console.log("Procesando apuntes para materia:", subject);
+        console.log("Longitud de apuntes:", notes.length);
         
         if (!notes || notes.trim().length === 0) {
             throw new Error("Los apuntes no pueden estar vacíos.");
@@ -85,6 +106,7 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
             throw new Error("Los apuntes son demasiado largos. Máximo 10,000 caracteres.");
         }
 
+        console.log("Enviando solicitud a Gemini API...");
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: model,
             contents: prompt,
@@ -95,24 +117,29 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
             }
         });
 
+        console.log("Respuesta recibida de Gemini API");
         const jsonString = response.text;
         if (!jsonString) {
             throw new Error("La API devolvió una respuesta vacía.");
         }
 
+        console.log("Parseando respuesta JSON...");
         let parsedJson;
         try {
             parsedJson = JSON.parse(jsonString);
         } catch (parseError) {
             console.error("Error parsing JSON response:", parseError);
+            console.error("JSON string recibido:", jsonString);
             throw new Error("La API devolvió un formato JSON inválido.");
         }
 
         // Validar que la respuesta tenga la estructura esperada
         if (!parsedJson.summary || !parsedJson.keyConcepts || !parsedJson.quizQuestions || !parsedJson.relatedProblems) {
+            console.error("Estructura de respuesta inválida:", parsedJson);
             throw new Error("La respuesta de la API no tiene la estructura esperada.");
         }
 
+        console.log("Procesamiento completado exitosamente");
         return parsedJson as ProcessedData;
 
     } catch (error: any) {
