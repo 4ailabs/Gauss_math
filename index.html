@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -85,13 +85,24 @@
 
     /* Ajustes específicos para iPhone */
     @media screen and (max-width: 430px) {
+      /* Forzar ancho completo en iPhone */
+      body, #root {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
       .container {
         padding-bottom: 80px; /* Espacio extra para la barra de navegación */
+        width: 100% !important;
+        max-width: none !important;
       }
       
       /* Asegurar que el contenido principal no se corte */
       main {
         padding-bottom: 20px;
+        width: 100% !important;
       }
       
       /* Footer siempre visible */
@@ -100,6 +111,7 @@
         z-index: 10;
         background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
         padding-bottom: 20px;
+        width: 100% !important;
       }
     }
 

@@ -1,5 +1,87 @@
 /* Mobile Optimizations for Gauss MathMind IA */
 
+/* iPhone specific optimizations */
+@media screen and (max-width: 430px) {
+  /* Full width container for iPhone */
+  .w-full {
+    width: 100% !important;
+  }
+  
+  /* Remove container max-width on mobile */
+  .container {
+    max-width: none !important;
+    width: 100% !important;
+  }
+  
+  /* Ensure full screen usage */
+  body, html, #root {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden;
+  }
+}
+
+/* iPhone SE / Mini (375px and below) */
+@media screen and (max-width: 375px) {
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Smaller header font for small screens */
+  h1 {
+    font-size: 1.125rem !important; /* 18px */
+  }
+  
+  h2 {
+    font-size: 1rem !important; /* 16px */
+  }
+}
+
+/* iPhone Pro Max (428px) and similar large phones */
+@media screen and (min-width: 390px) and (max-width: 430px) {
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Very small phones (320px - iPhone 5/SE original) */
+@media screen and (max-width: 320px) {
+  .container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Even smaller text for very small screens */
+  h1 {
+    font-size: 1rem !important;
+  }
+  
+  button {
+    font-size: 0.75rem !important;
+    padding: 8px 12px !important;
+  }
+}
+
+/* Remove Tailwind container constraints on mobile */
+@media (max-width: 640px) {
+  /* Override Tailwind's container class */
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Full width utilities */
+  .mobile-full-width {
+    width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+  }
+}
+
 /* Touch targets should be at least 44px for iOS and 48px for Android */
 @media (max-width: 640px) {
   /* Improve touch targets */

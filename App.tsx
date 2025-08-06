@@ -493,7 +493,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-6 h-screen flex flex-col safe-area-bottom">
+      <div className="w-full mx-auto px-3 sm:px-6 lg:max-w-7xl lg:mx-auto py-2 sm:py-6 h-screen flex flex-col safe-area-bottom">
         {/* Header */}
         <header className="text-center mb-2 sm:mb-6 flex-shrink-0">
           <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 bg-clip-text text-transparent tracking-tight leading-tight">
@@ -506,7 +506,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
         {/* Navigation */}
         <nav className="flex justify-center mb-2 sm:mb-6 flex-shrink-0">
-          <div className="flex bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50 shadow-lg w-full max-w-sm sm:w-auto">
+          <div className="flex bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50 shadow-lg w-full sm:w-auto mx-1 sm:mx-0">
             {['Editor', 'IA', 'Resumen'].map((tab) => (
               <button
                 key={tab}
@@ -532,8 +532,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'editor' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">
-                <div className="max-w-4xl mx-auto space-y-3 sm:space-y-6">
-                  <div className="text-center px-1 sm:px-2">
+                <div className="w-full space-y-3 sm:space-y-6">
+                  <div className="text-center px-2 sm:px-4">
                     <h2 className="text-lg sm:text-3xl font-bold text-white mb-1 sm:mb-2 flex items-center justify-center gap-2 sm:gap-3">
                       <BookOpenIcon className="w-5 h-5 sm:w-8 sm:h-8 text-blue-500"/>
                       Editor de Apuntes
@@ -661,7 +661,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'assistant' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-hidden">
-                <div className="max-w-4xl mx-auto h-full flex flex-col px-1 sm:px-0">
+                <div className="w-full h-full flex flex-col px-2 sm:px-4">
                   <div className="flex justify-between items-center mb-2 sm:mb-4 flex-shrink-0">
                     <div className="text-center flex-1">
                       <h2 className="text-base sm:text-2xl font-bold text-white mb-1 flex items-center justify-center gap-2 sm:gap-3">
@@ -697,7 +697,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'summary' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">
-                <div className="max-w-4xl mx-auto px-1 sm:px-0">
+                <div className="w-full px-2 sm:px-4">
                   <div className="text-center mb-3 sm:mb-6">
                     <h2 className="text-lg sm:text-3xl font-bold text-white mb-1 sm:mb-2 flex items-center justify-center gap-2 sm:gap-3">
                       <BrainCircuitIcon className="w-5 h-5 sm:w-8 sm:h-8 text-blue-500"/>
