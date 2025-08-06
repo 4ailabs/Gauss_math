@@ -350,6 +350,12 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
             console.log("Llamando a sendMessageStream...");
             responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
             console.log("Stream sin imagen creado:", !!responseStream);
+            
+            // Verificar que el stream sea válido
+            if (!responseStream || typeof responseStream[Symbol.asyncIterator] !== 'function') {
+                console.error("Stream inválido recibido:", responseStream);
+                throw new Error("Stream de respuesta inválido");
+            }
         }
         
         if (!responseStream) {

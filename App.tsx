@@ -614,20 +614,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       setAssistantHistory(prev => [...prev, modelMsg]);
       
       console.log("Iniciando iteración del stream...");
+      let chunkCount = 0;
       for await (const chunk of stream) {
-        console.log("Chunk recibido:", chunk);
+        chunkCount++;
+        console.log(`Chunk ${chunkCount} recibido:`, chunk);
+        console.log("Tipo de chunk:", typeof chunk);
+        console.log("Longitud del chunk:", chunk ? chunk.length : 0);
         
         // Validar que el chunk sea una cadena válida
         if (typeof chunk !== 'string') {
           console.warn("Chunk inválido recibido:", chunk);
+          console.warn("Tipo de chunk:", typeof chunk);
           continue;
         }
         
         if (isFirstChunk) {
           fullResponse = chunk;
           isFirstChunk = false;
+          console.log("Primer chunk procesado:", fullResponse);
         } else {
           fullResponse += chunk;
+          console.log("Respuesta acumulada:", fullResponse.substring(0, 100) + "...");
         }
 
         // Actualizar el historial con debounce para mejor rendimiento
@@ -642,11 +649,18 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         }, 100);
       }
 
-      console.log("Stream completado, respuesta final:", fullResponse);
+      console.log("Stream completado, total de chunks:", chunkCount);
+      console.log("Respuesta final:", fullResponse);
+      console.log("Longitud de respuesta final:", fullResponse ? fullResponse.length : 0);
 
-      // Validar respuesta final
-      if (!fullResponse || typeof fullResponse !== 'string') {
-        throw new Error("Respuesta inválida del asistente");
+      // Validar respuesta final - permitir respuestas vacías pero válidas
+      if (fullResponse === undefined || fullResponse === null) {
+        throw new Error("Respuesta vacía del asistente");
+      }
+
+      // Si la respuesta está vacía, mostrar un mensaje por defecto
+      if (fullResponse.trim() === '') {
+        fullResponse = "Lo siento, no pude generar una respuesta. ¿Podrías reformular tu pregunta?";
       }
 
       // Actualización final
