@@ -1,7 +1,26 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ProcessedData, ChatMessage } from './types';
 import { processNotes, getAssistantResponseStream, resetAssistantChat, extractTextFromImage } from './services/geminiService';
-import { BrainCircuitIcon, BookOpenIcon, MessageCircleIcon, LoaderCircleIcon, MicIcon, CameraIcon, SendIcon, HashIcon, RefreshCwIcon, DownloadIcon } from './components/ui/Icons';
+import { 
+  BrainCircuitIcon, 
+  BookOpenIcon, 
+  MessageCircleIcon, 
+  LoaderCircleIcon, 
+  MicIcon, 
+  CameraIcon, 
+  SendIcon, 
+  HashIcon, 
+  RefreshCwIcon, 
+  DownloadIcon,
+  SparklesIcon,
+  CalculatorIcon,
+  LightbulbIcon,
+  TargetIcon,
+  CheckCircleIcon,
+  AlertCircleIcon,
+  ZapIcon,
+  FileTextIcon
+} from './components/ui/Icons';
 
 declare global {
     interface Window {
@@ -371,11 +390,17 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     <div className="min-h-screen bg-slate-950 text-slate-200 p-2 sm:p-4 lg:p-8">
       <div className="max-w-screen-2xl mx-auto flex flex-col min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-2rem)]">
         <header className="text-center mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-            Gauss MathMind <span className="text-blue-400">IA</span>
-          </h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-slate-400 px-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <SparklesIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+              Gauss MathMind <span className="text-blue-400">IA</span>
+            </h1>
+            <ZapIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
+          </div>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-slate-400 px-2 flex items-center justify-center gap-2">
+            <CalculatorIcon className="w-4 h-4 text-slate-500" />
             Captura, procesa y domina tus apuntes de matemáticas avanzadas.
+            <LightbulbIcon className="w-4 h-4 text-slate-500" />
           </p>
         </header>
 
@@ -417,10 +442,25 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 onChange={(e) => setNotes(e.target.value)}
                 />
             </div>
-            {error && <p className="text-red-400 text-xs sm:text-sm animate-fade-in px-2">{error}</p>}
+            {error && (
+                <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
+                    <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
+                    {error}
+                </div>
+            )}
             <div className="flex flex-col gap-2 sm:gap-4">
-                 <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 text-sm sm:text-base">
-                    {isLoading ? <><LoaderCircleIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5"/> Procesando...</> : <><BrainCircuitIcon className="w-4 h-4 sm:w-5 sm:h-5"/> Procesar Apuntes</>}
+                 <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 text-sm sm:text-base shadow-lg">
+                    {isLoading ? (
+                        <>
+                            <LoaderCircleIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5"/> 
+                            Procesando...
+                        </>
+                    ) : (
+                        <>
+                            <BrainCircuitIcon className="w-4 h-4 sm:w-5 sm:h-5"/> 
+                            Procesar Apuntes
+                        </>
+                    )}
                 </button>
                 <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-4">
                     <button
@@ -523,14 +563,19 @@ const Flashcard: React.FC<{ concept: string; definition: string }> = ({ concept,
     return (
         <div className="[perspective:1000px] w-full" onClick={() => setIsFlipped(!isFlipped)} role="button" tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setIsFlipped(!isFlipped)}>
             <div className={`relative w-full h-24 sm:h-32 rounded-lg shadow-md cursor-pointer transition-transform duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
-                <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-slate-800/70 p-2 sm:p-4 rounded-lg [backface-visibility:hidden] border border-slate-700 text-center">
+                <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800/70 to-slate-900/70 p-2 sm:p-4 rounded-lg [backface-visibility:hidden] border border-slate-700 text-center">
+                    <TargetIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mb-1" />
                     <h4 className="text-sm sm:text-md font-bold text-white">{concept}</h4>
                     <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 flex items-center gap-1 text-xs text-slate-400">
                         <RefreshCwIcon className="w-3 h-3"/> 
                         <span className="hidden sm:inline">Voltear</span>
                     </div>
                 </div>
-                <div className="absolute inset-0 w-full h-full bg-slate-800 p-2 sm:p-4 rounded-lg [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-y-auto">
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 p-2 sm:p-4 rounded-lg [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-y-auto">
+                    <div className="flex items-center gap-2 mb-2">
+                        <LightbulbIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                        <span className="text-xs text-slate-400 font-medium">Definición</span>
+                    </div>
                     <p className="text-slate-300 text-xs sm:text-sm">{definition}</p>
                 </div>
             </div>
@@ -558,11 +603,17 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
             </div>
             <div id="processed-output-content" className="space-y-6 sm:space-y-8 overflow-y-auto flex-grow pr-1 sm:pr-2">
                 <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2">Resumen</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 flex items-center gap-2">
+                        <FileTextIcon className="w-5 h-5" />
+                        Resumen
+                    </h3>
                     <p className="text-slate-300 whitespace-pre-wrap text-sm sm:text-base">{data.summary}</p>
                 </div>
                 <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-3 sm:mb-4">Conceptos Clave (Flashcards)</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-3 sm:mb-4 flex items-center gap-2">
+                        <TargetIcon className="w-5 h-5" />
+                        Conceptos Clave (Flashcards)
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                         {data.keyConcepts.map((item, index) => (
                             <Flashcard key={index} concept={item.concept} definition={item.definition} />
@@ -571,7 +622,10 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
                 </div>
                  {data.relatedProblems?.length > 0 && (
                      <div>
-                        <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3">Problemas para Practicar</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3 flex items-center gap-2">
+                            <CalculatorIcon className="w-5 h-5" />
+                            Problemas para Practicar
+                        </h3>
                         <ul className="space-y-2 sm:space-y-3">
                             {data.relatedProblems.map((item, index) => (
                                <details key={index} className="p-2 sm:p-3 bg-slate-900/50 rounded-md cursor-pointer group">
@@ -579,14 +633,23 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
                                        <span className="flex-1">{item.problem}</span>
                                        <svg className="w-3 h-3 sm:w-4 sm:h-4 transition-transform transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                                    </summary>
-                                   <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm"><strong>Solución:</strong> {item.solution}</div>
+                                   <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm">
+                                       <div className="flex items-center gap-2 mb-1">
+                                           <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                                           <strong>Solución:</strong>
+                                       </div>
+                                       {item.solution}
+                                   </div>
                                </details>
                             ))}
                         </ul>
                     </div>
                 )}
                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3">Ponte a Prueba</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3 flex items-center gap-2">
+                        <BrainCircuitIcon className="w-5 h-5" />
+                        Ponte a Prueba
+                    </h3>
                     <ul className="space-y-2 sm:space-y-3">
                         {data.quizQuestions.map((item, index) => (
                            <details key={index} className="p-2 sm:p-3 bg-slate-900/50 rounded-md cursor-pointer group">
@@ -595,7 +658,13 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
                                    <span className="text-blue-400 text-xs uppercase font-bold mr-1 sm:mr-2 bg-blue-900/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">{item.type}</span>
                                    <svg className="w-3 h-3 sm:w-4 sm:h-4 transition-transform transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                                </summary>
-                               <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm"><strong>Respuesta:</strong> {item.answer}</div>
+                               <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm">
+                                   <div className="flex items-center gap-2 mb-1">
+                                       <LightbulbIcon className="w-4 h-4 text-yellow-400" />
+                                       <strong>Respuesta:</strong>
+                                   </div>
+                                   {item.answer}
+                               </div>
                            </details>
                         ))}
                     </ul>
