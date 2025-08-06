@@ -220,7 +220,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       setProcessedData(data);
       setActiveView('summary');
     } catch (e: any) {
-      setError(e.message || "Ocurrió un error desconocido.");
+      console.error("Error processing notes:", e);
+      setError(e.message || "Ocurrió un error desconocido al procesar los apuntes.");
       setProcessedData(null);
     } finally {
       setIsLoading(false);
@@ -454,9 +455,19 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 />
             </div>
             {error && (
-                <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
-                    <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
-                    {error}
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
+                        <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
+                        {error}
+                    </div>
+                    <button 
+                        onClick={handleProcessNotes} 
+                        disabled={isLoading || isScanning || isExporting || isRecording}
+                        className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs sm:text-sm"
+                    >
+                        <RefreshCwIcon className="w-4 h-4" />
+                        Reintentar
+                    </button>
                 </div>
             )}
             <div className="flex flex-col gap-2 sm:gap-4">

@@ -73,7 +73,18 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
     `;
 
     try {
-        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error("API Key no configurada.");
+        }
+        
+        if (!notes || notes.trim().length === 0) {
+            throw new Error("Los apuntes no pueden estar vacíos.");
+        }
+        
+        if (notes.length > 10000) {
+            throw new Error("Los apuntes son demasiado largos. Máximo 10,000 caracteres.");
+        }
+
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: model,
             contents: prompt,
@@ -89,12 +100,42 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
             throw new Error("La API devolvió una respuesta vacía.");
         }
 
-        const parsedJson = JSON.parse(jsonString);
+        let parsedJson;
+        try {
+            parsedJson = JSON.parse(jsonString);
+        } catch (parseError) {
+            console.error("Error parsing JSON response:", parseError);
+            throw new Error("La API devolvió un formato JSON inválido.");
+        }
+
+        // Validar que la respuesta tenga la estructura esperada
+        if (!parsedJson.summary || !parsedJson.keyConcepts || !parsedJson.quizQuestions || !parsedJson.relatedProblems) {
+            throw new Error("La respuesta de la API no tiene la estructura esperada.");
+        }
+
         return parsedJson as ProcessedData;
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error processing notes with Gemini:", error);
-        throw new Error("No se pudieron procesar los apuntes. La API podría haber devuelto un formato no válido o haber ocurrido un error.");
+        
+        // Manejo específico de errores
+        if (error.message?.includes('API Key')) {
+            throw new Error("Error de configuración: API Key no válida. Verifica tu configuración.");
+        } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
+            throw new Error("Se ha excedido la cuota de la API. Inténtalo más tarde.");
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+            throw new Error("Error de conexión. Verifica tu conexión a internet.");
+        } else if (error.message?.includes('JSON')) {
+            throw new Error("Error en el formato de respuesta. Inténtalo de nuevo.");
+        } else if (error.message?.includes('estructura')) {
+            throw new Error("La respuesta no tiene el formato esperado. Inténtalo de nuevo.");
+        } else if (error.message?.includes('vacío')) {
+            throw new Error("Los apuntes no pueden estar vacíos.");
+        } else if (error.message?.includes('largo')) {
+            throw new Error("Los apuntes son demasiado largos. Reduce el contenido.");
+        } else {
+            throw new Error("No se pudieron procesar los apuntes. Verifica tu conexión e inténtalo de nuevo.");
+        }
     }
 };
 
