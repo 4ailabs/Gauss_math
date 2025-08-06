@@ -492,9 +492,10 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-2 sm:p-4 lg:p-8">
-      <div className="max-w-screen-2xl mx-auto flex flex-col min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-2rem)]">
-        <header className="text-center mb-4 sm:mb-6">
+    <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
+      <div className="container mx-auto px-4 py-4 sm:py-6 h-screen flex flex-col">
+        {/* Header */}
+        <header className="text-center mb-4 sm:mb-6 flex-shrink-0">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
             Gauss MathMind <span className="text-blue-400">IA</span>
           </h1>
@@ -503,164 +504,190 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           </p>
         </header>
 
-        {/* Mobile Navigation - Improved */}
-        <div className="lg:hidden mb-4 border-b border-slate-700 sticky top-0 bg-slate-950/95 backdrop-blur-sm z-10">
-            <div className="flex justify-around">
-                <TabButton onClick={() => setActiveView('editor')} active={activeView === 'editor'} icon={<BookOpenIcon className="w-4 h-4 sm:w-5 sm:h-5"/>}>Editor</TabButton>
-                <TabButton onClick={() => setActiveView('assistant')} active={activeView === 'assistant'} icon={<MessageCircleIcon className="w-4 h-4 sm:w-5 sm:h-5"/>}>IA</TabButton>
-                <TabButton onClick={() => setActiveView('summary')} active={activeView === 'summary'} icon={<BrainCircuitIcon className="w-4 h-4 sm:w-5 sm:h-5"/>}>Resultados</TabButton>
-            </div>
-        </div>
+        {/* Navigation */}
+        <nav className="flex justify-center mb-4 sm:mb-6 flex-shrink-0">
+          <div className="flex bg-slate-800 rounded-lg p-1">
+            {['Editor', 'IA', 'Resumen'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveView(tab === 'Editor' ? 'editor' : tab === 'IA' ? 'assistant' : 'summary')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeView === (tab === 'Editor' ? 'editor' : tab === 'IA' ? 'assistant' : 'summary')
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {tab === 'Editor' && <BookOpenIcon className="w-4 h-4" />}
+                {tab === 'IA' && <MessageCircleIcon className="w-4 h-4" />}
+                {tab === 'Resumen' && <FileTextIcon className="w-4 h-4" />}
+                {tab}
+              </button>
+            ))}
+          </div>
+        </nav>
 
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 flex-grow">
-          {/* Column 1: Editor */}
-          <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'editor' ? 'flex' : 'hidden'} lg:flex`}>
-            <h2 className="text-2xl sm:text-2xl font-semibold text-white flex items-center gap-2">
-                <BookOpenIcon className="w-6 h-6 text-blue-400"/>
-                Editor de Apuntes
-            </h2>
-             <div className="relative">
-                <label htmlFor="subject-select" className="sr-only">Seleccionar Materia</label>
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                     <HashIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-                </div>
-                <select
-                    id="subject-select"
-                    value={selectedSubject}
-                    onChange={(e) => setSelectedSubject(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 pl-10 text-base text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
-                >
-                    {subjects.map(subject => ( <option key={subject} value={subject}>{subject}</option>))}
-                </select>
-             </div>
+        {/* Main Content */}
+        <main className="flex-grow overflow-hidden">
+          {activeView === 'editor' && (
+            <div className="h-full flex flex-col">
+              <div className="flex-grow overflow-y-auto">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <h2 className="text-2xl sm:text-2xl font-semibold text-white flex items-center gap-2">
+                    <BookOpenIcon className="w-6 h-6 text-blue-400"/>
+                    Editor de Apuntes
+                  </h2>
+                  <div className="relative">
+                    <label htmlFor="subject-select" className="sr-only">Seleccionar Materia</label>
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <HashIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                    </div>
+                    <select
+                      id="subject-select"
+                      value={selectedSubject}
+                      onChange={(e) => setSelectedSubject(e.target.value)}
+                      className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 pl-10 text-base text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
+                    >
+                      {subjects.map(subject => ( <option key={subject} value={subject}>{subject}</option>))}
+                    </select>
+                  </div>
 
-            <div className="bg-slate-900 rounded-lg p-1 shadow-lg flex-grow flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px]">
-                <StyledTextarea
-                placeholder="Escribe, pega o escanea tus apuntes de matemáticas aquí. Usa LaTeX para las fórmulas, ej., \\( \\int_a^b x^2 dx \\)..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                />
-            </div>
-            {error && (
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
+                  <div className="bg-slate-900 rounded-lg p-1 shadow-lg flex-grow flex flex-col min-h-[300px] sm:min-h-[400px]">
+                    <StyledTextarea
+                      placeholder="Escribe, pega o escanea tus apuntes de matemáticas aquí. Usa LaTeX para las fórmulas, ej., \\( \\int_a^b x^2 dx \\)..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                  </div>
+                  {error && (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
                         <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
                         {error}
-                    </div>
-                    <button 
+                      </div>
+                      <button 
                         onClick={handleProcessNotes} 
                         disabled={isLoading || isScanning || isExporting || isRecording}
                         className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs sm:text-sm"
-                    >
+                      >
                         <RefreshCwIcon className="w-4 h-4" />
                         Reintentar
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-2 sm:gap-4">
+                    <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 text-base shadow-lg">
+                      {isLoading ? (
+                        <>
+                          <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
+                          Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <BrainCircuitIcon className="w-5 h-5"/> 
+                          Procesar Apuntes
+                        </>
+                      )}
                     </button>
-                </div>
-            )}
-            <div className="flex flex-col gap-2 sm:gap-4">
-                 <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 text-base shadow-lg">
-                    {isLoading ? (
-                        <>
-                            <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
-                            Procesando...
-                        </>
-                    ) : (
-                        <>
-                            <BrainCircuitIcon className="w-5 h-5"/> 
-                            Procesar Apuntes
-                        </>
-                    )}
-                </button>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-4">
-                    <button
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-4">
+                      <button
                         onClick={handleToggleRecording}
                         disabled={isLoading || isScanning || isExporting || !isSpeechSupported}
                         className={`flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-lg transition-all text-base ${
-                            !isSpeechSupported
-                            ? 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
-                            : isRecording
-                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                            : 'bg-slate-800 hover:bg-slate-700 text-white'
+                          !isSpeechSupported
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
+                          : isRecording
+                          ? 'bg-red-600 hover:bg-red-700 text-white'
+                          : 'bg-slate-800 hover:bg-slate-700 text-white'
                         }`}
                         title={!isSpeechSupported ? "El reconocimiento de voz no es compatible con este navegador." : isRecording ? "Detener grabación" : "Grabar audio"}
-                    >
+                      >
                         {isRecording ? (
-                            <>
-                                <MicIcon className="w-5 h-5 animate-pulse" /> 
-                                <span className="hidden sm:inline">Detener</span>
-                            </>
+                          <>
+                            <MicIcon className="w-5 h-5 animate-pulse" /> 
+                            <span className="hidden sm:inline">Detener</span>
+                          </>
                         ) : (
-                            <>
-                                <MicIcon className="w-5 h-5" /> 
-                                <span className="hidden sm:inline">Grabar</span>
-                            </>
+                          <>
+                            <MicIcon className="w-5 h-5" /> 
+                            <span className="hidden sm:inline">Grabar</span>
+                          </>
                         )}
-                    </button>
-                    <button 
+                      </button>
+                      <button 
                         onClick={handleScanClick} 
                         disabled={isLoading || isScanning || isExporting || isRecording} 
                         className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-all text-base"
                         title="Escanea imágenes de apuntes (JPG, PNG, WebP, máx. 10MB)"
-                    >
+                      >
                         {isScanning ? (
-                            <>
-                                <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
-                                <span className="hidden sm:inline">Escaneando...</span>
-                            </>
+                          <>
+                            <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
+                            <span className="hidden sm:inline">Escaneando...</span>
+                          </>
                         ) : (
-                            <>
-                                <CameraIcon className="w-5 h-5"/> 
-                                <span className="hidden sm:inline">Escanear</span>
-                            </>
+                          <>
+                            <CameraIcon className="w-5 h-5"/> 
+                            <span className="hidden sm:inline">Escanear</span>
+                          </>
                         )}
-                    </button>
+                      </button>
+                    </div>
+                    <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
+                  </div>
                 </div>
-                <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
+              </div>
             </div>
-          </div>
-
-          {/* Column 2: AI Assistant */}
-          <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'assistant' ? 'flex' : 'hidden'} lg:flex`}>
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+          )}
+          
+          {activeView === 'assistant' && (
+            <div className="h-full flex flex-col">
+              <div className="flex-grow overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
                     <MessageCircleIcon className="w-6 h-6 text-blue-400"/>
                     IA
-                </h2>
-                <button 
+                  </h2>
+                  <button 
                     onClick={handleResetAssistantChat} 
                     title="Reiniciar conversación"
                     className="text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-50 p-1"
                     disabled={isAssistantLoading}
-                >
+                  >
                     <RefreshCwIcon className="w-5 h-5"/>
-                </button>
-            </div>
-             <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px]">
-                <AssistantView 
+                  </button>
+                </div>
+                <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px]">
+                  <AssistantView 
                     history={assistantHistory} 
                     inputValue={assistantInput} 
                     onInputChange={(e) => setAssistantInput(e.target.value)} 
                     onSubmit={handleAssistantSubmit} 
                     isLoading={isAssistantLoading} 
                     subject={selectedSubject} 
-                />
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Column 3: Processed Notes */}
-          <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'summary' ? 'flex' : 'hidden'} lg:flex`}>
-            <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                <BrainCircuitIcon className="w-6 h-6 text-blue-400"/>
-                Apuntes Procesados
-            </h2>
-            <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px] overflow-y-auto">
-              <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
+          )}
+          
+          {activeView === 'summary' && (
+            <div className="h-full flex flex-col">
+              <div className="flex-grow overflow-y-auto">
+                <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4">
+                  <BrainCircuitIcon className="w-6 h-6 text-blue-400"/>
+                  Apuntes Procesados
+                </h2>
+                <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px] overflow-y-auto">
+                  <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </main>
 
-        <footer className="text-center mt-6 sm:mt-8 py-3 sm:py-4 border-t border-slate-800">
-            <p className="text-slate-500 text-xs sm:text-sm">Desarrollado por 4ailabs</p>
+        {/* Footer */}
+        <footer className="text-center text-slate-500 text-sm mt-4 flex-shrink-0">
+          <p>Desarrollado por 4ailabs</p>
         </footer>
       </div>
     </div>

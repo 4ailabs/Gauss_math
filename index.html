@@ -32,6 +32,34 @@
       },
     }
   </script>
+  <style>
+    /* Fijar la aplicación en móvil */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    #root {
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Prevenir zoom en inputs en iOS */
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+    
+    /* Prevenir scroll horizontal */
+    * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
 <script type="importmap">
 {
   "imports": {
