@@ -20,7 +20,8 @@ import {
   AlertCircleIcon,
   ZapIcon,
   FileTextIcon,
-  CopyIcon
+  CopyIcon,
+  XIcon
 } from './components/ui/Icons';
 
 declare global {
@@ -58,6 +59,7 @@ const App: React.FC = () => {
   const [processedData, setProcessedData] = useState<ProcessedData | null>(null);
   const [assistantHistory, setAssistantHistory] = useState<ChatMessage[]>([]);
   const [assistantInput, setAssistantInput] = useState<string>('');
+  const [assistantImage, setAssistantImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAssistantLoading, setIsAssistantLoading] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -73,6 +75,7 @@ const App: React.FC = () => {
   const notesOnRecordStartRef = useRef<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const assistantImageInputRef = useRef<HTMLInputElement>(null);
 
 
   const subjects = [
@@ -365,6 +368,45 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     }
   }, [processedData, selectedSubject]);
 
+  const handleAssistantImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Validaciones del archivo
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setError("La imagen es demasiado grande. Máximo 10MB.");
+      return;
+    }
+    
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Formato de imagen no válido. Usa JPG, PNG o WebP.");
+      return;
+    }
+    
+    setError(null);
+    
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    reader.onload = () => {
+      const result = reader.result as string;
+      setAssistantImage(result);
+    };
+  };
+
+  const handleRemoveAssistantImage = () => {
+    setAssistantImage(null);
+    if (assistantImageInputRef.current) {
+      assistantImageInputRef.current.value = '';
+    }
+  };
+
+  const handleAssistantImageClick = () => {
+    assistantImageInputRef.current?.click();
+  };
+
   const handleScanClick = () => imageInputRef.current?.click();
 
   const handleImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -420,60 +462,74 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     };
   };
 
-  const handleAssistantSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleAssistantSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!assistantInput.trim() || isAssistantLoading) return;
+    
+    if (!assistantInput.trim() && !assistantImage) return;
+    if (isAssistantLoading) return;
 
-    const newQuestion: ChatMessage = { role: 'user', content: assistantInput };
-    setAssistantHistory(prev => [...prev, newQuestion]);
-    setIsAssistantLoading(true);
+    const userMessage = assistantInput.trim();
+    const hasImage = !!assistantImage;
+    
+    // Agregar mensaje del usuario al historial
+    const userMsg: ChatMessage = {
+      role: 'user',
+      content: hasImage ? `${userMessage} [Incluye imagen]` : userMessage
+    };
+    
+    setAssistantHistory(prev => [...prev, userMsg]);
     setAssistantInput('');
+    setIsAssistantLoading(true);
+    setError(null);
 
     try {
-      const stream = await getAssistantResponseStream(assistantInput, selectedSubject);
-      let fullResponse = "";
-      const modelResponse: ChatMessage = { role: 'model', content: "" };
-      setAssistantHistory(prev => [...prev, modelResponse]);
+      let fullResponse = '';
+      let isFirstChunk = true;
 
-      // Usar un debounce para actualizar menos frecuentemente
-      let updateTimeout: NodeJS.Timeout;
+      // Crear el stream con imagen si existe
+      const stream = await getAssistantResponseStream(userMessage, selectedSubject, assistantImage);
       
       for await (const chunk of stream) {
-          fullResponse += chunk.text;
-          
-          // Actualizar cada 100ms en lugar de en cada chunk
-          clearTimeout(updateTimeout);
-          updateTimeout = setTimeout(() => {
-              setAssistantHistory(prev => prev.map((msg, index) => 
-                index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
-              ));
-          }, 100);
+        if (isFirstChunk) {
+          fullResponse = chunk;
+          isFirstChunk = false;
+        } else {
+          fullResponse += chunk;
+        }
+
+        // Actualizar el historial con debounce para mejor rendimiento
+        setTimeout(() => {
+          setAssistantHistory(prev => 
+            prev.map((msg, index) => 
+              index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
+            )
+          );
+        }, 100);
       }
-      
+
       // Actualización final
-      clearTimeout(updateTimeout);
-      setAssistantHistory(prev => prev.map((msg, index) => 
-        index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
-      ));
-      
-    } catch (e: any) {
-      console.error("Error en asistente:", e);
-      let errorMessage = "Lo siento, no pude obtener una respuesta. Por favor, inténtalo de nuevo.";
-      
-      if (e.message?.includes('API Key')) {
-        errorMessage = "Error de configuración: API Key no válida. Verifica tu configuración.";
-      } else if (e.message?.includes('quota')) {
-        errorMessage = "Se ha excedido la cuota de la API. Inténtalo más tarde.";
-      } else if (e.message?.includes('network')) {
-        errorMessage = "Error de conexión. Verifica tu conexión a internet.";
+      setAssistantHistory(prev => 
+        prev.map((msg, index) => 
+          index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
+        )
+      );
+
+      // Limpiar imagen después de enviar
+      setAssistantImage(null);
+      if (assistantImageInputRef.current) {
+        assistantImageInputRef.current.value = '';
       }
+
+    } catch (error: any) {
+      console.error('Error en asistente:', error);
+      setError(error.message || 'Error al comunicarse con el asistente');
       
-      const errorResponse: ChatMessage = { role: 'model', content: errorMessage };
-      setAssistantHistory(prev => [...prev, errorResponse]);
+      // Remover el mensaje del usuario si falló
+      setAssistantHistory(prev => prev.slice(0, -1));
     } finally {
       setIsAssistantLoading(false);
     }
-  }, [assistantInput, isAssistantLoading, selectedSubject]);
+  };
   
   const handleResetAssistantChat = () => {
       resetAssistantChat(selectedSubject);
@@ -740,7 +796,9 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                         )}
                       </button>
                     </div>
+                    {/* Inputs ocultos para imágenes */}
                     <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
+                    <input type="file" ref={assistantImageInputRef} onChange={handleAssistantImageSelected} accept="image/*" className="hidden"/>
                   </div>
                 </div>
               </div>
@@ -823,18 +881,48 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     </div>
                     
                     <div className="pb-6 sm:pb-8">
+                      {/* Imagen seleccionada */}
+                      {assistantImage && (
+                        <div className="mb-4 p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-slate-300">Imagen seleccionada:</span>
+                            <button
+                              onClick={handleRemoveAssistantImage}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <XIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <img 
+                            src={assistantImage} 
+                            alt="Imagen para el asistente" 
+                            className="max-w-full h-20 object-cover rounded-lg"
+                          />
+                        </div>
+                      )}
+                      
                       <form onSubmit={handleAssistantSubmit} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={assistantInput}
-                          onChange={(e) => setAssistantInput(e.target.value)}
-                          placeholder="Pregúntale algo a la IA..."
-                          className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
-                          disabled={isAssistantLoading}
-                        />
+                        <div className="flex-1 flex gap-2">
+                          <input
+                            type="text"
+                            value={assistantInput}
+                            onChange={(e) => setAssistantInput(e.target.value)}
+                            placeholder="Pregúntale algo a la IA..."
+                            className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
+                            disabled={isAssistantLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAssistantImageClick}
+                            className="bg-slate-600/50 hover:bg-slate-500/50 text-slate-300 hover:text-white p-2 rounded-lg transition-colors flex-shrink-0"
+                            title="Agregar imagen"
+                          >
+                            <CameraIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                         <button 
                           type="submit" 
-                          disabled={isAssistantLoading || !assistantInput.trim()} 
+                          disabled={isAssistantLoading || (!assistantInput.trim() && !assistantImage)} 
                           className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
                         >
                           <SendIcon className="w-4 h-4"/>

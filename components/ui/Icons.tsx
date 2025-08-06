@@ -20,7 +20,8 @@ import {
   Settings,
   Zap,
   Star,
-  Copy
+  Copy,
+  X
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -49,3 +50,4 @@ export const SettingsIcon: React.FC<IconProps> = (props) => <Settings {...props}
 export const ZapIcon: React.FC<IconProps> = (props) => <Zap {...props} />;
 export const StarIcon: React.FC<IconProps> = (props) => <Star {...props} />;
 export const CopyIcon: React.FC<IconProps> = (props) => <Copy {...props} />;
+export const XIcon: React.FC<IconProps> = (props) => <X {...props} />;

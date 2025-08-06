@@ -262,7 +262,7 @@ const initializeAssistantChat = (subject: string): Chat => {
 };
 
 
-export const getAssistantResponseStream = async (newQuestion: string, subject: string) => {
+export const getAssistantResponseStream = async (newQuestion: string, subject: string, imageData?: string | null) => {
     if (!assistantChatInstance) {
         assistantChatInstance = initializeAssistantChat(subject);
     }
@@ -270,7 +270,60 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
     try {
         if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
         
-        const responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
+        let responseStream;
+        
+        if (imageData) {
+            // Si hay imagen, extraer el base64 y mime type
+            const base64Match = imageData.match(/^data:([^;]+);base64,(.+)$/);
+            if (!base64Match) {
+                throw new Error("Formato de imagen inválido.");
+            }
+            
+            const mimeType = base64Match[1];
+            const base64Image = base64Match[2];
+            
+            // Crear parte de imagen
+            const imagePart = {
+                inlineData: {
+                    mimeType: mimeType,
+                    data: base64Image,
+                },
+            };
+            
+            // Enviar mensaje con imagen usando generateContent directamente
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            { text: newQuestion },
+                            imagePart
+                        ]
+                    }
+                ],
+                config: {
+                    temperature: 0.6
+                }
+            });
+            
+            // Simular stream con la respuesta completa
+            const text = response.text || '';
+            const chunks = text.split(' ');
+            const stream = {
+                async *[Symbol.asyncIterator]() {
+                    for (const chunk of chunks) {
+                        yield chunk + ' ';
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
+            };
+            
+            return stream;
+        } else {
+            // Enviar mensaje sin imagen
+            responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
+        }
         
         if (!responseStream) {
             throw new Error("No se pudo obtener respuesta del asistente.");
