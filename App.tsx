@@ -232,61 +232,82 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, [notes, selectedSubject]);
   
     const handleExportToPdf = useCallback(async () => {
-        if (!processedData) return;
-    
-        const { jsPDF } = window.jsPDF;
-        const input = document.getElementById('processed-output-content');
-    
-        if (!input) {
-            setError("No se pudo encontrar el contenido para exportar.");
-            return;
-        }
-    
-        setIsExporting(true);
-        setError(null);
-    
-        try {
-            const canvas = await window.html2canvas(input, {
-                scale: 2, 
-                useCORS: true,
-                backgroundColor: '#1e293b'
-            });
-    
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'p',
-                unit: 'mm',
-                format: 'a4'
-            });
-    
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const ratio = canvasWidth / pdfWidth;
-            const imgHeight = canvasHeight / ratio;
-    
-            let heightLeft = imgHeight;
-            let position = 0;
-    
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
-            heightLeft -= pdfHeight;
-    
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
-                heightLeft -= pdfHeight;
-            }
-    
-            pdf.save(`Gauss_MathMind_Apuntes_${selectedSubject.replace(/\s/g, '_')}.pdf`);
-        } catch (e) {
-            console.error("Error al exportar a PDF:", e);
-            setError("Ocurrió un error al generar el PDF.");
-        } finally {
-            setIsExporting(false);
-        }
-    }, [processedData, selectedSubject]);
+    if (!processedData) {
+      setError("No hay datos procesados para exportar.");
+      return;
+    }
+
+    // Verificar que las librerías estén disponibles
+    if (!window.jsPDF || !window.html2canvas) {
+      setError("Las librerías de PDF no están cargadas. Recarga la página e intenta de nuevo.");
+      return;
+    }
+
+    const { jsPDF } = window.jsPDF;
+    const input = document.getElementById('processed-output-content');
+
+    if (!input) {
+      setError("No se pudo encontrar el contenido para exportar.");
+      return;
+    }
+
+    setIsExporting(true);
+    setError(null);
+
+    try {
+      // Esperar un poco para que el DOM se renderice completamente
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const canvas = await window.html2canvas(input, {
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: '#1e293b',
+        allowTaint: true,
+        foreignObjectRendering: true,
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / pdfWidth;
+      const imgHeight = canvasHeight / ratio;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Primera página
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pdfHeight;
+
+      // Páginas adicionales si es necesario
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pdfHeight;
+      }
+
+      // Generar nombre de archivo
+      const fileName = `Gauss_MathMind_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      pdf.save(fileName);
+      
+      console.log("PDF exportado exitosamente:", fileName);
+    } catch (e) {
+      console.error("Error al exportar a PDF:", e);
+      setError("Ocurrió un error al generar el PDF. Verifica que tienes datos procesados e intenta de nuevo.");
+    } finally {
+      setIsExporting(false);
+    }
+  }, [processedData, selectedSubject]);
 
   const handleScanClick = () => imageInputRef.current?.click();
 
@@ -858,7 +879,7 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
   }
 
   return (
-    <div className="space-y-6">
+    <div id="processed-output-content" className="space-y-6">
       {/* Header con botón de exportar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
         <h3 className="text-lg sm:text-2xl font-bold text-white">Resultados del Procesamiento</h3>
