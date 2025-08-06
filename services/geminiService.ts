@@ -350,10 +350,33 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
             console.log("Llamando a sendMessageStream...");
             responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
             console.log("Stream sin imagen creado:", !!responseStream);
+            console.log("Tipo de responseStream:", typeof responseStream);
+            console.log("Métodos del responseStream:", Object.getOwnPropertyNames(responseStream));
             
             // Verificar que el stream sea válido
-            if (!responseStream || typeof responseStream[Symbol.asyncIterator] !== 'function') {
-                console.error("Stream inválido recibido:", responseStream);
+            if (!responseStream) {
+                console.error("Stream es null o undefined");
+                throw new Error("Stream de respuesta inválido");
+            }
+            
+            if (typeof responseStream[Symbol.asyncIterator] !== 'function') {
+                console.error("Stream no es iterable:", responseStream);
+                // Intentar convertir a stream si es posible
+                if (responseStream.text) {
+                    console.log("Convirtiendo respuesta a stream...");
+                    const text = responseStream.text;
+                    const chunks = text.split(' ');
+                    const stream = {
+                        async *[Symbol.asyncIterator]() {
+                            for (const chunk of chunks) {
+                                yield chunk + ' ';
+                                await new Promise(resolve => setTimeout(resolve, 50));
+                            }
+                        }
+                    };
+                    console.log("Stream convertido creado");
+                    return stream;
+                }
                 throw new Error("Stream de respuesta inválido");
             }
         }

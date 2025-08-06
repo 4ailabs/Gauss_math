@@ -615,6 +615,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       
       console.log("Iniciando iteración del stream...");
       let chunkCount = 0;
+      let hasValidChunks = false;
+      
       for await (const chunk of stream) {
         chunkCount++;
         console.log(`Chunk ${chunkCount} recibido:`, chunk);
@@ -626,6 +628,11 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           console.warn("Chunk inválido recibido:", chunk);
           console.warn("Tipo de chunk:", typeof chunk);
           continue;
+        }
+        
+        // Verificar si el chunk tiene contenido
+        if (chunk.trim().length > 0) {
+          hasValidChunks = true;
         }
         
         if (isFirstChunk) {
@@ -650,6 +657,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       }
 
       console.log("Stream completado, total de chunks:", chunkCount);
+      console.log("Tiene chunks válidos:", hasValidChunks);
       console.log("Respuesta final:", fullResponse);
       console.log("Longitud de respuesta final:", fullResponse ? fullResponse.length : 0);
 
@@ -658,8 +666,9 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         throw new Error("Respuesta vacía del asistente");
       }
 
-      // Si la respuesta está vacía, mostrar un mensaje por defecto
-      if (fullResponse.trim() === '') {
+      // Si la respuesta está vacía o no tiene chunks válidos, mostrar un mensaje por defecto
+      if (fullResponse.trim() === '' || !hasValidChunks) {
+        console.warn("Respuesta vacía o sin chunks válidos, usando mensaje por defecto");
         fullResponse = "Lo siento, no pude generar una respuesta. ¿Podrías reformular tu pregunta?";
       }
 
