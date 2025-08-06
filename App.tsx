@@ -385,6 +385,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       setAssistantHistory([]);
   };
 
+  useEffect(() => {
+    // Verificar API key con fallback a localStorage
+    const checkApiKey = () => {
+      const envApiKey = process.env.GEMINI_API_KEY;
+      const localApiKey = typeof window !== 'undefined' ? window.localStorage.getItem('temp_api_key') : null;
+      
+      console.log("Verificando API key:");
+      console.log("- Env API key:", envApiKey ? "Presente" : "Ausente");
+      console.log("- Local API key:", localApiKey ? "Presente" : "Ausente");
+      
+      if (envApiKey || localApiKey) {
+        setIsApiKeyMissing(false);
+        return;
+      }
+      
+      setIsApiKeyMissing(true);
+    };
+
+    checkApiKey();
+  }, []);
+
   if (isApiKeyMissing) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-200 flex items-center justify-center p-4">
@@ -396,30 +417,54 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           
           {/* Debugging temporal */}
           <div className="mt-6 p-4 bg-slate-800 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-400 mb-2">Debugging Temporal</h3>
+            <h3 className="text-lg font-semibold text-blue-400 mb-2">Configuración Temporal</h3>
             <p className="text-sm text-slate-400 mb-3">
-              Si ya configuraste la variable en Vercel, puedes probar configurándola temporalmente aquí:
+              Pega tu API key de Google AI Studio aquí para probar la aplicación:
             </p>
             <input
               type="password"
-              placeholder="Pega tu API key aquí temporalmente"
-              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white text-sm mb-2"
-              onChange={(e) => {
-                if (e.target.value.startsWith('AIza')) {
-                  // Configurar temporalmente
-                  window.localStorage.setItem('temp_api_key', e.target.value);
-                  window.location.reload();
-                }
-              }}
+              id="temp-api-key"
+              placeholder="AIzaSyC... (tu API key aquí)"
+              className="w-full p-3 bg-slate-700 border border-slate-600 rounded text-white text-sm mb-3"
             />
-            <p className="text-xs text-slate-500">
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const input = document.getElementById('temp-api-key') as HTMLInputElement;
+                  const apiKey = input.value.trim();
+                  
+                  if (apiKey && apiKey.startsWith('AIza')) {
+                    window.localStorage.setItem('temp_api_key', apiKey);
+                    console.log("API key guardada en localStorage");
+                    window.location.reload();
+                  } else {
+                    alert("Por favor, ingresa una API key válida que empiece con 'AIza'");
+                  }
+                }}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+              >
+                Aplicar API Key
+              </button>
+              <button
+                onClick={() => {
+                  window.localStorage.removeItem('temp_api_key');
+                  console.log("API key temporal eliminada");
+                  window.location.reload();
+                }}
+                className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition-colors"
+                title="Limpiar API key temporal"
+              >
+                🗑️
+              </button>
+            </div>
+            <p className="text-xs text-slate-500 mt-2">
               Esta es solo para debugging. La key se guarda temporalmente en tu navegador.
             </p>
           </div>
           
           <div className="mt-4 text-xs text-slate-500">
-            <p>Pasos para configurar en Vercel:</p>
-            <ol className="text-left mt-2 space-y-1">
+            <p className="font-semibold mb-2">Para configuración permanente en Vercel:</p>
+            <ol className="text-left space-y-1">
               <li>1. Ve a tu proyecto en vercel.com</li>
               <li>2. Settings → Environment Variables</li>
               <li>3. Agrega: GEMINI_API_KEY = tu_api_key</li>
