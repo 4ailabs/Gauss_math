@@ -355,12 +355,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       const modelResponse: ChatMessage = { role: 'model', content: "" };
       setAssistantHistory(prev => [...prev, modelResponse]);
 
+      // Usar un debounce para actualizar menos frecuentemente
+      let updateTimeout: NodeJS.Timeout;
+      
       for await (const chunk of stream) {
           fullResponse += chunk.text;
-          setAssistantHistory(prev => prev.map((msg, index) => 
-            index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
-          ));
+          
+          // Actualizar cada 100ms en lugar de en cada chunk
+          clearTimeout(updateTimeout);
+          updateTimeout = setTimeout(() => {
+              setAssistantHistory(prev => prev.map((msg, index) => 
+                index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
+              ));
+          }, 100);
       }
+      
+      // Actualización final
+      clearTimeout(updateTimeout);
+      setAssistantHistory(prev => prev.map((msg, index) => 
+        index === prev.length - 1 ? { ...msg, content: fullResponse } : msg
+      ));
+      
     } catch (e: any) {
       console.error("Error en asistente:", e);
       let errorMessage = "Lo siento, no pude obtener una respuesta. Por favor, inténtalo de nuevo.";
@@ -620,7 +635,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <RefreshCwIcon className="w-5 h-5"/>
                 </button>
             </div>
-             <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px]">
+             <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px]">
                 <AssistantView 
                     history={assistantHistory} 
                     inputValue={assistantInput} 
@@ -638,7 +653,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 <BrainCircuitIcon className="w-6 h-6 text-blue-400"/>
                 Apuntes Procesados
             </h2>
-            <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px]">
+            <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px] overflow-y-auto">
               <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
             </div>
           </div>
@@ -770,13 +785,27 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
 
 const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onSubmit: (e: React.FormEvent) => void, isLoading: boolean, subject: string}> = ({ history, inputValue, onInputChange, onSubmit, isLoading, subject }) => {
      const chatEndRef = useRef<HTMLDivElement>(null);
+     const chatContainerRef = useRef<HTMLDivElement>(null);
+     
      useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        // Scroll suave solo si el usuario está cerca del final
+        if (chatContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+            const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+            
+            if (isNearBottom) {
+                chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+        }
      }, [history]);
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-grow overflow-y-auto pr-1 sm:pr-2 space-y-3 sm:space-y-4">
+            <div 
+                ref={chatContainerRef}
+                className="flex-grow overflow-y-auto pr-1 sm:pr-2 space-y-3 sm:space-y-4 scroll-smooth"
+                style={{ scrollBehavior: 'smooth' }}
+            >
                 {history.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-slate-400 text-center">
                         <div>
@@ -790,7 +819,7 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                         <div key={index} className={`flex items-start gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                              {msg.role === 'model' && <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1"><BrainCircuitIcon className="w-3 h-3 sm:w-5 sm:h-5 text-white"/></div>}
                             <div className={`max-w-[85%] sm:max-w-xl p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200'}`}>
-                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                             </div>
                         </div>
                     ))
@@ -805,7 +834,7 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                 )}
                  <div ref={chatEndRef} />
             </div>
-            <form onSubmit={onSubmit} className="mt-3 sm:mt-4 flex gap-2">
+            <form onSubmit={onSubmit} className="mt-3 sm:mt-4 flex gap-2 flex-shrink-0">
                 <input
                     type="text"
                     value={inputValue}
@@ -814,7 +843,7 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                     className="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     disabled={isLoading}
                 />
-                <button type="submit" disabled={isLoading || !inputValue.trim()} className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold p-3 rounded-lg transition-colors">
+                <button type="submit" disabled={isLoading || !inputValue.trim()} className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold p-3 rounded-lg transition-colors flex-shrink-0">
                     <SendIcon className="w-5 h-5"/>
                 </button>
             </form>
