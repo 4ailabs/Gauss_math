@@ -72,6 +72,8 @@ const App: React.FC = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const notesOnRecordStartRef = useRef<string>('');
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
 
   const subjects = [
@@ -422,6 +424,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     checkApiKey();
   }, []);
 
+  // Scroll automático para el chat
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [assistantHistory]);
+
+  // Efecto para inicializar el asistente cuando cambia la materia
+
   if (isApiKeyMissing) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-200 flex items-center justify-center p-4">
@@ -682,7 +693,11 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 
                 <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow p-2 sm:p-4 mb-4">
                   <div className="h-full flex flex-col">
-                    <div className="flex-grow overflow-y-auto pr-2 space-y-3 mb-4">
+                    <div 
+                      ref={chatContainerRef}
+                      className="flex-grow overflow-y-auto pr-2 space-y-3 mb-4 scroll-smooth"
+                      style={{ maxHeight: '60vh' }}
+                    >
                       {assistantHistory.length === 0 ? (
                         <div className="flex items-center justify-center h-full">
                           <div className="text-center space-y-3">
@@ -727,6 +742,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                           </div>
                         </div>
                       )}
+                      <div ref={chatEndRef} />
                     </div>
                     
                     <div className="pb-6 sm:pb-8">
