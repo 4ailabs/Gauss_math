@@ -729,23 +729,25 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       )}
                     </div>
                     
-                    <form onSubmit={handleAssistantSubmit} className="flex gap-2">
-                      <input
-                        type="text"
-                        value={assistantInput}
-                        onChange={(e) => setAssistantInput(e.target.value)}
-                        placeholder="Pregúntale algo a la IA..."
-                        className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
-                        disabled={isAssistantLoading}
-                      />
-                      <button 
-                        type="submit" 
-                        disabled={isAssistantLoading || !assistantInput.trim()} 
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
-                      >
-                        <SendIcon className="w-4 h-4"/>
-                      </button>
-                    </form>
+                    <div className="pb-4 sm:pb-6">
+                      <form onSubmit={handleAssistantSubmit} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={assistantInput}
+                          onChange={(e) => setAssistantInput(e.target.value)}
+                          placeholder="Pregúntale algo a la IA..."
+                          className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
+                          disabled={isAssistantLoading}
+                        />
+                        <button 
+                          type="submit" 
+                          disabled={isAssistantLoading || !assistantInput.trim()} 
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
+                        >
+                          <SendIcon className="w-4 h-4"/>
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
