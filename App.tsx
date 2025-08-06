@@ -654,15 +654,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           
           {activeView === 'assistant' && (
             <div className="h-full flex flex-col">
-              <div className="flex-grow overflow-y-auto">
-                <div className="max-w-4xl mx-auto">
-                  <div className="flex justify-between items-center mb-6">
+              <div className="flex-grow overflow-hidden">
+                <div className="max-w-4xl mx-auto h-full flex flex-col">
+                  <div className="flex justify-between items-center mb-4 flex-shrink-0">
                     <div className="text-center flex-1">
-                      <h2 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-                        <MessageCircleIcon className="w-8 h-8 text-blue-400"/>
+                      <h2 className="text-2xl font-bold text-white mb-1 flex items-center justify-center gap-3">
+                        <MessageCircleIcon className="w-6 h-6 text-blue-400"/>
                         Asistente IA
                       </h2>
-                      <p className="text-slate-400">Pregúntale cualquier cosa sobre {selectedSubject}</p>
+                      <p className="text-slate-400 text-sm">Pregúntale cualquier cosa sobre {selectedSubject}</p>
                     </div>
                     <button 
                       onClick={handleResetAssistantChat} 
@@ -670,10 +670,10 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       className="text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-50 p-2 hover:bg-slate-800/50 rounded-lg"
                       disabled={isAssistantLoading}
                     >
-                      <RefreshCwIcon className="w-6 h-6"/>
+                      <RefreshCwIcon className="w-5 h-5"/>
                     </button>
                   </div>
-                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-4 min-h-[500px] max-h-[600px]">
+                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-4 min-h-0">
                     <AssistantView 
                       history={assistantHistory} 
                       inputValue={assistantInput} 
@@ -912,34 +912,34 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
      }, [history]);
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full min-h-0">
             <div 
                 ref={chatContainerRef}
-                className="flex-grow overflow-y-auto pr-2 space-y-4 scroll-smooth"
+                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth min-h-0"
                 style={{ scrollBehavior: 'smooth' }}
             >
                 {history.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                        <div className="text-center space-y-4">
-                            <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <BrainCircuitIcon className="w-8 h-8 text-white"/>
+                        <div className="text-center space-y-3">
+                            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <BrainCircuitIcon className="w-6 h-6 text-white"/>
                             </div>
                             <div>
-                                <p className="text-lg font-semibold text-white mb-2">Soy tu IA para</p>
-                                <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{subject}</p>
-                                <p className="text-slate-400 mt-2">¡Pregúntame cualquier cosa!</p>
+                                <p className="text-base font-semibold text-white mb-1">Soy tu IA para</p>
+                                <p className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{subject}</p>
+                                <p className="text-slate-400 mt-1 text-sm">¡Pregúntame cualquier cosa!</p>
                             </div>
                         </div>
                     </div>
                 ) : (
                     history.map((msg, index) => (
-                        <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                        <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                              {msg.role === 'model' && (
-                                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                                     <BrainCircuitIcon className="w-4 h-4 text-white"/>
+                                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                                     <BrainCircuitIcon className="w-3 h-3 text-white"/>
                                  </div>
                              )}
-                            <div className={`max-w-[85%] p-4 rounded-2xl text-base shadow-lg ${
+                            <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
                                 msg.role === 'user' 
                                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
                                     : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
@@ -950,35 +950,35 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                     ))
                 )}
                 {isLoading && history[history.length-1]?.role === 'user' && (
-                    <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                            <BrainCircuitIcon className="w-4 h-4 text-white"/>
+                    <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                            <BrainCircuitIcon className="w-3 h-3 text-white"/>
                         </div>
-                        <div className="max-w-[85%] p-4 rounded-2xl bg-slate-700/50 backdrop-blur-sm border border-slate-600/30 shadow-lg">
+                        <div className="max-w-[85%] p-3 rounded-xl bg-slate-700/50 backdrop-blur-sm border border-slate-600/30 shadow-lg">
                            <div className="flex items-center gap-2">
-                               <LoaderCircleIcon className="w-5 h-5 animate-spin text-blue-400"/>
-                               <span className="text-slate-300">Pensando...</span>
+                               <LoaderCircleIcon className="w-4 h-4 animate-spin text-blue-400"/>
+                               <span className="text-slate-300 text-sm">Pensando...</span>
                            </div>
                         </div>
                     </div>
                 )}
                  <div ref={chatEndRef} />
             </div>
-            <form onSubmit={onSubmit} className="mt-4 flex gap-3 flex-shrink-0">
+            <form onSubmit={onSubmit} className="mt-3 flex gap-2 flex-shrink-0">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={onInputChange}
                     placeholder="Pregúntale algo a la IA..."
-                    className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
+                    className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
                     disabled={isLoading}
                 />
                 <button 
                     type="submit" 
                     disabled={isLoading || !inputValue.trim()} 
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-3 rounded-xl transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
                 >
-                    <SendIcon className="w-5 h-5"/>
+                    <SendIcon className="w-4 h-4"/>
                 </button>
             </form>
         </div>
