@@ -66,6 +66,7 @@ const App: React.FC = () => {
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAssistantLoading, setIsAssistantLoading] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -573,6 +574,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     const userMessage = assistantInput.trim();
     const hasImage = !!assistantImage;
     
+    console.log("Enviando mensaje al asistente:", { userMessage, hasImage });
+    
     // Agregar mensaje del usuario al historial
     const userMsg: ChatMessage = {
       role: 'user',
@@ -585,13 +588,21 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     setError(null);
 
     try {
+      console.log("Iniciando stream de respuesta...");
       let fullResponse = '';
       let isFirstChunk = true;
 
       // Crear el stream con imagen si existe
       const stream = await getAssistantResponseStream(userMessage, selectedSubject, assistantImage);
+      console.log("Stream creado exitosamente");
+      
+      // Agregar mensaje vacío del modelo para mostrar loading
+      const modelMsg: ChatMessage = { role: 'model', content: '' };
+      setAssistantHistory(prev => [...prev, modelMsg]);
       
       for await (const chunk of stream) {
+        console.log("Chunk recibido:", chunk);
+        
         if (isFirstChunk) {
           fullResponse = chunk;
           isFirstChunk = false;
@@ -609,6 +620,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         }, 100);
       }
 
+      console.log("Stream completado, respuesta final:", fullResponse);
+
       // Actualización final
       setAssistantHistory(prev => 
         prev.map((msg, index) => 
@@ -623,11 +636,20 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       }
 
     } catch (error: any) {
-      console.error('Error en asistente:', error);
+      console.error('Error detallado en asistente:', error);
+      console.error('Stack trace:', error.stack);
+      
+      // Agregar mensaje de error al historial
+      const errorMsg: ChatMessage = {
+        role: 'model',
+        content: `❌ Error: ${error.message || 'Error al comunicarse con el asistente'}`
+      };
+      
+      setAssistantHistory(prev => [...prev, errorMsg]);
       setError(error.message || 'Error al comunicarse con el asistente');
       
       // Remover el mensaje del usuario si falló
-      setAssistantHistory(prev => prev.slice(0, -1));
+      // setAssistantHistory(prev => prev.slice(0, -1));
     } finally {
       setIsAssistantLoading(false);
     }
@@ -667,6 +689,37 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, [assistantHistory]);
 
   // Efecto para inicializar el asistente cuando cambia la materia
+  useEffect(() => {
+    if (selectedSubject) {
+      try {
+        resetAssistantChat(selectedSubject);
+      } catch (error) {
+        console.error("Error inicializando asistente:", error);
+        setError("Error al inicializar el asistente.");
+      }
+    }
+  }, [selectedSubject]);
+
+  // Error boundary para renderizado
+  if (renderError) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="bg-slate-800 rounded-xl p-6 max-w-md text-center">
+          <h2 className="text-xl font-bold text-white mb-4">Error de Renderizado</h2>
+          <p className="text-slate-300 mb-4">{renderError}</p>
+          <button
+            onClick={() => {
+              setRenderError(null);
+              window.location.reload();
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            Recargar Página
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isApiKeyMissing) {
     return (
@@ -955,22 +1008,38 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                           </div>
                         </div>
                       ) : (
-                        assistantHistory.map((msg, index) => (
-                          <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                            {msg.role === 'model' && (
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                                <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                        assistantHistory.map((msg, index) => {
+                          try {
+                            return (
+                              <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                                {msg.role === 'model' && (
+                                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                                    <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                                  </div>
+                                )}
+                                <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
+                                  msg.role === 'user' 
+                                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
+                                    : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
+                                }`}>
+                                  <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
+                                </div>
                               </div>
-                            )}
-                            <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
-                              msg.role === 'user' 
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                                : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
-                            }`}>
-                              <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
-                            </div>
-                          </div>
-                        ))
+                            );
+                          } catch (error) {
+                            console.error("Error renderizando mensaje:", error);
+                            return (
+                              <div key={index} className="flex items-start gap-2">
+                                <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-1">
+                                  <AlertCircleIcon className="w-3 h-3 text-white"/>
+                                </div>
+                                <div className="max-w-[85%] p-3 rounded-xl text-sm bg-red-900/20 border border-red-500/30">
+                                  <p className="text-red-300">Error al mostrar mensaje</p>
+                                </div>
+                              </div>
+                            );
+                          }
+                        })
                       )}
                       {isAssistantLoading && assistantHistory[assistantHistory.length-1]?.role === 'user' && (
                         <div className="flex items-start gap-2">

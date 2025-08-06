@@ -263,12 +263,14 @@ const initializeAssistantChat = (subject: string): Chat => {
 
 
 export const getAssistantResponseStream = async (newQuestion: string, subject: string, imageData?: string | null) => {
-    if (!assistantChatInstance) {
-        assistantChatInstance = initializeAssistantChat(subject);
-    }
-
     try {
+        if (!assistantChatInstance) {
+            assistantChatInstance = initializeAssistantChat(subject);
+        }
+
         if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        
+        console.log("Enviando pregunta al asistente:", { newQuestion, subject, hasImage: !!imageData });
         
         let responseStream;
         
@@ -290,6 +292,8 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
                 },
             };
             
+            console.log("Procesando pregunta con imagen...");
+            
             // Enviar mensaje con imagen usando generateContent directamente
             const response = await ai.models.generateContent({
                 model: model,
@@ -307,6 +311,8 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
                 }
             });
             
+            console.log("Respuesta con imagen recibida");
+            
             // Simular stream con la respuesta completa
             const text = response.text || '';
             const chunks = text.split(' ');
@@ -321,8 +327,10 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
             
             return stream;
         } else {
+            console.log("Procesando pregunta sin imagen...");
             // Enviar mensaje sin imagen
             responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
+            console.log("Stream sin imagen creado");
         }
         
         if (!responseStream) {
@@ -343,7 +351,7 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
         } else if (error.message?.includes('invalid')) {
             throw new Error("Solicitud inválida. Verifica tu pregunta.");
         } else {
-            throw new Error("Lo siento, encontré un error. Por favor, inténtalo de nuevo.");
+            throw new Error(`Error del asistente: ${error.message || 'Error desconocido'}`);
         }
     }
 };
