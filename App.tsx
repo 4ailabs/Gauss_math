@@ -679,7 +679,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       <RefreshCwIcon className="w-3 h-3 sm:w-5 sm:h-5"/>
                     </button>
                   </div>
-                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-2 sm:p-4 min-h-0">
+                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-2 sm:p-4 min-h-0 h-full">
                     <AssistantView 
                       history={assistantHistory} 
                       inputValue={assistantInput} 
@@ -921,7 +921,7 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
         <div className="flex flex-col h-full min-h-0">
             <div 
                 ref={chatContainerRef}
-                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth min-h-0"
+                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth min-h-0 mb-2"
                 style={{ scrollBehavior: 'smooth' }}
             >
                 {history.length === 0 ? (
@@ -970,7 +970,7 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                 )}
                  <div ref={chatEndRef} />
             </div>
-            <form onSubmit={onSubmit} className="mt-3 flex gap-2 flex-shrink-0">
+            <form onSubmit={onSubmit} className="flex gap-2 flex-shrink-0 mt-auto">
                 <input
                     type="text"
                     value={inputValue}
