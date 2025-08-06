@@ -369,30 +369,48 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, [processedData, selectedSubject]);
 
   const handleAssistantImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("handleAssistantImageSelected ejecutado");
+    console.log("Archivos seleccionados:", event.target.files);
+    
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log("No se seleccionó ningún archivo");
+      return;
+    }
+    
+    console.log("Archivo seleccionado:", file.name, file.type, file.size);
     
     // Validaciones del archivo
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
+      console.error("Archivo demasiado grande:", file.size);
       setError("La imagen es demasiado grande. Máximo 10MB.");
       return;
     }
     
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
+      console.error("Tipo de archivo no válido:", file.type);
       setError("Formato de imagen no válido. Usa JPG, PNG o WebP.");
       return;
     }
     
+    console.log("Archivo válido, procesando...");
     setError(null);
     
     const reader = new FileReader();
     reader.readAsDataURL(file);
     
     reader.onload = () => {
+      console.log("Archivo leído exitosamente");
       const result = reader.result as string;
       setAssistantImage(result);
+      console.log("Imagen establecida en el estado");
+    };
+    
+    reader.onerror = (error) => {
+      console.error("Error leyendo archivo:", error);
+      setError("Error al procesar la imagen.");
     };
   };
 
@@ -404,7 +422,14 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   };
 
   const handleAssistantImageClick = () => {
-    assistantImageInputRef.current?.click();
+    console.log("Botón de cámara clickeado");
+    console.log("assistantImageInputRef.current:", assistantImageInputRef.current);
+    if (assistantImageInputRef.current) {
+      console.log("Abriendo selector de archivos...");
+      assistantImageInputRef.current.click();
+    } else {
+      console.error("No se encontró el input de archivo");
+    }
   };
 
   const handleScanClick = () => imageInputRef.current?.click();
@@ -798,7 +823,6 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     </div>
                     {/* Inputs ocultos para imágenes */}
                     <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
-                    <input type="file" ref={assistantImageInputRef} onChange={handleAssistantImageSelected} accept="image/*" className="hidden"/>
                   </div>
                 </div>
               </div>
@@ -807,6 +831,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           
           {activeView === 'assistant' && (
             <div className="h-full flex flex-col">
+              {/* Input oculto para imágenes del asistente */}
+              <input
+                ref={assistantImageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAssistantImageSelected}
+                className="hidden"
+              />
+              
               <div className="w-full h-full flex flex-col px-2 sm:px-4">
                 <div className="flex justify-between items-center mb-2 sm:mb-4">
                   <div className="text-center flex-1">
