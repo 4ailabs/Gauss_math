@@ -36,7 +36,7 @@ declare global {
 const StyledTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
   <textarea
     {...props}
-    className="w-full h-full p-3 sm:p-4 bg-slate-900/50 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none transition-colors text-sm sm:text-base"
+    className="w-full h-full p-4 bg-slate-900/50 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none transition-colors text-base"
   />
 );
 
@@ -480,17 +480,11 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     <div className="min-h-screen bg-slate-950 text-slate-200 p-2 sm:p-4 lg:p-8">
       <div className="max-w-screen-2xl mx-auto flex flex-col min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-2rem)]">
         <header className="text-center mb-4 sm:mb-6">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <SparklesIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-              Gauss MathMind <span className="text-blue-400">IA</span>
-            </h1>
-            <ZapIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
-          </div>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-lg text-slate-400 px-2 flex items-center justify-center gap-2">
-            <CalculatorIcon className="w-4 h-4 text-slate-500" />
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+            Gauss MathMind <span className="text-blue-400">IA</span>
+          </h1>
+          <p className="mt-2 sm:mt-3 text-base sm:text-lg text-slate-400 px-2">
             Captura, procesa y domina tus apuntes de matemáticas avanzadas.
-            <LightbulbIcon className="w-4 h-4 text-slate-500" />
           </p>
         </header>
 
@@ -506,8 +500,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 flex-grow">
           {/* Column 1: Editor */}
           <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'editor' ? 'flex' : 'hidden'} lg:flex`}>
-            <h2 className="text-xl sm:text-2xl font-semibold text-white flex items-center gap-2">
-                <BookOpenIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400"/>
+            <h2 className="text-2xl sm:text-2xl font-semibold text-white flex items-center gap-2">
+                <BookOpenIcon className="w-6 h-6 text-blue-400"/>
                 Editor de Apuntes
             </h2>
              <div className="relative">
@@ -519,7 +513,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     id="subject-select"
                     value={selectedSubject}
                     onChange={(e) => setSelectedSubject(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2 sm:p-3 pl-8 sm:pl-10 text-sm sm:text-base text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
+                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 pl-10 text-base text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
                 >
                     {subjects.map(subject => ( <option key={subject} value={subject}>{subject}</option>))}
                 </select>
@@ -549,15 +543,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 </div>
             )}
             <div className="flex flex-col gap-2 sm:gap-4">
-                 <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 text-sm sm:text-base shadow-lg">
+                 <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 text-base shadow-lg">
                     {isLoading ? (
                         <>
-                            <LoaderCircleIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5"/> 
+                            <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
                             Procesando...
                         </>
                     ) : (
                         <>
-                            <BrainCircuitIcon className="w-4 h-4 sm:w-5 sm:h-5"/> 
+                            <BrainCircuitIcon className="w-5 h-5"/> 
                             Procesar Apuntes
                         </>
                     )}
@@ -566,7 +560,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <button
                         onClick={handleToggleRecording}
                         disabled={isLoading || isScanning || isExporting || !isSpeechSupported}
-                        className={`flex items-center justify-center gap-1 sm:gap-2 font-bold py-2 sm:py-3 px-2 sm:px-4 rounded-lg transition-all text-xs sm:text-sm ${
+                        className={`flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-lg transition-all text-base ${
                             !isSpeechSupported
                             ? 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
                             : isRecording
@@ -577,12 +571,12 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     >
                         {isRecording ? (
                             <>
-                                <MicIcon className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" /> 
+                                <MicIcon className="w-5 h-5 animate-pulse" /> 
                                 <span className="hidden sm:inline">Detener</span>
                             </>
                         ) : (
                             <>
-                                <MicIcon className="w-4 h-4 sm:w-5 sm:h-5" /> 
+                                <MicIcon className="w-5 h-5" /> 
                                 <span className="hidden sm:inline">Grabar</span>
                             </>
                         )}
@@ -590,17 +584,17 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <button 
                         onClick={handleScanClick} 
                         disabled={isLoading || isScanning || isExporting || isRecording} 
-                        className="flex items-center justify-center gap-1 sm:gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-2 sm:py-3 px-2 sm:px-4 rounded-lg transition-all text-xs sm:text-sm"
+                        className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-all text-base"
                         title="Escanea imágenes de apuntes (JPG, PNG, WebP, máx. 10MB)"
                     >
                         {isScanning ? (
                             <>
-                                <LoaderCircleIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5"/> 
+                                <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
                                 <span className="hidden sm:inline">Escaneando...</span>
                             </>
                         ) : (
                             <>
-                                <CameraIcon className="w-4 h-4 sm:w-5 sm:h-5"/> 
+                                <CameraIcon className="w-5 h-5"/> 
                                 <span className="hidden sm:inline">Escanear</span>
                             </>
                         )}
@@ -613,8 +607,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {/* Column 2: AI Assistant */}
           <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'assistant' ? 'flex' : 'hidden'} lg:flex`}>
             <div className="flex justify-between items-center">
-                <h2 className="text-xl sm:text-2xl font-semibold text-white flex items-center gap-2">
-                    <MessageCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400"/>
+                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                    <MessageCircleIcon className="w-6 h-6 text-blue-400"/>
                     IA
                 </h2>
                 <button 
@@ -623,7 +617,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     className="text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-50 p-1"
                     disabled={isAssistantLoading}
                 >
-                    <RefreshCwIcon className="w-4 h-4 sm:w-5 sm:h-5"/>
+                    <RefreshCwIcon className="w-5 h-5"/>
                 </button>
             </div>
              <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px]">
@@ -640,8 +634,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
           {/* Column 3: Processed Notes */}
           <div className={`flex-col gap-3 sm:gap-4 lg:col-span-1 ${activeView === 'summary' ? 'flex' : 'hidden'} lg:flex`}>
-            <h2 className="text-xl sm:text-2xl font-semibold text-white flex items-center gap-2">
-                <BrainCircuitIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400"/>
+            <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                <BrainCircuitIcon className="w-6 h-6 text-blue-400"/>
                 Apuntes Procesados
             </h2>
             <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px]">
@@ -786,16 +780,16 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                 {history.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-slate-400 text-center">
                         <div>
-                            <p className="mb-2 text-sm sm:text-base">Soy tu IA para</p>
-                            <strong className="text-blue-400 block text-sm sm:text-base">{subject}</strong>
-                            <p className="mt-2 text-xs sm:text-sm">¡Pregúntame cualquier cosa!</p>
+                            <p className="mb-2 text-base">Soy tu IA para</p>
+                            <strong className="text-blue-400 block text-base">{subject}</strong>
+                            <p className="mt-2 text-sm">¡Pregúntame cualquier cosa!</p>
                         </div>
                     </div>
                 ) : (
                     history.map((msg, index) => (
                         <div key={index} className={`flex items-start gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                              {msg.role === 'model' && <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1"><BrainCircuitIcon className="w-3 h-3 sm:w-5 sm:h-5 text-white"/></div>}
-                            <div className={`max-w-[85%] sm:max-w-xl p-2 sm:p-3 rounded-lg text-xs sm:text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200'}`}>
+                            <div className={`max-w-[85%] sm:max-w-xl p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200'}`}>
                                 <p className="whitespace-pre-wrap">{msg.content}</p>
                             </div>
                         </div>
@@ -804,8 +798,8 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                 {isLoading && history[history.length-1]?.role === 'user' && (
                     <div className="flex items-start gap-2 sm:gap-3">
                         <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1"><BrainCircuitIcon className="w-3 h-3 sm:w-5 sm:h-5 text-white"/></div>
-                        <div className="max-w-[85%] sm:max-w-md p-2 sm:p-3 rounded-lg bg-slate-800 text-slate-200">
-                           <LoaderCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 animate-spin"/>
+                        <div className="max-w-[85%] sm:max-w-md p-3 rounded-lg bg-slate-800 text-slate-200">
+                           <LoaderCircleIcon className="w-5 h-5 animate-spin"/>
                         </div>
                     </div>
                 )}
@@ -817,11 +811,11 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                     value={inputValue}
                     onChange={onInputChange}
                     placeholder="Pregúntale algo a la IA..."
-                    className="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     disabled={isLoading}
                 />
-                <button type="submit" disabled={isLoading || !inputValue.trim()} className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold p-2 rounded-lg transition-colors">
-                    <SendIcon className="w-4 h-4 sm:w-5 sm:h-5"/>
+                <button type="submit" disabled={isLoading || !inputValue.trim()} className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold p-3 rounded-lg transition-colors">
+                    <SendIcon className="w-5 h-5"/>
                 </button>
             </form>
         </div>
