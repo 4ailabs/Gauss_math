@@ -233,13 +233,21 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, [notes, selectedSubject]);
   
     const handleExportToPdf = useCallback(async () => {
+    console.log("Iniciando exportación PDF...");
+    
     if (!processedData) {
+      console.error("No hay datos procesados");
       setError("No hay datos procesados para exportar.");
       return;
     }
 
     // Verificar que las librerías estén disponibles
+    console.log("Verificando librerías...");
+    console.log("window.jsPDF:", !!window.jsPDF);
+    console.log("window.html2canvas:", !!window.html2canvas);
+    
     if (!window.jsPDF || !window.html2canvas) {
+      console.error("Librerías no disponibles");
       setError("Las librerías de PDF no están cargadas. Recarga la página e intenta de nuevo.");
       return;
     }
@@ -247,7 +255,9 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     const { jsPDF } = window.jsPDF;
     const input = document.getElementById('processed-output-content');
 
+    console.log("Elemento encontrado:", !!input);
     if (!input) {
+      console.error("Elemento processed-output-content no encontrado");
       setError("No se pudo encontrar el contenido para exportar.");
       return;
     }
@@ -256,19 +266,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     setError(null);
 
     try {
+      console.log("Esperando renderizado del DOM...");
       // Esperar un poco para que el DOM se renderice completamente
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
+      console.log("Iniciando html2canvas...");
       const canvas = await window.html2canvas(input, {
-        scale: 2, 
+        scale: 1.5, // Reducir escala para mejor compatibilidad
         useCORS: true,
         backgroundColor: '#1e293b',
         allowTaint: true,
-        foreignObjectRendering: true,
-        logging: false
+        foreignObjectRendering: false, // Desactivar para mejor compatibilidad
+        logging: true, // Activar logging para debug
+        width: input.scrollWidth,
+        height: input.scrollHeight
       });
 
+      console.log("Canvas generado:", canvas.width, "x", canvas.height);
       const imgData = canvas.toDataURL('image/png');
+      console.log("Imagen generada, longitud:", imgData.length);
+
+      console.log("Creando PDF...");
       const pdf = new jsPDF({
         orientation: 'p',
         unit: 'mm',
@@ -282,29 +300,41 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       const ratio = canvasWidth / pdfWidth;
       const imgHeight = canvasHeight / ratio;
 
+      console.log("Dimensiones PDF:", pdfWidth, "x", pdfHeight);
+      console.log("Dimensiones Canvas:", canvasWidth, "x", canvasHeight);
+      console.log("Altura imagen:", imgHeight);
+
       let heightLeft = imgHeight;
       let position = 0;
 
       // Primera página
+      console.log("Agregando primera página...");
       pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
       heightLeft -= pdfHeight;
 
       // Páginas adicionales si es necesario
+      let pageCount = 1;
       while (heightLeft > 0) {
+        console.log("Agregando página adicional:", pageCount + 1);
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight, undefined, 'FAST');
         heightLeft -= pdfHeight;
+        pageCount++;
       }
 
       // Generar nombre de archivo
       const fileName = `Gauss_MathMind_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      console.log("Guardando PDF como:", fileName);
       pdf.save(fileName);
       
-      console.log("PDF exportado exitosamente:", fileName);
+      console.log("PDF exportado exitosamente");
+      alert('✅ PDF generado exitosamente');
+      
     } catch (e) {
-      console.error("Error al exportar a PDF:", e);
-      setError("Ocurrió un error al generar el PDF. Verifica que tienes datos procesados e intenta de nuevo.");
+      console.error("Error detallado al exportar a PDF:", e);
+      console.error("Stack trace:", e.stack);
+      setError(`Error al generar el PDF: ${e.message}. Verifica que tienes datos procesados e intenta de nuevo.`);
     } finally {
       setIsExporting(false);
     }
