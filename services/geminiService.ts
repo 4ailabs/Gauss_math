@@ -351,3 +351,72 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
 export const resetAssistantChat = (subject: string) => {
     assistantChatInstance = initializeAssistantChat(subject);
 };
+
+export const generateQuizFromContent = async (content: string, subject: string): Promise<any> => {
+    try {
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error("API Key no configurada.");
+        }
+
+        const quizPrompt = `Basándote en este contenido sobre "${subject}", genera un quiz de 5 preguntas para evaluar la comprensión. 
+
+        Formato JSON requerido:
+        {
+          "questions": [
+            {
+              "question": "Pregunta aquí",
+              "options": ["A) Opción 1", "B) Opción 2", "C) Opción 3", "D) Opción 4"],
+              "correctAnswer": "A",
+              "explanation": "Explicación de por qué es correcta"
+            }
+          ]
+        }
+
+        Las preguntas deben ser de comprensión, aplicación y análisis. Incluye solo el JSON, sin texto adicional.
+
+        Contenido: ${content}`;
+
+        const response: GenerateContentResponse = await ai.models.generateContent({
+            model: model,
+            contents: quizPrompt,
+            config: {
+                responseMimeType: "application/json",
+                temperature: 0.3,
+            }
+        });
+
+        if (!response.text) {
+            throw new Error("No se pudo generar el quiz.");
+        }
+
+        // Parsear la respuesta JSON
+        let parsedResponse;
+        try {
+            parsedResponse = JSON.parse(response.text);
+        } catch (parseError) {
+            console.error("Error parsing quiz response:", parseError);
+            console.error("Response text:", response.text);
+            throw new Error("Formato de respuesta inválido del quiz.");
+        }
+
+        // Validar estructura
+        if (!parsedResponse.questions || !Array.isArray(parsedResponse.questions)) {
+            throw new Error("Estructura de quiz inválida.");
+        }
+
+        return parsedResponse;
+
+    } catch (error: any) {
+        console.error("Error generating quiz:", error);
+        
+        if (error.message?.includes('API Key')) {
+            throw new Error("Error de configuración: API Key no válida.");
+        } else if (error.message?.includes('quota')) {
+            throw new Error("Se ha excedido la cuota de la API. Inténtalo más tarde.");
+        } else if (error.message?.includes('network')) {
+            throw new Error("Error de conexión. Verifica tu conexión a internet.");
+        } else {
+            throw new Error("No se pudo generar el quiz. Inténtalo de nuevo.");
+        }
+    }
+};

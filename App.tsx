@@ -60,6 +60,12 @@ const App: React.FC = () => {
   const [assistantHistory, setAssistantHistory] = useState<ChatMessage[]>([]);
   const [assistantInput, setAssistantInput] = useState<string>('');
   const [assistantImage, setAssistantImage] = useState<string | null>(null);
+  const [isQuizMode, setIsQuizMode] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAssistantLoading, setIsAssistantLoading] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -430,6 +436,74 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     } else {
       console.error("No se encontró el input de archivo");
     }
+  };
+
+  const generateQuiz = async () => {
+    if (!processedData) {
+      setError("No hay datos procesados para generar el quiz.");
+      return;
+    }
+
+    setIsGeneratingQuiz(true);
+    setError(null);
+
+    try {
+      // Crear contenido para el quiz basado en los datos procesados
+      const content = `
+        Resumen: ${processedData.summary}
+        
+        Conceptos Clave:
+        ${processedData.keyConcepts.map((c, i) => `${i + 1}. ${c.concept}: ${c.definition}`).join('\n')}
+        
+        Materia: ${selectedSubject}
+      `;
+
+      // Importar la función del servicio
+      const { generateQuizFromContent } = await import('./services/geminiService');
+      
+      const quizData = await generateQuizFromContent(content, selectedSubject);
+      
+      if (quizData.questions && Array.isArray(quizData.questions)) {
+        setQuizQuestions(quizData.questions);
+        setCurrentQuestionIndex(0);
+        setUserAnswers([]);
+        setQuizScore(null);
+        setIsQuizMode(true);
+      } else {
+        throw new Error('Formato de respuesta inválido');
+      }
+
+    } catch (error: any) {
+      console.error('Error generando quiz:', error);
+      setError(error.message || 'Error al generar el quiz. Intenta de nuevo.');
+    } finally {
+      setIsGeneratingQuiz(false);
+    }
+  };
+
+  const handleQuizAnswer = (answer: string) => {
+    const newAnswers = [...userAnswers];
+    newAnswers[currentQuestionIndex] = answer;
+    setUserAnswers(newAnswers);
+
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      // Calcular puntuación
+      const correctAnswers = newAnswers.filter((answer, index) => 
+        answer === quizQuestions[index].correctAnswer
+      ).length;
+      const score = Math.round((correctAnswers / quizQuestions.length) * 100);
+      setQuizScore(score);
+    }
+  };
+
+  const resetQuiz = () => {
+    setIsQuizMode(false);
+    setQuizQuestions([]);
+    setCurrentQuestionIndex(0);
+    setUserAnswers([]);
+    setQuizScore(null);
   };
 
   const handleScanClick = () => imageInputRef.current?.click();
@@ -980,7 +1054,22 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <p className="text-xs sm:text-base text-slate-400 px-1 sm:px-2">Resumen, conceptos clave y ejercicios generados por IA</p>
                   </div>
                   <div id="processed-output" className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl p-2 sm:p-6 min-h-[300px] sm:min-h-[500px] max-h-[60vh] sm:max-h-[600px] overflow-y-auto">
-                    <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} onCopy={handleCopyToClipboard} isExporting={isExporting} />
+                    <SummaryView 
+                      data={processedData} 
+                      isLoading={isLoading} 
+                      onExport={handleExportToPdf} 
+                      onCopy={handleCopyToClipboard} 
+                      onQuiz={generateQuiz}
+                      isExporting={isExporting}
+                      isGeneratingQuiz={isGeneratingQuiz}
+                      isQuizMode={isQuizMode}
+                      quizQuestions={quizQuestions}
+                      currentQuestionIndex={currentQuestionIndex}
+                      userAnswers={userAnswers}
+                      quizScore={quizScore}
+                      onQuizAnswer={handleQuizAnswer}
+                      onResetQuiz={resetQuiz}
+                    />
                   </div>
                 </div>
               </div>
@@ -1022,7 +1111,7 @@ const Flashcard: React.FC<{ concept: string; definition: string }> = ({ concept,
     );
 };
 
-const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onExport: () => void, onCopy: () => void, isExporting: boolean}> = ({ data, isLoading, onExport, onCopy, isExporting }) => {
+const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onExport: () => void, onCopy: () => void, onQuiz: () => void, isExporting: boolean, isGeneratingQuiz: boolean, isQuizMode: boolean, quizQuestions: any[], currentQuestionIndex: number, userAnswers: string[], quizScore: number | null, onQuizAnswer: (answer: string) => void, onResetQuiz: () => void}> = ({ data, isLoading, onExport, onCopy, onQuiz, isExporting, isGeneratingQuiz, isQuizMode, quizQuestions, currentQuestionIndex, userAnswers, quizScore, onQuizAnswer, onResetQuiz }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -1061,6 +1150,23 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
         <h3 className="text-lg sm:text-2xl font-bold text-white">Resultados del Procesamiento</h3>
         <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={onQuiz}
+            disabled={isGeneratingQuiz || !data}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 disabled:transform-none shadow-lg text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
+          >
+            {isGeneratingQuiz ? (
+              <>
+                <LoaderCircleIcon className="w-4 h-4 animate-spin" />
+                Generando...
+              </>
+            ) : (
+              <>
+                <TargetIcon className="w-4 h-4" />
+                Quiz
+              </>
+            )}
+          </button>
           <button
             onClick={onCopy}
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 shadow-lg text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
@@ -1180,6 +1286,98 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
           ))}
         </div>
       </div>
+
+      {/* Modo Quiz */}
+      {isQuizMode && quizQuestions.length > 0 && (
+        <div className="bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 p-4 sm:p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                <TargetIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white"/>
+              </div>
+              <h4 className="text-lg sm:text-xl font-bold text-white">Modo Quiz</h4>
+            </div>
+            <button
+              onClick={onResetQuiz}
+              className="text-slate-400 hover:text-red-400 transition-colors"
+              title="Salir del quiz"
+            >
+              <XIcon className="w-5 h-5" />
+            </button>
+          </div>
+
+          {quizScore !== null ? (
+            // Resultados del quiz
+            <div className="text-center space-y-4">
+              <div className="text-4xl font-bold text-white mb-2">
+                {quizScore}%
+              </div>
+              <div className="text-lg text-slate-300 mb-4">
+                {quizScore >= 80 ? '¡Excelente! 🎉' : 
+                 quizScore >= 60 ? '¡Bien hecho! 👍' : 
+                 'Necesitas repasar más 📚'}
+              </div>
+              
+              {/* Revisión de respuestas */}
+              <div className="space-y-3">
+                {quizQuestions.map((question, index) => {
+                  const userAnswer = userAnswers[index];
+                  const isCorrect = userAnswer === question.correctAnswer;
+                  
+                  return (
+                    <div key={index} className={`p-3 rounded-lg border ${isCorrect ? 'bg-green-900/20 border-green-500/30' : 'bg-red-900/20 border-red-500/30'}`}>
+                      <div className="flex items-start gap-2 mb-2">
+                        <span className={`text-sm font-bold ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                          {isCorrect ? '✓' : '✗'}
+                        </span>
+                        <p className="text-sm text-white flex-1">{question.question}</p>
+                      </div>
+                      <div className="ml-6">
+                        <p className="text-xs text-slate-400 mb-1">
+                          Tu respuesta: <span className={isCorrect ? 'text-green-400' : 'text-red-400'}>{userAnswer || 'Sin responder'}</span>
+                        </p>
+                        <p className="text-xs text-slate-400 mb-1">
+                          Respuesta correcta: <span className="text-green-400">{question.correctAnswer}</span>
+                        </p>
+                        <p className="text-xs text-slate-300">{question.explanation}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            // Pregunta actual
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-sm text-slate-400">
+                <span>Pregunta {currentQuestionIndex + 1} de {quizQuestions.length}</span>
+                <span>{Math.round(((currentQuestionIndex + 1) / quizQuestions.length) * 100)}% completado</span>
+              </div>
+              
+              <div className="bg-slate-600/20 rounded-lg p-4 border border-slate-500/20">
+                <h5 className="text-white font-semibold mb-4 text-base sm:text-lg">
+                  {quizQuestions[currentQuestionIndex].question}
+                </h5>
+                
+                <div className="space-y-2">
+                  {quizQuestions[currentQuestionIndex].options.map((option: string, optionIndex: number) => {
+                    const optionLetter = String.fromCharCode(65 + optionIndex); // A, B, C, D
+                    return (
+                      <button
+                        key={optionIndex}
+                        onClick={() => onQuizAnswer(optionLetter)}
+                        className="w-full text-left p-3 rounded-lg border border-slate-500/30 bg-slate-600/20 hover:bg-slate-500/30 transition-colors text-sm sm:text-base"
+                      >
+                        <span className="text-blue-400 font-medium">{optionLetter})</span> {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
