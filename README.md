@@ -1,16 +1,17 @@
-# Gauss MathMind IA 🧮
+# Gauss∑ AI
 
-Una aplicación inteligente para estudiantes avanzados de matemáticas que combina un editor de apuntes con IA conversacional especializada. Diseñada para maximizar la eficiencia del estudio mediante el procesamiento automático de apuntes y asistencia personalizada.
+**Gauss∑ AI** es una aplicación web avanzada que utiliza inteligencia artificial para transformar la forma en que los estudiantes procesan y comprenden apuntes de matemáticas avanzadas.
 
-## ✨ Características
+## 🚀 Características Principales
 
-- **📝 Editor de Apuntes**: Soporte completo para LaTeX y fórmulas matemáticas
-- **🤖 IA Conversacional**: Asistente especializado en materias matemáticas
-- **🎤 Reconocimiento de Voz**: Dictado automático de apuntes
-- **📷 Escaneo de Imágenes**: Extracción de texto de fotos de apuntes
-- **📊 Procesamiento Inteligente**: Análisis automático con resúmenes, conceptos clave y ejercicios
-- **📄 Exportación PDF**: Generación de documentos para estudio offline
-- **📱 Diseño Responsive**: Funciona perfectamente en desktop y móvil
+- **📝 Procesamiento Inteligente**: IA que analiza y estructura apuntes complejos
+- **🎯 Conceptos Clave**: Extracción automática de puntos importantes
+- **❓ Generación de Preguntas**: Quiz interactivo para evaluar comprensión
+- **📄 Exportación**: Generación de documentos para estudio offline
+- **🤖 Asistente IA**: Chat inteligente para resolver dudas
+- **📱 Diseño Responsivo**: Optimizado para móviles y escritorio
+- **📸 Escaneo de Imágenes**: OCR para extraer texto de fotos
+- **🎤 Reconocimiento de Voz**: Dictado por voz para apuntes
 
 ## 🚀 Tecnologías
 
@@ -30,8 +31,8 @@ Una aplicación inteligente para estudiantes avanzados de matemáticas que combi
 
 1. **Clona el repositorio**
    ```bash
-   git clone https://github.com/4ailabs/gauss-mathmind-ia.git
-   cd gauss-mathmind-ia
+   git clone https://github.com/4ailabs/gauss-sum-ai.git
+   cd gauss-sum-ai
    ```
 
 2. **Instala dependencias**
@@ -112,7 +113,8 @@ Puedes modificar las materias en `App.tsx` línea 50.
 1. **Editor**: Escribe o pega tus apuntes matemáticos
 2. **IA**: Haz preguntas específicas sobre la materia
 3. **Procesamiento**: Analiza automáticamente tus apuntes
-4. **Exportación**: Genera PDFs para estudio offline
+4. **Quiz**: Evalúa tu comprensión con preguntas interactivas
+5. **Exportación**: Genera documentos para estudio offline
 
 ## 🤝 Contribuir
 

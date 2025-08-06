@@ -283,12 +283,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         content += `   Solución: ${problem.solution}\n\n`;
       });
 
+      // Generar nombre de archivo
+      const fileName = `Gauss∑_AI_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+      console.log("Guardando archivo como:", fileName);
       // Crear y descargar archivo
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Gauss_MathMind_Apuntes_${selectedSubject.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+      link.download = fileName;
       
       // Simular clic para descargar
       document.body.appendChild(link);
@@ -317,7 +320,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
     try {
       // Crear texto formateado para copiar
-      let textToCopy = `GAUSS MATHMIND - APUNTES PROCESADOS\n`;
+      let textToCopy = `GAUSS∑ AI - APUNTES PROCESADOS\n`;
       textToCopy += `Materia: ${selectedSubject}\n`;
       textToCopy += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n`;
       textToCopy += `\n${'='.repeat(50)}\n\n`;
@@ -739,13 +742,11 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="w-full mx-auto px-3 sm:px-6 lg:max-w-7xl lg:mx-auto py-2 sm:py-6 h-screen flex flex-col safe-area-bottom">
         {/* Header */}
-        <header className="text-center mb-2 sm:mb-6 flex-shrink-0">
-          <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 bg-clip-text text-transparent tracking-tight leading-tight">
-            Gauss MathMind <span className="text-blue-500">IA</span>
+        <header className="text-center mb-2 sm:mb-4 flex-shrink-0">
+          <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent mb-1">
+            Gauss∑ AI
           </h1>
-          <p className="mt-1 sm:mt-2 text-xs sm:text-sm lg:text-base text-slate-400 px-1 sm:px-4">
-            Captura, procesa y domina tus apuntes de matemáticas avanzadas
-          </p>
+          <p className="text-xs sm:text-sm text-slate-400 px-2 sm:px-4">Captura, procesa y domina tus apuntes de matemáticas avanzadas</p>
         </header>
 
         {/* Navigation */}
