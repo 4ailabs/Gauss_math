@@ -19,7 +19,8 @@ import {
   AlertCircle,
   Settings,
   Zap,
-  Star
+  Star,
+  Copy
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -47,3 +48,4 @@ export const AlertCircleIcon: React.FC<IconProps> = (props) => <AlertCircle {...
 export const SettingsIcon: React.FC<IconProps> = (props) => <Settings {...props} />;
 export const ZapIcon: React.FC<IconProps> = (props) => <Zap {...props} />;
 export const StarIcon: React.FC<IconProps> = (props) => <Star {...props} />;
+export const CopyIcon: React.FC<IconProps> = (props) => <Copy {...props} />;

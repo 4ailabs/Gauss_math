@@ -19,7 +19,8 @@ import {
   CheckCircleIcon,
   AlertCircleIcon,
   ZapIcon,
-  FileTextIcon
+  FileTextIcon,
+  CopyIcon
 } from './components/ui/Icons';
 
 declare global {
@@ -306,6 +307,71 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       setError("Ocurrió un error al generar el PDF. Verifica que tienes datos procesados e intenta de nuevo.");
     } finally {
       setIsExporting(false);
+    }
+  }, [processedData, selectedSubject]);
+
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!processedData) {
+      setError("No hay datos procesados para copiar.");
+      return;
+    }
+
+    try {
+      // Crear texto formateado para copiar
+      let textToCopy = `GAUSS MATHMIND - APUNTES PROCESADOS\n`;
+      textToCopy += `Materia: ${selectedSubject}\n`;
+      textToCopy += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n`;
+      textToCopy += `\n${'='.repeat(50)}\n\n`;
+
+      // Resumen
+      textToCopy += `📋 RESUMEN\n`;
+      textToCopy += `${processedData.summary.replace(/<[^>]*>/g, '')}\n\n`;
+
+      // Conceptos Clave
+      textToCopy += `🎯 CONCEPTOS CLAVE\n`;
+      processedData.keyConcepts.forEach((concept, index) => {
+        textToCopy += `${index + 1}. ${concept.concept}\n`;
+        textToCopy += `   ${concept.definition}\n\n`;
+      });
+
+      // Preguntas de Quiz
+      textToCopy += `❓ PREGUNTAS DE QUIZ\n`;
+      processedData.quizQuestions.forEach((question, index) => {
+        textToCopy += `${index + 1}. ${question.question}\n`;
+        textToCopy += `   Respuesta: ${question.answer}\n\n`;
+      });
+
+      // Problemas Relacionados
+      textToCopy += `🧮 PROBLEMAS RELACIONADOS\n`;
+      processedData.relatedProblems.forEach((problem, index) => {
+        textToCopy += `${index + 1}. ${problem.problem}\n`;
+        textToCopy += `   Solución: ${problem.solution}\n\n`;
+      });
+
+      // Copiar al portapapeles
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        // Fallback para navegadores que no soportan clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      // Mostrar mensaje de éxito
+      setError(null);
+      alert('✅ Contenido copiado al portapapeles exitosamente');
+      
+    } catch (e) {
+      console.error("Error al copiar al portapapeles:", e);
+      setError("No se pudo copiar al portapapeles. Intenta seleccionar y copiar manualmente.");
     }
   }, [processedData, selectedSubject]);
 
@@ -803,7 +869,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <p className="text-xs sm:text-base text-slate-400 px-1 sm:px-2">Resumen, conceptos clave y ejercicios generados por IA</p>
                   </div>
                   <div id="processed-output" className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl p-2 sm:p-6 min-h-[300px] sm:min-h-[500px] max-h-[60vh] sm:max-h-[600px] overflow-y-auto">
-                    <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
+                    <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} onCopy={handleCopyToClipboard} isExporting={isExporting} />
                   </div>
                 </div>
               </div>
@@ -845,7 +911,7 @@ const Flashcard: React.FC<{ concept: string; definition: string }> = ({ concept,
     );
 };
 
-const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onExport: () => void, isExporting: boolean}> = ({ data, isLoading, onExport, isExporting }) => {
+const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onExport: () => void, onCopy: () => void, isExporting: boolean}> = ({ data, isLoading, onExport, onCopy, isExporting }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -883,23 +949,32 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
       {/* Header con botón de exportar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
         <h3 className="text-lg sm:text-2xl font-bold text-white">Resultados del Procesamiento</h3>
-        <button
-          onClick={onExport}
-          disabled={isExporting}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 disabled:transform-none shadow-lg text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
-        >
-          {isExporting ? (
-            <>
-              <LoaderCircleIcon className="w-4 h-4 animate-spin" />
-              Exportando...
-            </>
-          ) : (
-            <>
-              <DownloadIcon className="w-4 h-4" />
-              Exportar PDF
-            </>
-          )}
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={onCopy}
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 shadow-lg text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
+          >
+            <CopyIcon className="w-4 h-4" />
+            Copiar
+          </button>
+          <button
+            onClick={onExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all transform hover:scale-105 disabled:transform-none shadow-lg text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
+          >
+            {isExporting ? (
+              <>
+                <LoaderCircleIcon className="w-4 h-4 animate-spin" />
+                Exportando...
+              </>
+            ) : (
+              <>
+                <DownloadIcon className="w-4 h-4" />
+                PDF
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Resumen */}
