@@ -390,9 +390,42 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       <div className="min-h-screen bg-slate-950 text-slate-200 flex items-center justify-center p-4">
         <div className="max-w-md text-center bg-slate-900 p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-red-500 mb-4">Error de Configuración</h1>
-          <p className="text-slate-300">
+          <p className="text-slate-300 mb-6">
             La variable de entorno <code>GEMINI_API_KEY</code> no está configurada. Por favor, asegúrate de que tu API Key de Google AI está disponible para que la aplicación funcione.
           </p>
+          
+          {/* Debugging temporal */}
+          <div className="mt-6 p-4 bg-slate-800 rounded-lg">
+            <h3 className="text-lg font-semibold text-blue-400 mb-2">Debugging Temporal</h3>
+            <p className="text-sm text-slate-400 mb-3">
+              Si ya configuraste la variable en Vercel, puedes probar configurándola temporalmente aquí:
+            </p>
+            <input
+              type="password"
+              placeholder="Pega tu API key aquí temporalmente"
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white text-sm mb-2"
+              onChange={(e) => {
+                if (e.target.value.startsWith('AIza')) {
+                  // Configurar temporalmente
+                  window.localStorage.setItem('temp_api_key', e.target.value);
+                  window.location.reload();
+                }
+              }}
+            />
+            <p className="text-xs text-slate-500">
+              Esta es solo para debugging. La key se guarda temporalmente en tu navegador.
+            </p>
+          </div>
+          
+          <div className="mt-4 text-xs text-slate-500">
+            <p>Pasos para configurar en Vercel:</p>
+            <ol className="text-left mt-2 space-y-1">
+              <li>1. Ve a tu proyecto en vercel.com</li>
+              <li>2. Settings → Environment Variables</li>
+              <li>3. Agrega: GEMINI_API_KEY = tu_api_key</li>
+              <li>4. Redeploy la aplicación</li>
+            </ol>
+          </div>
         </div>
       </div>
     );

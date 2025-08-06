@@ -3,7 +3,16 @@ import { ProcessedData, ChatMessage } from '../types';
 
 // Función para verificar la configuración de la API
 const checkApiConfiguration = () => {
-    const apiKey = process.env.GEMINI_API_KEY;
+    let apiKey = process.env.GEMINI_API_KEY;
+    
+    // Fallback para debugging temporal
+    if (!apiKey && typeof window !== 'undefined') {
+        apiKey = window.localStorage.getItem('temp_api_key');
+        if (apiKey) {
+            console.log("Usando API key temporal de localStorage");
+        }
+    }
+    
     console.log("API Key configurada:", apiKey ? "Sí" : "No");
     console.log("API Key length:", apiKey ? apiKey.length : 0);
     console.log("API Key preview:", apiKey ? `${apiKey.substring(0, 10)}...` : "No disponible");
@@ -26,7 +35,16 @@ try {
     console.error("Error en configuración de API:", error);
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// Función para obtener la API key con fallback
+const getApiKey = () => {
+    let apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+        apiKey = window.localStorage.getItem('temp_api_key');
+    }
+    return apiKey || "";
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 const model = "gemini-2.5-flash";
 
 const processNotesSchema = {
