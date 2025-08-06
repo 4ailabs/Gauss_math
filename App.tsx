@@ -493,7 +493,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6 h-screen flex flex-col">
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6 h-screen flex flex-col safe-area-bottom">
         {/* Header */}
         <header className="text-center mb-3 sm:mb-6 flex-shrink-0">
           <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent tracking-tight leading-tight">
@@ -528,7 +528,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         </nav>
 
         {/* Main Content */}
-        <main className="flex-grow overflow-hidden">
+        <main className="flex-grow overflow-hidden pb-4">
           {activeView === 'editor' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">

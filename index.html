@@ -63,6 +63,60 @@
       max-width: 100%;
       box-sizing: border-box;
     }
+
+    /* Manejar barras de navegación móviles */
+    @supports (padding: max(0px)) {
+      .safe-area-bottom {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      }
+      
+      .safe-area-top {
+        padding-top: max(1rem, env(safe-area-inset-top));
+      }
+      
+      .safe-area-left {
+        padding-left: max(1rem, env(safe-area-inset-left));
+      }
+      
+      .safe-area-right {
+        padding-right: max(1rem, env(safe-area-inset-right));
+      }
+    }
+
+    /* Ajustes específicos para iPhone */
+    @media screen and (max-width: 430px) {
+      .container {
+        padding-bottom: 80px; /* Espacio extra para la barra de navegación */
+      }
+      
+      /* Asegurar que el contenido principal no se corte */
+      main {
+        padding-bottom: 20px;
+      }
+      
+      /* Footer siempre visible */
+      footer {
+        position: relative;
+        z-index: 10;
+        background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
+        padding-bottom: 20px;
+      }
+    }
+
+    /* Ajustes para navegadores con barras de navegación */
+    @media screen and (max-height: 700px) {
+      .container {
+        padding-bottom: 60px;
+      }
+      
+      header {
+        margin-bottom: 1rem !important;
+      }
+      
+      nav {
+        margin-bottom: 1rem !important;
+      }
+    }
   </style>
 <script type="importmap">
 {
