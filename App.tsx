@@ -679,7 +679,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       <RefreshCwIcon className="w-3 h-3 sm:w-5 sm:h-5"/>
                     </button>
                   </div>
-                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-2 sm:p-4 min-h-0 h-full">
+                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-2 sm:p-4 min-h-0" style={{ minHeight: '400px' }}>
                     <AssistantView 
                       history={assistantHistory} 
                       inputValue={assistantInput} 
@@ -918,11 +918,11 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
      }, [history]);
 
     return (
-        <div className="flex flex-col h-full min-h-0">
+        <div className="flex flex-col h-full">
             <div 
                 ref={chatContainerRef}
-                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth min-h-0 mb-2"
-                style={{ scrollBehavior: 'smooth' }}
+                className="flex-grow overflow-y-auto pr-2 space-y-3 scroll-smooth"
+                style={{ scrollBehavior: 'smooth', minHeight: '300px' }}
             >
                 {history.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
@@ -970,23 +970,25 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
                 )}
                  <div ref={chatEndRef} />
             </div>
-            <form onSubmit={onSubmit} className="flex gap-2 flex-shrink-0 mt-auto">
-                <input
-                    type="text"
-                    value={inputValue}
-                    onChange={onInputChange}
-                    placeholder="Pregúntale algo a la IA..."
-                    className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
-                    disabled={isLoading}
-                />
-                <button 
-                    type="submit" 
-                    disabled={isLoading || !inputValue.trim()} 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
-                >
-                    <SendIcon className="w-4 h-4"/>
-                </button>
-            </form>
+            <div className="mt-4 flex-shrink-0">
+                <form onSubmit={onSubmit} className="flex gap-2">
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={onInputChange}
+                        placeholder="Pregúntale algo a la IA..."
+                        className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
+                        disabled={isLoading}
+                    />
+                    <button 
+                        type="submit" 
+                        disabled={isLoading || !inputValue.trim()} 
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-2 rounded-lg transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
+                    >
+                        <SendIcon className="w-4 h-4"/>
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
