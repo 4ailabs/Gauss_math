@@ -236,7 +236,8 @@ let assistantChatInstance: Chat | null = null;
 
 const initializeAssistantChat = (subject: string): Chat => {
     try {
-        if (!process.env.GEMINI_API_KEY) {
+        const apiKey = getApiKey();
+        if (!apiKey) {
             throw new Error("API Key no configurada.");
         }
         
@@ -263,26 +264,42 @@ const initializeAssistantChat = (subject: string): Chat => {
 
 
 export const getAssistantResponseStream = async (newQuestion: string, subject: string, imageData?: string | null) => {
+    console.log("=== INICIO getAssistantResponseStream ===");
+    console.log("Parámetros:", { newQuestion, subject, hasImage: !!imageData });
+    
     try {
+        console.log("Verificando assistantChatInstance...");
         if (!assistantChatInstance) {
+            console.log("assistantChatInstance es null, inicializando...");
             assistantChatInstance = initializeAssistantChat(subject);
+            console.log("assistantChatInstance inicializado:", !!assistantChatInstance);
         }
 
-        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        console.log("Verificando API key...");
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            console.error("API Key no encontrada");
+            throw new Error("API Key no configurada.");
+        }
+        console.log("API Key encontrada, longitud:", apiKey.length);
         
         console.log("Enviando pregunta al asistente:", { newQuestion, subject, hasImage: !!imageData });
         
         let responseStream;
         
         if (imageData) {
+            console.log("Procesando con imagen...");
             // Si hay imagen, extraer el base64 y mime type
             const base64Match = imageData.match(/^data:([^;]+);base64,(.+)$/);
             if (!base64Match) {
+                console.error("Formato de imagen inválido");
                 throw new Error("Formato de imagen inválido.");
             }
             
             const mimeType = base64Match[1];
             const base64Image = base64Match[2];
+            
+            console.log("Imagen procesada, mimeType:", mimeType);
             
             // Crear parte de imagen
             const imagePart = {
@@ -325,21 +342,29 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
                 }
             };
             
+            console.log("=== ÉXITO getAssistantResponseStream (con imagen) ===");
             return stream;
         } else {
             console.log("Procesando pregunta sin imagen...");
             // Enviar mensaje sin imagen
+            console.log("Llamando a sendMessageStream...");
             responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
-            console.log("Stream sin imagen creado");
+            console.log("Stream sin imagen creado:", !!responseStream);
         }
         
         if (!responseStream) {
+            console.error("No se pudo obtener responseStream");
             throw new Error("No se pudo obtener respuesta del asistente.");
         }
         
+        console.log("=== ÉXITO getAssistantResponseStream (sin imagen) ===");
         return responseStream;
     } catch (error: any) {
+        console.error("=== ERROR en getAssistantResponseStream ===");
         console.error("Error getting assistant response:", error);
+        console.error("Error message:", error.message);
+        console.error("Error name:", error.name);
+        console.error("Error stack:", error.stack);
         
         // Manejo específico de errores
         if (error.message?.includes('API Key')) {

@@ -574,7 +574,11 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     const userMessage = assistantInput.trim();
     const hasImage = !!assistantImage;
     
-    console.log("Enviando mensaje al asistente:", { userMessage, hasImage });
+    console.log("=== INICIO handleAssistantSubmit ===");
+    console.log("Mensaje del usuario:", userMessage);
+    console.log("Tiene imagen:", hasImage);
+    console.log("Materia seleccionada:", selectedSubject);
+    console.log("Estado actual:", { isAssistantLoading, error });
     
     // Agregar mensaje del usuario al historial
     const userMsg: ChatMessage = {
@@ -582,6 +586,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       content: hasImage ? `${userMessage} [Incluye imagen]` : userMessage
     };
     
+    console.log("Agregando mensaje del usuario al historial...");
     setAssistantHistory(prev => [...prev, userMsg]);
     setAssistantInput('');
     setIsAssistantLoading(true);
@@ -593,13 +598,16 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       let isFirstChunk = true;
 
       // Crear el stream con imagen si existe
+      console.log("Llamando a getAssistantResponseStream...");
       const stream = await getAssistantResponseStream(userMessage, selectedSubject, assistantImage);
-      console.log("Stream creado exitosamente");
+      console.log("Stream creado exitosamente, tipo:", typeof stream);
       
       // Agregar mensaje vacío del modelo para mostrar loading
       const modelMsg: ChatMessage = { role: 'model', content: '' };
+      console.log("Agregando mensaje vacío del modelo...");
       setAssistantHistory(prev => [...prev, modelMsg]);
       
+      console.log("Iniciando iteración del stream...");
       for await (const chunk of stream) {
         console.log("Chunk recibido:", chunk);
         
@@ -635,9 +643,14 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         assistantImageInputRef.current.value = '';
       }
 
+      console.log("=== ÉXITO handleAssistantSubmit ===");
+
     } catch (error: any) {
+      console.error("=== ERROR en handleAssistantSubmit ===");
       console.error('Error detallado en asistente:', error);
       console.error('Stack trace:', error.stack);
+      console.error('Error message:', error.message);
+      console.error('Error name:', error.name);
       
       // Agregar mensaje de error al historial
       const errorMsg: ChatMessage = {
@@ -648,10 +661,10 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       setAssistantHistory(prev => [...prev, errorMsg]);
       setError(error.message || 'Error al comunicarse con el asistente');
       
-      // Remover el mensaje del usuario si falló
-      // setAssistantHistory(prev => prev.slice(0, -1));
+      console.log("=== FIN ERROR handleAssistantSubmit ===");
     } finally {
       setIsAssistantLoading(false);
+      console.log("=== FIN handleAssistantSubmit ===");
     }
   };
   
