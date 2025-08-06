@@ -496,10 +496,10 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6 h-screen flex flex-col safe-area-bottom">
         {/* Header */}
         <header className="text-center mb-3 sm:mb-6 flex-shrink-0">
-          <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent tracking-tight leading-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent tracking-tight leading-tight">
             Gauss MathMind <span className="text-blue-400">IA</span>
           </h1>
-          <p className="mt-2 sm:mt-3 text-sm sm:text-lg lg:text-xl text-slate-300 px-2 sm:px-4">
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm lg:text-base text-slate-400 px-2 sm:px-4">
             Captura, procesa y domina tus apuntes de matemáticas avanzadas
           </p>
         </header>
