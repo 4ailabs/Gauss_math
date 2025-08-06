@@ -820,14 +820,17 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
           </div>
           <h4 className="text-xl font-bold text-white">Conceptos Clave</h4>
         </div>
-        <div className="grid gap-3">
+        <div className="grid gap-4">
           {data.keyConcepts.map((concept, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-slate-600/20 rounded-lg border border-slate-500/20">
-              <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-white">{index + 1}</span>
-              </div>
-              <div className="prose prose-invert max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: concept }} />
+            <div key={index} className="p-4 bg-slate-600/20 rounded-lg border border-slate-500/20">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-white">{index + 1}</span>
+                </div>
+                <div className="flex-1">
+                  <h5 className="font-semibold text-white mb-2">{concept.concept}</h5>
+                  <p className="text-slate-300 text-sm leading-relaxed">{concept.definition}</p>
+                </div>
               </div>
             </div>
           ))}
@@ -849,8 +852,14 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
                 <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-teal-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-xs font-bold text-white">{index + 1}</span>
                 </div>
-                <div className="prose prose-invert max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: question }} />
+                <div className="flex-1">
+                  <h5 className="font-semibold text-white mb-2">{question.question}</h5>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs bg-green-900/50 text-green-300 px-2 py-1 rounded-full font-medium">
+                      {question.type}
+                    </span>
+                  </div>
+                  <p className="text-slate-300 text-sm leading-relaxed">{question.answer}</p>
                 </div>
               </div>
             </div>
@@ -873,8 +882,9 @@ const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onE
                 <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-xs font-bold text-white">{index + 1}</span>
                 </div>
-                <div className="prose prose-invert max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: problem }} />
+                <div className="flex-1">
+                  <h5 className="font-semibold text-white mb-2">{problem.problem}</h5>
+                  <p className="text-slate-300 text-sm leading-relaxed">{problem.solution}</p>
                 </div>
               </div>
             </div>
