@@ -1,0 +1,137 @@
+/* Mobile Optimizations for Gauss MathMind IA */
+
+/* Touch targets should be at least 44px for iOS and 48px for Android */
+@media (max-width: 640px) {
+  /* Improve touch targets */
+  button, input, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Extra small breakpoint for very small phones */
+  @media (max-width: 380px) {
+    .xs\:hidden {
+      display: none;
+    }
+    
+    .xs\:inline {
+      display: inline;
+    }
+    
+    .xs\:block {
+      display: block;
+    }
+  }
+  
+  /* Prevent zoom on input focus */
+  input[type="text"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  
+  /* Better scrolling on mobile */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text selection on buttons */
+  button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Better button press feedback */
+  button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+  
+  /* Improve textarea on mobile */
+  textarea {
+    resize: none;
+    -webkit-appearance: none;
+    border-radius: 12px;
+  }
+  
+  /* Better spacing for mobile cards */
+  .mobile-card {
+    margin-bottom: 12px;
+  }
+  
+  /* Sticky elements adjustments */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Improve chat messages on mobile */
+  .chat-message {
+    max-width: 85%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Better loading states */
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Safe area insets for newer iPhones */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper icons and images */
+  .icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode improvements for mobile */
+@media (prefers-color-scheme: dark) {
+  /* Better contrast for accessibility */
+  .text-slate-400 {
+    color: rgb(156, 163, 175) !important;
+  }
+  
+  .text-slate-300 {
+    color: rgb(203, 213, 225) !important;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .mobile-landscape-compact {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  
+  .mobile-landscape-compact h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .mobile-landscape-compact h2 {
+    font-size: 1.25rem !important;
+  }
+}
