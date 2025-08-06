@@ -621,26 +621,53 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         chunkCount++;
         console.log(`Chunk ${chunkCount} recibido:`, chunk);
         console.log("Tipo de chunk:", typeof chunk);
-        console.log("Longitud del chunk:", chunk ? chunk.length : 0);
         
-        // Validar que el chunk sea una cadena válida
-        if (typeof chunk !== 'string') {
-          console.warn("Chunk inválido recibido:", chunk);
-          console.warn("Tipo de chunk:", typeof chunk);
+        // Manejar diferentes tipos de chunks
+        let chunkText = '';
+        
+        if (typeof chunk === 'string') {
+          // Si es un string directo
+          chunkText = chunk;
+          console.log("Chunk es string, longitud:", chunkText.length);
+        } else if (chunk && typeof chunk === 'object') {
+          // Si es un objeto de respuesta de Gemini
+          console.log("Chunk es objeto, extrayendo texto...");
+          
+          // Intentar extraer texto del objeto de respuesta
+          if (chunk.text) {
+            chunkText = chunk.text;
+            console.log("Texto extraído de chunk.text:", chunkText);
+          } else if (chunk.candidates && chunk.candidates.length > 0) {
+            // Extraer de candidates
+            const candidate = chunk.candidates[0];
+            if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+              chunkText = candidate.content.parts[0].text || '';
+              console.log("Texto extraído de candidates:", chunkText);
+            }
+          } else if (chunk.response && chunk.response.text) {
+            // Extraer de response
+            chunkText = chunk.response.text;
+            console.log("Texto extraído de response:", chunkText);
+          }
+          
+          console.log("Longitud del texto extraído:", chunkText.length);
+        }
+        
+        // Validar que el chunk tenga contenido
+        if (chunkText && chunkText.trim().length > 0) {
+          hasValidChunks = true;
+          console.log("Chunk válido encontrado:", chunkText.substring(0, 50) + "...");
+        } else {
+          console.warn("Chunk sin contenido válido");
           continue;
         }
         
-        // Verificar si el chunk tiene contenido
-        if (chunk.trim().length > 0) {
-          hasValidChunks = true;
-        }
-        
         if (isFirstChunk) {
-          fullResponse = chunk;
+          fullResponse = chunkText;
           isFirstChunk = false;
           console.log("Primer chunk procesado:", fullResponse);
         } else {
-          fullResponse += chunk;
+          fullResponse += chunkText;
           console.log("Respuesta acumulada:", fullResponse.substring(0, 100) + "...");
         }
 
