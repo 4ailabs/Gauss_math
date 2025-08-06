@@ -492,34 +492,34 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
-      <div className="container mx-auto px-4 py-4 sm:py-6 h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <div className="container mx-auto px-4 py-6 h-screen flex flex-col">
         {/* Header */}
-        <header className="text-center mb-4 sm:mb-6 flex-shrink-0">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+        <header className="text-center mb-6 flex-shrink-0">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent tracking-tight">
             Gauss MathMind <span className="text-blue-400">IA</span>
           </h1>
-          <p className="mt-2 sm:mt-3 text-base sm:text-lg text-slate-400 px-2">
-            Captura, procesa y domina tus apuntes de matemáticas avanzadas.
+          <p className="mt-3 text-lg sm:text-xl text-slate-300 px-4">
+            Captura, procesa y domina tus apuntes de matemáticas avanzadas
           </p>
         </header>
 
         {/* Navigation */}
-        <nav className="flex justify-center mb-4 sm:mb-6 flex-shrink-0">
-          <div className="flex bg-slate-800 rounded-lg p-1">
+        <nav className="flex justify-center mb-6 flex-shrink-0">
+          <div className="flex bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50 shadow-lg">
             {['Editor', 'IA', 'Resumen'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveView(tab === 'Editor' ? 'editor' : tab === 'IA' ? 'assistant' : 'summary')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   activeView === (tab === 'Editor' ? 'editor' : tab === 'IA' ? 'assistant' : 'summary')
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                 }`}
               >
-                {tab === 'Editor' && <BookOpenIcon className="w-4 h-4" />}
-                {tab === 'IA' && <MessageCircleIcon className="w-4 h-4" />}
-                {tab === 'Resumen' && <FileTextIcon className="w-4 h-4" />}
+                {tab === 'Editor' && <BookOpenIcon className="w-5 h-5" />}
+                {tab === 'IA' && <MessageCircleIcon className="w-5 h-5" />}
+                {tab === 'Resumen' && <FileTextIcon className="w-5 h-5" />}
                 {tab}
               </button>
             ))}
@@ -531,103 +531,116 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'editor' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">
-                <div className="flex flex-col gap-3 sm:gap-4">
-                  <h2 className="text-2xl sm:text-2xl font-semibold text-white flex items-center gap-2">
-                    <BookOpenIcon className="w-6 h-6 text-blue-400"/>
-                    Editor de Apuntes
-                  </h2>
+                <div className="max-w-4xl mx-auto space-y-6">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+                      <BookOpenIcon className="w-8 h-8 text-blue-400"/>
+                      Editor de Apuntes
+                    </h2>
+                    <p className="text-slate-400">Escribe, pega o escanea tus apuntes matemáticos</p>
+                  </div>
+                  
                   <div className="relative">
-                    <label htmlFor="subject-select" className="sr-only">Seleccionar Materia</label>
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <HashIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                    <label htmlFor="subject-select" className="block text-sm font-medium text-slate-300 mb-2">Seleccionar Materia</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                        <HashIcon className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <select
+                        id="subject-select"
+                        value={selectedSubject}
+                        onChange={(e) => setSelectedSubject(e.target.value)}
+                        className="w-full bg-slate-800/50 border border-slate-600 rounded-xl p-4 pl-12 text-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none appearance-none backdrop-blur-sm"
+                      >
+                        {subjects.map(subject => ( <option key={subject} value={subject}>{subject}</option>))}
+                      </select>
                     </div>
-                    <select
-                      id="subject-select"
-                      value={selectedSubject}
-                      onChange={(e) => setSelectedSubject(e.target.value)}
-                      className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 pl-10 text-base text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none"
-                    >
-                      {subjects.map(subject => ( <option key={subject} value={subject}>{subject}</option>))}
-                    </select>
                   </div>
 
-                  <div className="bg-slate-900 rounded-lg p-1 shadow-lg flex-grow flex flex-col min-h-[300px] sm:min-h-[400px]">
+                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl">
                     <StyledTextarea
                       placeholder="Escribe, pega o escanea tus apuntes de matemáticas aquí. Usa LaTeX para las fórmulas, ej., \\( \\int_a^b x^2 dx \\)..."
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                     />
                   </div>
+                  
                   {error && (
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2 text-red-400 text-xs sm:text-sm animate-fade-in px-2 bg-red-900/20 rounded-lg py-2">
-                        <AlertCircleIcon className="w-4 h-4 flex-shrink-0" />
-                        {error}
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 animate-fade-in">
+                      <div className="flex items-center gap-3 text-red-400">
+                        <AlertCircleIcon className="w-6 h-6 flex-shrink-0" />
+                        <span className="font-medium">{error}</span>
                       </div>
                       <button 
                         onClick={handleProcessNotes} 
                         disabled={isLoading || isScanning || isExporting || isRecording}
-                        className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs sm:text-sm"
+                        className="mt-3 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all"
                       >
-                        <RefreshCwIcon className="w-4 h-4" />
+                        <RefreshCwIcon className="w-5 h-5" />
                         Reintentar
                       </button>
                     </div>
                   )}
-                  <div className="flex flex-col gap-2 sm:gap-4">
-                    <button onClick={handleProcessNotes} disabled={isLoading || isScanning || isExporting || isRecording} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 text-base shadow-lg">
+                  
+                  <div className="space-y-4">
+                    <button 
+                      onClick={handleProcessNotes} 
+                      disabled={isLoading || isScanning || isExporting || isRecording} 
+                      className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 disabled:from-slate-700 disabled:to-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 text-lg shadow-lg disabled:transform-none"
+                    >
                       {isLoading ? (
                         <>
-                          <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
+                          <LoaderCircleIcon className="animate-spin w-6 h-6"/> 
                           Procesando...
                         </>
                       ) : (
                         <>
-                          <BrainCircuitIcon className="w-5 h-5"/> 
+                          <BrainCircuitIcon className="w-6 h-6"/> 
                           Procesar Apuntes
                         </>
                       )}
                     </button>
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-4">
+                    
+                    <div className="grid grid-cols-2 gap-4">
                       <button
                         onClick={handleToggleRecording}
                         disabled={isLoading || isScanning || isExporting || !isSpeechSupported}
-                        className={`flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-lg transition-all text-base ${
+                        className={`flex items-center justify-center gap-3 font-semibold py-4 px-6 rounded-xl transition-all text-lg ${
                           !isSpeechSupported
-                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
+                          ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                           : isRecording
-                          ? 'bg-red-600 hover:bg-red-700 text-white'
-                          : 'bg-slate-800 hover:bg-slate-700 text-white'
+                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg'
+                          : 'bg-slate-800/50 hover:bg-slate-700/50 text-white border border-slate-600/50'
                         }`}
                         title={!isSpeechSupported ? "El reconocimiento de voz no es compatible con este navegador." : isRecording ? "Detener grabación" : "Grabar audio"}
                       >
                         {isRecording ? (
                           <>
-                            <MicIcon className="w-5 h-5 animate-pulse" /> 
-                            <span className="hidden sm:inline">Detener</span>
+                            <MicIcon className="w-6 h-6 animate-pulse" /> 
+                            <span>Detener</span>
                           </>
                         ) : (
                           <>
-                            <MicIcon className="w-5 h-5" /> 
-                            <span className="hidden sm:inline">Grabar</span>
+                            <MicIcon className="w-6 h-6" /> 
+                            <span>Grabar</span>
                           </>
                         )}
                       </button>
                       <button 
                         onClick={handleScanClick} 
                         disabled={isLoading || isScanning || isExporting || isRecording} 
-                        className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-all text-base"
+                        className="flex items-center justify-center gap-3 bg-slate-800/50 hover:bg-slate-700/50 disabled:bg-slate-700 text-white font-semibold py-4 px-6 rounded-xl transition-all text-lg border border-slate-600/50"
                         title="Escanea imágenes de apuntes (JPG, PNG, WebP, máx. 10MB)"
                       >
                         {isScanning ? (
                           <>
-                            <LoaderCircleIcon className="animate-spin w-5 h-5"/> 
-                            <span className="hidden sm:inline">Escaneando...</span>
+                            <LoaderCircleIcon className="animate-spin w-6 h-6"/> 
+                            <span>Escaneando...</span>
                           </>
                         ) : (
                           <>
-                            <CameraIcon className="w-5 h-5"/> 
-                            <span className="hidden sm:inline">Escanear</span>
+                            <CameraIcon className="w-6 h-6" /> 
+                            <span>Escanear</span>
                           </>
                         )}
                       </button>
@@ -642,29 +655,34 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'assistant' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                    <MessageCircleIcon className="w-6 h-6 text-blue-400"/>
-                    IA
-                  </h2>
-                  <button 
-                    onClick={handleResetAssistantChat} 
-                    title="Reiniciar conversación"
-                    className="text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-50 p-1"
-                    disabled={isAssistantLoading}
-                  >
-                    <RefreshCwIcon className="w-5 h-5"/>
-                  </button>
-                </div>
-                <div className="bg-slate-900/70 rounded-lg shadow-lg flex-grow flex flex-col p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px]">
-                  <AssistantView 
-                    history={assistantHistory} 
-                    inputValue={assistantInput} 
-                    onInputChange={(e) => setAssistantInput(e.target.value)} 
-                    onSubmit={handleAssistantSubmit} 
-                    isLoading={isAssistantLoading} 
-                    subject={selectedSubject} 
-                  />
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="text-center flex-1">
+                      <h2 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+                        <MessageCircleIcon className="w-8 h-8 text-blue-400"/>
+                        Asistente IA
+                      </h2>
+                      <p className="text-slate-400">Pregúntale cualquier cosa sobre {selectedSubject}</p>
+                    </div>
+                    <button 
+                      onClick={handleResetAssistantChat} 
+                      title="Reiniciar conversación"
+                      className="text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-50 p-2 hover:bg-slate-800/50 rounded-lg"
+                      disabled={isAssistantLoading}
+                    >
+                      <RefreshCwIcon className="w-6 h-6"/>
+                    </button>
+                  </div>
+                  <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl flex-grow flex flex-col p-4 min-h-[500px] max-h-[600px]">
+                    <AssistantView 
+                      history={assistantHistory} 
+                      inputValue={assistantInput} 
+                      onInputChange={(e) => setAssistantInput(e.target.value)} 
+                      onSubmit={handleAssistantSubmit} 
+                      isLoading={isAssistantLoading} 
+                      subject={selectedSubject} 
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -673,12 +691,17 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
           {activeView === 'summary' && (
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto">
-                <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4">
-                  <BrainCircuitIcon className="w-6 h-6 text-blue-400"/>
-                  Apuntes Procesados
-                </h2>
-                <div id="processed-output" className="bg-slate-900/70 rounded-lg shadow-lg flex-grow p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] lg:min-h-[660px] max-h-[600px] sm:max-h-[700px] lg:max-h-[800px] overflow-y-auto">
-                  <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
+                <div className="max-w-4xl mx-auto">
+                  <div className="text-center mb-6">
+                    <h2 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+                      <BrainCircuitIcon className="w-8 h-8 text-blue-400"/>
+                      Apuntes Procesados
+                    </h2>
+                    <p className="text-slate-400">Resumen, conceptos clave y ejercicios generados por IA</p>
+                  </div>
+                  <div id="processed-output" className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-xl p-6 min-h-[500px] max-h-[600px] overflow-y-auto">
+                    <SummaryView data={processedData} isLoading={isLoading} onExport={handleExportToPdf} isExporting={isExporting} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -686,8 +709,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         </main>
 
         {/* Footer */}
-        <footer className="text-center text-slate-500 text-sm mt-4 flex-shrink-0">
-          <p>Desarrollado por 4ailabs</p>
+        <footer className="text-center text-slate-500 text-sm mt-6 flex-shrink-0">
+          <p className="font-medium">Desarrollado por <span className="text-blue-400">4ailabs</span></p>
         </footer>
       </div>
     </div>
@@ -720,94 +743,146 @@ const Flashcard: React.FC<{ concept: string; definition: string }> = ({ concept,
 };
 
 const SummaryView: React.FC<{data: ProcessedData | null, isLoading: boolean, onExport: () => void, isExporting: boolean}> = ({ data, isLoading, onExport, isExporting }) => {
-    if (isLoading) return <div className="flex items-center justify-center h-full"><LoaderCircleIcon className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-blue-400" /></div>;
-    if (!data) return <div className="flex items-center justify-center h-full text-slate-400 text-center p-4"><p className="text-sm sm:text-base">Procesa tus apuntes para ver el análisis de la IA aquí.</p></div>;
-
+  if (isLoading) {
     return (
-        <div className="animate-fade-in h-full flex flex-col">
-            <div className="flex-shrink-0 mb-3 sm:mb-4 flex justify-end">
-                <button 
-                    onClick={onExport} 
-                    disabled={isExporting}
-                    className="flex items-center justify-center gap-1 sm:gap-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg transition-all text-xs sm:text-sm"
-                >
-                    {isExporting ? 
-                        <><LoaderCircleIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5"/> <span className="hidden sm:inline">Exportando...</span></> : 
-                        <><DownloadIcon className="w-4 h-4 sm:w-5 sm:h-5"/> <span className="hidden sm:inline">Exportar PDF</span></>
-                    }
-                </button>
-            </div>
-            <div id="processed-output-content" className="space-y-6 sm:space-y-8 overflow-y-auto flex-grow pr-1 sm:pr-2">
-                <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 flex items-center gap-2">
-                        <FileTextIcon className="w-5 h-5" />
-                        Resumen
-                    </h3>
-                    <p className="text-slate-300 whitespace-pre-wrap text-sm sm:text-base">{data.summary}</p>
-                </div>
-                <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-3 sm:mb-4 flex items-center gap-2">
-                        <TargetIcon className="w-5 h-5" />
-                        Conceptos Clave (Flashcards)
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                        {data.keyConcepts.map((item, index) => (
-                            <Flashcard key={index} concept={item.concept} definition={item.definition} />
-                        ))}
-                    </div>
-                </div>
-                 {data.relatedProblems?.length > 0 && (
-                     <div>
-                        <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3 flex items-center gap-2">
-                            <CalculatorIcon className="w-5 h-5" />
-                            Problemas para Practicar
-                        </h3>
-                        <ul className="space-y-2 sm:space-y-3">
-                            {data.relatedProblems.map((item, index) => (
-                               <details key={index} className="p-2 sm:p-3 bg-slate-900/50 rounded-md cursor-pointer group">
-                                   <summary className="font-semibold text-white list-none flex justify-between items-center gap-2 text-sm sm:text-base">
-                                       <span className="flex-1">{item.problem}</span>
-                                       <svg className="w-3 h-3 sm:w-4 sm:h-4 transition-transform transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                                   </summary>
-                                   <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm">
-                                       <div className="flex items-center gap-2 mb-1">
-                                           <CheckCircleIcon className="w-4 h-4 text-green-400" />
-                                           <strong>Solución:</strong>
-                                       </div>
-                                       {item.solution}
-                                   </div>
-                               </details>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-                 <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-blue-400 mb-2 sm:mb-3 flex items-center gap-2">
-                        <BrainCircuitIcon className="w-5 h-5" />
-                        Ponte a Prueba
-                    </h3>
-                    <ul className="space-y-2 sm:space-y-3">
-                        {data.quizQuestions.map((item, index) => (
-                           <details key={index} className="p-2 sm:p-3 bg-slate-900/50 rounded-md cursor-pointer group">
-                               <summary className="font-semibold text-white list-none flex justify-between items-center gap-2 text-sm sm:text-base">
-                                   <span className="flex-1">{item.question}</span>
-                                   <span className="text-blue-400 text-xs uppercase font-bold mr-1 sm:mr-2 bg-blue-900/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">{item.type}</span>
-                                   <svg className="w-3 h-3 sm:w-4 sm:h-4 transition-transform transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                               </summary>
-                               <div className="text-slate-300 mt-2 pt-2 border-t border-slate-700 whitespace-pre-wrap text-xs sm:text-sm">
-                                   <div className="flex items-center gap-2 mb-1">
-                                       <LightbulbIcon className="w-4 h-4 text-yellow-400" />
-                                       <strong>Respuesta:</strong>
-                                   </div>
-                                   {item.answer}
-                               </div>
-                           </details>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <LoaderCircleIcon className="w-8 h-8 text-white animate-spin"/>
+          </div>
+          <div>
+            <p className="text-lg font-semibold text-white">Procesando apuntes...</p>
+            <p className="text-slate-400">La IA está analizando tu contenido</p>
+          </div>
         </div>
+      </div>
     );
+  }
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center">
+            <FileTextIcon className="w-8 h-8 text-white"/>
+          </div>
+          <div>
+            <p className="text-lg font-semibold text-white">Sin datos procesados</p>
+            <p className="text-slate-400">Procesa tus apuntes para ver los resultados</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header con botón de exportar */}
+      <div className="flex justify-between items-center">
+        <h3 className="text-2xl font-bold text-white">Resultados del Procesamiento</h3>
+        <button
+          onClick={onExport}
+          disabled={isExporting}
+          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold py-2 px-4 rounded-lg transition-all transform hover:scale-105 disabled:transform-none shadow-lg"
+        >
+          {isExporting ? (
+            <>
+              <LoaderCircleIcon className="w-4 h-4 animate-spin" />
+              Exportando...
+            </>
+          ) : (
+            <>
+              <DownloadIcon className="w-4 h-4" />
+              Exportar PDF
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Resumen */}
+      <div className="bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 p-6 shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <FileTextIcon className="w-5 h-5 text-white"/>
+          </div>
+          <h4 className="text-xl font-bold text-white">Resumen</h4>
+        </div>
+        <div className="prose prose-invert max-w-none">
+          <div dangerouslySetInnerHTML={{ __html: data.summary }} />
+        </div>
+      </div>
+
+      {/* Conceptos Clave */}
+      <div className="bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 p-6 shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+            <TargetIcon className="w-5 h-5 text-white"/>
+          </div>
+          <h4 className="text-xl font-bold text-white">Conceptos Clave</h4>
+        </div>
+        <div className="grid gap-3">
+          {data.keyConcepts.map((concept, index) => (
+            <div key={index} className="flex items-start gap-3 p-3 bg-slate-600/20 rounded-lg border border-slate-500/20">
+              <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-white">{index + 1}</span>
+              </div>
+              <div className="prose prose-invert max-w-none">
+                <div dangerouslySetInnerHTML={{ __html: concept }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Preguntas de Quiz */}
+      <div className="bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 p-6 shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+            <CalculatorIcon className="w-5 h-5 text-white"/>
+          </div>
+          <h4 className="text-xl font-bold text-white">Preguntas de Quiz</h4>
+        </div>
+        <div className="space-y-4">
+          {data.quizQuestions.map((question, index) => (
+            <div key={index} className="p-4 bg-slate-600/20 rounded-lg border border-slate-500/20">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-teal-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-white">{index + 1}</span>
+                </div>
+                <div className="prose prose-invert max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: question }} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Problemas Relacionados */}
+      <div className="bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 p-6 shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+            <BrainCircuitIcon className="w-5 h-5 text-white"/>
+          </div>
+          <h4 className="text-xl font-bold text-white">Problemas Relacionados</h4>
+        </div>
+        <div className="space-y-4">
+          {data.relatedProblems.map((problem, index) => (
+            <div key={index} className="p-4 bg-slate-600/20 rounded-lg border border-slate-500/20">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-white">{index + 1}</span>
+                </div>
+                <div className="prose prose-invert max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: problem }} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onSubmit: (e: React.FormEvent) => void, isLoading: boolean, subject: string}> = ({ history, inputValue, onInputChange, onSubmit, isLoading, subject }) => {
@@ -830,47 +905,69 @@ const AssistantView: React.FC<{history: ChatMessage[], inputValue: string, onInp
         <div className="flex flex-col h-full">
             <div 
                 ref={chatContainerRef}
-                className="flex-grow overflow-y-auto pr-1 sm:pr-2 space-y-3 sm:space-y-4 scroll-smooth"
+                className="flex-grow overflow-y-auto pr-2 space-y-4 scroll-smooth"
                 style={{ scrollBehavior: 'smooth' }}
             >
                 {history.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-slate-400 text-center">
-                        <div>
-                            <p className="mb-2 text-base">Soy tu IA para</p>
-                            <strong className="text-blue-400 block text-base">{subject}</strong>
-                            <p className="mt-2 text-sm">¡Pregúntame cualquier cosa!</p>
+                    <div className="flex items-center justify-center h-full">
+                        <div className="text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <BrainCircuitIcon className="w-8 h-8 text-white"/>
+                            </div>
+                            <div>
+                                <p className="text-lg font-semibold text-white mb-2">Soy tu IA para</p>
+                                <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{subject}</p>
+                                <p className="text-slate-400 mt-2">¡Pregúntame cualquier cosa!</p>
+                            </div>
                         </div>
                     </div>
                 ) : (
                     history.map((msg, index) => (
-                        <div key={index} className={`flex items-start gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                             {msg.role === 'model' && <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1"><BrainCircuitIcon className="w-3 h-3 sm:w-5 sm:h-5 text-white"/></div>}
-                            <div className={`max-w-[85%] sm:max-w-xl p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200'}`}>
-                                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                        <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                             {msg.role === 'model' && (
+                                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                                     <BrainCircuitIcon className="w-4 h-4 text-white"/>
+                                 </div>
+                             )}
+                            <div className={`max-w-[85%] p-4 rounded-2xl text-base shadow-lg ${
+                                msg.role === 'user' 
+                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
+                                    : 'bg-slate-700/50 backdrop-blur-sm text-slate-200 border border-slate-600/30'
+                            }`}>
+                                <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                             </div>
                         </div>
                     ))
                 )}
                 {isLoading && history[history.length-1]?.role === 'user' && (
-                    <div className="flex items-start gap-2 sm:gap-3">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1"><BrainCircuitIcon className="w-3 h-3 sm:w-5 sm:h-5 text-white"/></div>
-                        <div className="max-w-[85%] sm:max-w-md p-3 rounded-lg bg-slate-800 text-slate-200">
-                           <LoaderCircleIcon className="w-5 h-5 animate-spin"/>
+                    <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                            <BrainCircuitIcon className="w-4 h-4 text-white"/>
+                        </div>
+                        <div className="max-w-[85%] p-4 rounded-2xl bg-slate-700/50 backdrop-blur-sm border border-slate-600/30 shadow-lg">
+                           <div className="flex items-center gap-2">
+                               <LoaderCircleIcon className="w-5 h-5 animate-spin text-blue-400"/>
+                               <span className="text-slate-300">Pensando...</span>
+                           </div>
                         </div>
                     </div>
                 )}
                  <div ref={chatEndRef} />
             </div>
-            <form onSubmit={onSubmit} className="mt-3 sm:mt-4 flex gap-2 flex-shrink-0">
+            <form onSubmit={onSubmit} className="mt-4 flex gap-3 flex-shrink-0">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={onInputChange}
                     placeholder="Pregúntale algo a la IA..."
-                    className="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="flex-grow bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none backdrop-blur-sm placeholder-slate-400"
                     disabled={isLoading}
                 />
-                <button type="submit" disabled={isLoading || !inputValue.trim()} className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold p-3 rounded-lg transition-colors flex-shrink-0">
+                <button 
+                    type="submit" 
+                    disabled={isLoading || !inputValue.trim()} 
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-semibold p-3 rounded-xl transition-all transform hover:scale-105 disabled:transform-none flex-shrink-0 shadow-lg"
+                >
                     <SendIcon className="w-5 h-5"/>
                 </button>
             </form>
