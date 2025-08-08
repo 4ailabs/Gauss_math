@@ -52,7 +52,7 @@ const App: React.FC = () => {
   const [isSpeechSupported, setIsSpeechSupported] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isApiKeyMissing, setIsApiKeyMissing] = useState<boolean>(false);
-  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help' | 'recent'>('search');
+  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help' | 'recent' | 'study'>('search');
   const [searchType, setSearchType] = useState<'research' | 'systematic' | 'papers'>('research');
   const [gatherType, setGatherType] = useState<'papers' | 'trials'>('papers');
   const [selectedSubject, setSelectedSubject] = useState<string>('Cálculo Diferencial e Integral');
@@ -67,7 +67,6 @@ const App: React.FC = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [studyProgress, setStudyProgress] = useState<StudyProgress[]>([]);
   const [studyReminders, setStudyReminders] = useState<StudyReminder[]>([]);
-  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help' | 'recent' | 'study'>('search');
   
   // Funciones para manejar el historial
   const saveToHistory = useCallback((processedData: ProcessedData) => {
