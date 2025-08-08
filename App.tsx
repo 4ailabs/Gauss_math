@@ -89,18 +89,36 @@ const App: React.FC = () => {
     localStorage.setItem('gaussmathmind_history', JSON.stringify(updatedHistory));
     
     // Crear flashcards automáticamente
-    createFlashcards(processedData, selectedSubject);
+    const newFlashcards: Flashcard[] = processedData.keyConcepts.map((concept, index) => ({
+      id: `${Date.now()}-${index}`,
+      concept: concept.concept,
+      definition: concept.definition,
+      topic: concept.concept.split(' ')[0],
+      subject: selectedSubject,
+      confidence: 0.5,
+      lastReviewed: Date.now(),
+      reviewCount: 0,
+      nextReview: Date.now() + (24 * 60 * 60 * 1000)
+    }));
+
+    setFlashcards(prev => [...prev, ...newFlashcards]);
+    localStorage.setItem('gaussmathmind_flashcards', JSON.stringify([...flashcards, ...newFlashcards]));
     
     // Crear recordatorio para repasar en 3 días
     const reviewDate = Date.now() + (3 * 24 * 60 * 60 * 1000);
-    addStudyReminder(
-      newHistoryItem.title,
-      selectedSubject,
-      reviewDate,
-      'medium',
-      `Repasar: ${newHistoryItem.title}`
-    );
-  }, [notes, selectedSubject, analysisHistory, createFlashcards, addStudyReminder]);
+    const newReminder: StudyReminder = {
+      id: Date.now().toString(),
+      topic: newHistoryItem.title,
+      subject: selectedSubject,
+      dueDate: reviewDate,
+      priority: 'medium',
+      completed: false,
+      description: `Repasar: ${newHistoryItem.title}`
+    };
+    
+    setStudyReminders(prev => [...prev, newReminder]);
+    localStorage.setItem('gaussmathmind_reminders', JSON.stringify([...studyReminders, newReminder]));
+  }, [notes, selectedSubject, analysisHistory, flashcards, studyReminders]);
 
   const loadHistoryFromStorage = useCallback(() => {
     try {
@@ -440,23 +458,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     }
   }, [notes, selectedSubject, saveToHistory]);
 
-  // Funciones para sistema de estudio
-  const createFlashcards = useCallback((processedData: ProcessedData, subject: string) => {
-    const newFlashcards: Flashcard[] = processedData.keyConcepts.map((concept, index) => ({
-      id: `${Date.now()}-${index}`,
-      concept: concept.concept,
-      definition: concept.definition,
-      topic: concept.concept.split(' ')[0], // Usar primera palabra como tema
-      subject: subject,
-      confidence: 0.5, // Confianza inicial media
-      lastReviewed: Date.now(),
-      reviewCount: 0,
-      nextReview: Date.now() + (24 * 60 * 60 * 1000) // Revisar en 24 horas
-    }));
 
-    setFlashcards(prev => [...prev, ...newFlashcards]);
-    localStorage.setItem('gaussmathmind_flashcards', JSON.stringify([...flashcards, ...newFlashcards]));
-  }, [flashcards]);
 
   const updateFlashcardConfidence = useCallback((flashcardId: string, confidence: number) => {
     setFlashcards(prev => prev.map(card => {
@@ -510,19 +512,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     });
   }, []);
 
-  const addStudyReminder = useCallback((topic: string, subject: string, dueDate: number, priority: 'low' | 'medium' | 'high', description: string) => {
-    const newReminder: StudyReminder = {
-      id: Date.now().toString(),
-      topic,
-      subject,
-      dueDate,
-      priority,
-      completed: false,
-      description
-    };
-    setStudyReminders(prev => [...prev, newReminder]);
-    localStorage.setItem('gaussmathmind_reminders', JSON.stringify([...studyReminders, newReminder]));
-  }, [studyReminders]);
+
 
   const completeReminder = useCallback((reminderId: string) => {
     setStudyReminders(prev => prev.map(r => 
