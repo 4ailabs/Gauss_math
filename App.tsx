@@ -59,6 +59,9 @@ const App: React.FC = () => {
   const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistory[]>([]);
   const [librarySearchTerm, setLibrarySearchTerm] = useState<string>('');
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<AnalysisHistory | null>(null);
+  const [sidebarChatMessage, setSidebarChatMessage] = useState('');
+  const [sidebarChatHistory, setSidebarChatHistory] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+  const [isSidebarChatLoading, setIsSidebarChatLoading] = useState(false);
   
   // Funciones para manejar el historial
   const saveToHistory = useCallback((processedData: ProcessedData) => {
@@ -535,6 +538,49 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         setError("Error al leer el archivo de imagen.");
         setIsScanning(false);
     };
+  };
+
+  const handleSidebarChat = async () => {
+    if (!sidebarChatMessage.trim() || !processedData) return;
+    
+    const userMessage = sidebarChatMessage.trim();
+    setSidebarChatMessage('');
+    
+    // Agregar mensaje del usuario al historial
+    const newUserMessage = { role: 'user' as const, content: userMessage };
+    setSidebarChatHistory(prev => [...prev, newUserMessage]);
+    
+    setIsSidebarChatLoading(true);
+    
+    try {
+      // Crear contexto con los datos del análisis
+      const context = `
+        Análisis actual: ${selectedSubject}
+        
+        Resumen: ${processedData.summary}
+        
+        Conceptos clave: ${processedData.keyConcepts.map(c => `${c.concept}: ${c.definition}`).join('\n')}
+        
+        Preguntas de práctica: ${processedData.quizQuestions.map(q => `${q.question}: ${q.answer}`).join('\n')}
+        
+        Problemas relacionados: ${processedData.relatedProblems.map(p => `${p.problem}: ${p.solution}`).join('\n')}
+        
+        Pregunta del usuario: ${userMessage}
+      `;
+      
+      const response = await getAssistantResponseStream(context, selectedSubject);
+      
+      // Agregar respuesta del asistente al historial
+      const assistantMessage = { role: 'assistant' as const, content: response };
+      setSidebarChatHistory(prev => [...prev, assistantMessage]);
+      
+    } catch (error) {
+      console.error('Error en chat del sidebar:', error);
+      const errorMessage = { role: 'assistant' as const, content: 'Lo siento, hubo un error al procesar tu pregunta. Inténtalo de nuevo.' };
+      setSidebarChatHistory(prev => [...prev, errorMessage]);
+    } finally {
+      setIsSidebarChatLoading(false);
+    }
   };
 
   const handleAssistantImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1216,27 +1262,82 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
               <div className="flex-1 p-6 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Chat</h3>
-                  <button className="text-gray-500 hover:text-gray-700">
-                    <div className="flex">
-                      <div className="w-3 h-3 border-t border-l border-gray-400 transform rotate-45"></div>
-                      <div className="w-3 h-3 border-b border-r border-gray-400 transform -rotate-45"></div>
-                    </div>
+                  <button 
+                    onClick={() => setSidebarChatHistory([])}
+                    className="text-gray-500 hover:text-gray-700"
+                    title="Limpiar chat"
+                  >
+                    <RefreshCwIcon className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
+                {/* Chat Messages */}
+                <div className="flex-1 bg-gray-50 rounded-lg p-3 mb-4 overflow-y-auto max-h-64">
+                  {sidebarChatHistory.length === 0 ? (
+                    <div className="text-center text-gray-500 text-sm">
+                      <p>Haz preguntas sobre el análisis</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {sidebarChatHistory.map((message, index) => (
+                        <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                            message.role === 'user' 
+                              ? 'bg-teal-600 text-white' 
+                              : 'bg-white text-gray-900 border border-gray-200'
+                          }`}>
+                            {message.content}
+                          </div>
+                        </div>
+                      ))}
+                      {isSidebarChatLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-white text-gray-900 border border-gray-200 px-3 py-2 rounded-lg text-sm">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Chat Input */}
+                <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Pregunta sobre el análisis o sus datos..."
-                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                    value={sidebarChatMessage}
+                    onChange={(e) => setSidebarChatMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSidebarChat()}
+                    placeholder="Pregunta sobre el análisis..."
+                    className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                    disabled={isSidebarChatLoading}
                   />
+                  <button 
+                    onClick={handleSidebarChat}
+                    disabled={!sidebarChatMessage.trim() || isSidebarChatLoading}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      !sidebarChatMessage.trim() || isSidebarChatLoading
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-teal-600 hover:bg-teal-700 text-white'
+                    }`}
+                  >
+                    {isSidebarChatLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <ChevronRightIcon className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
                 
                 <button 
                   onClick={() => setActiveView('chat')}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  className="w-full mt-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors"
                 >
-                  Ir al Chat
+                  Chat Completo
                 </button>
               </div>
             </div>
