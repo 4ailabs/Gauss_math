@@ -470,7 +470,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="h-screen bg-white text-gray-900 flex flex-col overflow-hidden">
       {/* Top Navigation Bar */}
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -523,7 +523,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 overflow-y-auto">
         {activeView === 'search' && (
           <div className="space-y-8">
             {/* Search Type Selectors */}
@@ -774,7 +774,7 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         )}
 
         {activeView === 'results' && processedData && (
-          <div className="space-y-6">
+          <div className="space-y-6 pb-8">
             {/* Progress Indicator */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
