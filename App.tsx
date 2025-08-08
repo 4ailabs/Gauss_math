@@ -107,6 +107,158 @@ const App: React.FC = () => {
     );
   }, [analysisHistory, librarySearchTerm]);
 
+  // Función para compartir análisis
+  const handleShare = async () => {
+    if (!processedData) return;
+    
+    try {
+      const shareData = {
+        title: `Análisis de ${selectedSubject} - Gauss∑ AI`,
+        text: `Análisis de apuntes de ${selectedSubject} generado con Gauss∑ AI`,
+        url: window.location.href
+      };
+      
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copiar al portapapeles
+        const content = `
+Análisis de ${selectedSubject}
+Generado con Gauss∑ AI
+
+RESUMEN:
+${processedData.summary}
+
+CONCEPTOS CLAVE:
+${processedData.keyConcepts.map((concept, index) => 
+  `${index + 1}. ${concept.concept}: ${concept.definition}`
+).join('\n')}
+
+PREGUNTAS DE PRÁCTICA:
+${processedData.quizQuestions.map((question, index) => 
+  `${index + 1}. ${question.question}\n   Respuesta: ${question.answer}`
+).join('\n')}
+
+PROBLEMAS RELACIONADOS:
+${processedData.relatedProblems.map((problem, index) => 
+  `${index + 1}. ${problem.problem}\n   Solución: ${problem.solution}`
+).join('\n')}
+        `.trim();
+        
+        await navigator.clipboard.writeText(content);
+        alert('Análisis copiado al portapapeles');
+      }
+    } catch (error) {
+      console.error('Error al compartir:', error);
+      alert('Error al compartir el análisis');
+    }
+  };
+
+  // Función para descargar análisis como HTML
+  const handleDownload = async () => {
+    if (!processedData) return;
+    
+    try {
+      setIsExporting(true);
+      
+      // Crear contenido HTML para el archivo
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Análisis de ${selectedSubject}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px; }
+            h2 { color: #0f766e; margin-top: 30px; }
+            .concept, .question, .problem { 
+              background: #f8fafc; 
+              border: 1px solid #e2e8f0; 
+              border-radius: 8px; 
+              padding: 15px; 
+              margin: 10px 0; 
+            }
+            .number { 
+              background: #0f766e; 
+              color: white; 
+              border-radius: 50%; 
+              width: 24px; 
+              height: 24px; 
+              display: inline-flex; 
+              align-items: center; 
+              justify-content: center; 
+              font-size: 12px; 
+              font-weight: bold; 
+              margin-right: 10px; 
+            }
+            .type { 
+              background: #ccfbf1; 
+              color: #0f766e; 
+              padding: 4px 8px; 
+              border-radius: 12px; 
+              font-size: 12px; 
+              font-weight: bold; 
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Análisis de ${selectedSubject}</h1>
+          <p><strong>Generado con Gauss∑ AI</strong></p>
+          
+          <h2>Resumen</h2>
+          <p>${processedData.summary}</p>
+          
+          <h2>Conceptos Clave</h2>
+          ${processedData.keyConcepts.map((concept, index) => `
+            <div class="concept">
+              <span class="number">${index + 1}</span>
+              <strong>${concept.concept}</strong><br>
+              ${concept.definition}
+            </div>
+          `).join('')}
+          
+          <h2>Preguntas de Práctica</h2>
+          ${processedData.quizQuestions.map((question, index) => `
+            <div class="question">
+              <span class="number">${index + 1}</span>
+              <strong>${question.question}</strong><br>
+              <span class="type">${question.type}</span><br>
+              <strong>Respuesta:</strong> ${question.answer}
+            </div>
+          `).join('')}
+          
+          <h2>Problemas Relacionados</h2>
+          ${processedData.relatedProblems.map((problem, index) => `
+            <div class="problem">
+              <span class="number">${index + 1}</span>
+              <strong>${problem.problem}</strong><br>
+              <strong>Solución:</strong> ${problem.solution}
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `;
+      
+      // Crear blob y descargar
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `analisis-${selectedSubject.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Error al descargar:', error);
+      alert('Error al descargar el análisis');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const imageInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const notesOnRecordStartRef = useRef<string>('');
@@ -791,9 +943,28 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 </button>
               </div>
               <div className="flex items-center gap-2">
-                <button className="text-sm text-gray-500 hover:text-gray-700">Compartir</button>
-                <button className="text-sm text-gray-500 hover:text-gray-700">
-                  <DownloadIcon className="w-4 h-4" />
+                <button 
+                  onClick={handleShare}
+                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  title="Compartir análisis"
+                >
+                  Compartir
+                </button>
+                <button 
+                  onClick={handleDownload}
+                  disabled={isExporting}
+                  className={`text-sm transition-colors ${
+                    isExporting 
+                      ? 'text-gray-400 cursor-not-allowed' 
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                  title={isExporting ? 'Descargando...' : 'Descargar análisis'}
+                >
+                  {isExporting ? (
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <DownloadIcon className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
