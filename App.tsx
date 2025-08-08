@@ -961,199 +961,304 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
         )}
 
         {activeView === 'results' && processedData && (
-          <div className="space-y-6 pb-8">
-            {/* Progress Indicator */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                </div>
-                <span className="text-sm font-medium text-gray-900">Análisis de Apuntes</span>
-                <button className="text-sm text-gray-500 hover:text-gray-700">
-                  <ChevronDownIcon className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={handleShare}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                  title="Compartir análisis"
-                >
-                  Compartir
-                </button>
-                <button 
-                  onClick={handleDownload}
-                  disabled={isExporting}
-                  className={`text-sm transition-colors ${
-                    isExporting 
-                      ? 'text-gray-400 cursor-not-allowed' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                  title={isExporting ? 'Descargando...' : 'Descargar análisis'}
-                >
-                  {isExporting ? (
-                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <DownloadIcon className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Research Topic */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">{selectedSubject}</h2>
-                <div className="flex items-center gap-2">
-                  <UploadIcon className="w-4 h-4 text-gray-500" />
-                  <ChevronDownIcon className="w-4 h-4 text-gray-500" />
-                </div>
-              </div>
-
-              {/* Summary Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen</h3>
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                  <p className="text-gray-800 leading-relaxed">{processedData.summary}</p>
-                </div>
-              </div>
-
-              {/* Key Concepts Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Conceptos Clave</h3>
-                <div className="space-y-3">
-                  {processedData.keyConcepts.map((concept, index) => (
-                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs font-bold text-white">{index + 1}</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 mb-2">{concept.concept}</h4>
-                          <p className="text-gray-700 text-sm leading-relaxed">{concept.definition}</p>
-                        </div>
-                      </div>
+          <div className="flex h-full">
+            {/* Main Content Area */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Header with Report Info */}
+              <div className="border-b border-gray-200 bg-white p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
                     </div>
-                  ))}
+                    <span className="text-sm font-medium text-gray-900">Análisis de Apuntes</span>
+                    <button className="text-sm text-gray-500 hover:text-gray-700">
+                      <ChevronDownIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={handleShare}
+                      className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                      title="Compartir análisis"
+                    >
+                      Compartir
+                    </button>
+                    <button 
+                      onClick={handleDownload}
+                      disabled={isExporting}
+                      className={`text-sm transition-colors ${
+                        isExporting 
+                          ? 'text-gray-400 cursor-not-allowed' 
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      title={isExporting ? 'Descargando...' : 'Descargar análisis'}
+                    >
+                      {isExporting ? (
+                        <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <DownloadIcon className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Document Title */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">{new Date().toLocaleDateString('es-ES', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    }).toUpperCase()}</p>
+                    <h1 className="text-3xl font-bold text-teal-600">{selectedSubject}</h1>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DownloadIcon className="w-4 h-4 text-gray-500" />
+                    <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+                  </div>
                 </div>
               </div>
 
-              {/* Quiz Questions Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Preguntas de Práctica</h3>
-                <div className="space-y-4">
-                  {processedData.quizQuestions.map((question, index) => (
-                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs font-bold text-white">{index + 1}</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 mb-2">{question.question}</h4>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-full font-medium">
-                              {question.type}
-                            </span>
+              {/* Report Content */}
+              <div className="p-8 space-y-8">
+                {/* ABSTRACT Section */}
+                <div>
+                  <h2 className="text-lg font-bold text-teal-700 mb-4">RESUMEN</h2>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <p className="text-gray-800 leading-relaxed text-sm">{processedData.summary}</p>
+                  </div>
+                </div>
+
+                {/* METHODS Section */}
+                <div>
+                  <h2 className="text-lg font-bold text-teal-700 mb-4 flex items-center gap-2">
+                    METODOLOGÍA
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </h2>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <p className="text-gray-800 leading-relaxed text-sm">
+                      Analizamos los apuntes proporcionados usando inteligencia artificial avanzada. 
+                      Se identificaron {processedData.keyConcepts.length} conceptos clave, 
+                      se generaron {processedData.quizQuestions.length} preguntas de práctica, 
+                      y se crearon {processedData.relatedProblems.length} problemas relacionados. 
+                      Cada elemento fue revisado para asegurar precisión matemática y relevancia educativa.
+                    </p>
+                  </div>
+                </div>
+
+                {/* RESULTS Section */}
+                <div>
+                  <h2 className="text-lg font-bold text-teal-700 mb-4">RESULTADOS</h2>
+                  
+                  {/* Characteristics Table */}
+                  <div className="mb-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Características de los Conceptos Identificados</h3>
+                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                      <div className="bg-gray-50 border-b border-gray-200">
+                        <div className="grid grid-cols-4 gap-4 p-4 text-sm font-medium text-gray-700">
+                          <div className="flex items-center gap-2">
+                            Concepto
+                            <div className="flex flex-col">
+                              <div className="w-3 h-3 border-b border-l border-gray-400"></div>
+                              <div className="w-3 h-3 border-t border-r border-gray-400"></div>
+                            </div>
                           </div>
-                          <p className="text-gray-700 text-sm leading-relaxed">{question.answer}</p>
+                          <div className="flex items-center gap-2">
+                            Tipo
+                            <div className="flex flex-col">
+                              <div className="w-3 h-3 border-b border-l border-gray-400"></div>
+                              <div className="w-3 h-3 border-t border-r border-gray-400"></div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            Dificultad
+                            <div className="flex flex-col">
+                              <div className="w-3 h-3 border-b border-l border-gray-400"></div>
+                              <div className="w-3 h-3 border-t border-r border-gray-400"></div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            Aplicaciones
+                            <div className="flex flex-col">
+                              <div className="w-3 h-3 border-b border-l border-gray-400"></div>
+                              <div className="w-3 h-3 border-t border-r border-gray-400"></div>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      <div className="divide-y divide-gray-200">
+                        {processedData.keyConcepts.map((concept, index) => (
+                          <div key={index} className="grid grid-cols-4 gap-4 p-4 text-sm">
+                            <div className="font-medium text-gray-900">{concept.concept}</div>
+                            <div className="text-gray-700">Teoría</div>
+                            <div className="text-gray-700">
+                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                                Intermedia
+                              </span>
+                            </div>
+                            <div className="text-gray-700">Matemáticas, Física</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              {/* Related Problems Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Problemas Relacionados</h3>
-                <div className="space-y-4">
-                  {processedData.relatedProblems.map((problem, index) => (
-                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs font-bold text-white">{index + 1}</span>
+                  {/* Key Concepts */}
+                  <div className="mb-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Conceptos Clave Identificados</h3>
+                    <div className="space-y-3">
+                      {processedData.keyConcepts.map((concept, index) => (
+                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900 mb-2">{concept.concept}</h4>
+                              <p className="text-gray-700 text-sm leading-relaxed">{concept.definition}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 mb-2">{problem.problem}</h4>
-                          <p className="text-gray-700 text-sm leading-relaxed">{problem.solution}</p>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Practice Questions */}
+                  <div className="mb-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Preguntas de Práctica Generadas</h3>
+                    <div className="space-y-3">
+                      {processedData.quizQuestions.map((question, index) => (
+                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900 mb-2">{question.question}</h4>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-full font-medium">
+                                  {question.type}
+                                </span>
+                              </div>
+                              <p className="text-gray-700 text-sm leading-relaxed">{question.answer}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Related Problems */}
+                  <div>
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Problemas Relacionados</h3>
+                    <div className="space-y-3">
+                      {processedData.relatedProblems.map((problem, index) => (
+                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900 mb-2">{problem.problem}</h4>
+                              <p className="text-gray-700 text-sm leading-relaxed">{problem.solution}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Report Status Sidebar */}
-            <div className="w-80 bg-white border-l border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Estado del Análisis</h3>
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center">
-                    <CheckIcon className="w-4 h-4 text-white" />
+            {/* Right Sidebar */}
+            <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+              {/* Report Status */}
+              <div className="p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Reporte</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-900">Estado</span>
+                    <button className="text-gray-500 hover:text-gray-700">
+                      <div className="flex">
+                        <div className="w-3 h-3 border-t border-l border-gray-400 transform rotate-45"></div>
+                        <div className="w-3 h-3 border-b border-r border-gray-400 transform -rotate-45"></div>
+                      </div>
+                    </button>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">Procesar contenido</p>
-                    <p className="text-sm text-gray-600">Análisis de notas completado</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center">
-                    <CheckIcon className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">Extraer conceptos</p>
-                    <p className="text-sm text-gray-600">Conceptos clave identificados</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center">
-                    <CheckIcon className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">Generar preguntas</p>
-                    <p className="text-sm text-gray-600">Preguntas de práctica creadas</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center">
-                    <CheckIcon className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">Crear problemas</p>
-                    <p className="text-sm text-gray-600">Problemas relacionados generados</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                        <CheckIcon className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Procesar contenido</p>
+                        <p className="text-xs text-gray-600">Análisis completado</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                        <CheckIcon className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Extraer conceptos</p>
+                        <p className="text-xs text-gray-600">{processedData.keyConcepts.length} conceptos</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                        <CheckIcon className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Generar preguntas</p>
+                        <p className="text-xs text-gray-600">{processedData.quizQuestions.length} preguntas</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                        <CheckIcon className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Crear problemas</p>
+                        <p className="text-xs text-gray-600">{processedData.relatedProblems.length} problemas</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Action Buttons */}
-              <div className="mt-8 space-y-3">
-                <button 
-                  onClick={() => setActiveView('search')}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Nuevo Análisis
-                </button>
+
+              {/* Chat Section */}
+              <div className="flex-1 p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Chat</h3>
+                  <button className="text-gray-500 hover:text-gray-700">
+                    <div className="flex">
+                      <div className="w-3 h-3 border-t border-l border-gray-400 transform rotate-45"></div>
+                      <div className="w-3 h-3 border-b border-r border-gray-400 transform -rotate-45"></div>
+                    </div>
+                  </button>
+                </div>
+                
+                <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Pregunta sobre el análisis o sus datos..."
+                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                  />
+                </div>
+                
                 <button 
                   onClick={() => setActiveView('chat')}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors"
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
-                  Hacer Preguntas
+                  Ir al Chat
                 </button>
               </div>
-            </div>
-            {/* Back to Search Button */}
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => setActiveView('search')}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                ← Nueva Búsqueda
-              </button>
             </div>
           </div>
         )}
