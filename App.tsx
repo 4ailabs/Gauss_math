@@ -1220,11 +1220,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     {assistantHistory.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
                         <div className="text-center space-y-6 max-w-md">
-                          <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                            <BrainCircuitIcon className="w-8 h-8 text-white"/>
-                          </div>
                           <div className="space-y-3">
-                            <h3 className="text-xl font-bold text-gray-900">¡Hola! Soy tu asistente matemático</h3>
+                            <h3 className="text-2xl font-bold text-gray-900">¡Hola! Soy tu asistente matemático</h3>
                             <p className="text-gray-600 text-sm leading-relaxed">
                               Puedo ayudarte a entender conceptos, resolver problemas y explicar temas matemáticos de manera clara y detallada.
                             </p>
