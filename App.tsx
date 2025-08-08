@@ -957,12 +957,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     {assistantHistory.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
                         <div className="text-center space-y-3">
-                          <div className="w-12 h-12 mx-auto bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
-                            <BrainCircuitIcon className="w-6 h-6 text-white"/>
-                          </div>
                           <div>
-                            <p className="text-base font-semibold text-gray-900 mb-1">Pregúntame sobre</p>
-                            <p className="text-lg font-bold text-teal-600">{selectedSubject}</p>
+                            <p className="text-base font-semibold text-gray-900 mb-1">Pregúntame cualquier cosa</p>
                             <p className="text-gray-600 mt-1 text-sm">¡Puedo ayudarte a entender conceptos, resolver problemas y explicar temas matemáticos!</p>
                           </div>
                         </div>
