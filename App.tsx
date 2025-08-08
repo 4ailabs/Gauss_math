@@ -349,48 +349,10 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       setIsSpeechSupported(true);
-      recognitionRef.current = new SpeechRecognition();
-      const recognition = recognitionRef.current;
-      recognition.continuous = true;
-      recognition.lang = 'es-ES';
-      recognition.interimResults = true;
-
-      recognition.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript + ' ';
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-        if (finalTranscript) {
-          notesOnRecordStartRef.current += finalTranscript;
-        }
-        setNotes((notesOnRecordStartRef.current + interimTranscript).trim());
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognition.onerror = (event: any) => {
-        let errorMessage = `Error de reconocimiento de voz: ${event.error}`;
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-          errorMessage = 'Permiso para el micrófono denegado. Por favor, habilítalo en los ajustes de tu navegador.';
-        } else if (event.error === 'no-speech') {
-          errorMessage = 'No se detectó voz. Intenta hablar más claro.';
-        }
-        setError(errorMessage);
-        setIsRecording(false);
-      };
+      // No inicializar SpeechRecognition aquí, solo verificar que esté disponible
     } else {
       setIsSpeechSupported(false);
     }
-    return () => {
-      recognitionRef.current?.stop();
-    };
   }, []);
 
   useEffect(() => { try { localStorage.setItem('gaussmathmind_notes', notes); } catch(e) { console.error(e); }}, [notes]);
@@ -468,9 +430,52 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
   const handleToggleRecording = () => {
     if (!isSpeechSupported || isLoading || isScanning || isExporting) return;
+    
     if (isRecording) {
       recognitionRef.current?.stop();
+      setIsRecording(false);
     } else {
+      // Inicializar SpeechRecognition solo cuando el usuario quiera grabar
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!recognitionRef.current && SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        const recognition = recognitionRef.current;
+        recognition.continuous = true;
+        recognition.lang = 'es-ES';
+        recognition.interimResults = true;
+
+        recognition.onresult = (event: any) => {
+          let interimTranscript = '';
+          let finalTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript + ' ';
+            } else {
+              interimTranscript += event.results[i][0].transcript;
+            }
+          }
+          if (finalTranscript) {
+            notesOnRecordStartRef.current += finalTranscript;
+          }
+          setNotes((notesOnRecordStartRef.current + interimTranscript).trim());
+        };
+
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+
+        recognition.onerror = (event: any) => {
+          let errorMessage = `Error de reconocimiento de voz: ${event.error}`;
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMessage = 'Permiso para el micrófono denegado. Por favor, habilítalo en los ajustes de tu navegador.';
+          } else if (event.error === 'no-speech') {
+            errorMessage = 'No se detectó voz. Intenta hablar más claro.';
+          }
+          setError(errorMessage);
+          setIsRecording(false);
+        };
+      }
+      
       notesOnRecordStartRef.current = notes ? notes + ' ' : '';
       recognitionRef.current?.start();
       setIsRecording(true);
