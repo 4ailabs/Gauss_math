@@ -52,7 +52,7 @@ const App: React.FC = () => {
   const [isSpeechSupported, setIsSpeechSupported] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isApiKeyMissing, setIsApiKeyMissing] = useState<boolean>(false);
-  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help'>('search');
+  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help' | 'recent'>('search');
   const [searchType, setSearchType] = useState<'research' | 'systematic' | 'papers'>('research');
   const [gatherType, setGatherType] = useState<'papers' | 'trials'>('papers');
   const [selectedSubject, setSelectedSubject] = useState<string>('Cálculo Diferencial e Integral');
@@ -726,7 +726,16 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                 >
                   Búsqueda
                 </a>
-                <a href="#" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Recientes</a>
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveView('recent');
+                  }}
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+                >
+                  Recientes
+                </a>
                 <a 
                   href="#" 
                   onClick={(e) => {
@@ -1356,6 +1365,27 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
             />
             
             <div className="w-full h-full flex flex-col px-2 sm:px-4">
+              {/* Navigation Header */}
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={() => setActiveView('search')}
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <ChevronLeftIcon className="w-5 h-5" />
+                  <span className="text-sm font-medium">Volver</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    setAssistantHistory([]);
+                  }}
+                  title="Reset conversation"
+                  className="text-gray-500 hover:text-teal-600 transition-colors disabled:opacity-50 p-2 hover:bg-gray-100 rounded-lg"
+                  disabled={isAssistantLoading}
+                >
+                  <RefreshCwIcon className="w-5 h-5"/>
+                </button>
+              </div>
+              
               <div className="flex justify-between items-center mb-2 sm:mb-4">
                 <div className="text-center flex-1">
                   <h2 className="text-base sm:text-2xl font-bold text-gray-900 mb-1 flex items-center justify-center gap-2 sm:gap-3">
@@ -1383,17 +1413,6 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => {
-                    // resetAssistantChat(selectedSubject); // This line was removed as per the new_code
-                    setAssistantHistory([]);
-                  }}
-                  title="Reset conversation"
-                  className="text-gray-500 hover:text-teal-600 transition-colors disabled:opacity-50 p-1 sm:p-2 hover:bg-gray-100 rounded-lg"
-                  disabled={isAssistantLoading}
-                >
-                  <RefreshCwIcon className="w-3 h-3 sm:w-5 sm:h-5"/>
-                </button>
               </div>
               
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm flex-grow p-2 sm:p-4 mb-4">
@@ -2041,6 +2060,88 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
               >
                 ← Volver a Búsqueda
               </button>
+            </div>
+          </div>
+        )}
+
+        {activeView === 'recent' && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Reciente</h1>
+                <p className="text-gray-600">Tus análisis más recientes</p>
+              </div>
+              <button
+                onClick={() => setActiveView('search')}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Nuevo Análisis
+              </button>
+            </div>
+
+            {/* Recent Items */}
+            <div className="space-y-4">
+              {analysisHistory.slice(0, 10).map((item) => (
+                <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
+                        <CheckIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                        <p className="text-sm text-gray-600">{item.subject}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-500">
+                        {new Date(item.timestamp).toLocaleDateString('es-ES', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSelectedHistoryItem(item);
+                          setProcessedData(item.processedData);
+                          setNotes(item.notes);
+                          setSelectedSubject(item.subject);
+                          setActiveView('results');
+                        }}
+                        className="text-teal-600 hover:text-teal-700 font-medium text-sm"
+                      >
+                        Ver
+                      </button>
+                      <button
+                        onClick={() => deleteHistoryItem(item.id)}
+                        className="text-gray-400 hover:text-red-600 transition-colors"
+                        title="Eliminar"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {analysisHistory.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpenIcon className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay análisis recientes</h3>
+                  <p className="text-gray-600 mb-4">Comienza procesando tus primeros apuntes</p>
+                  <button
+                    onClick={() => setActiveView('search')}
+                    className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Crear Primer Análisis
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
