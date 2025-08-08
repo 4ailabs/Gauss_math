@@ -1,21 +1,31 @@
 export interface ProcessedData {
   summary: string;
-  keyConcepts: {
+  keyConcepts: Array<{
     concept: string;
     definition: string;
-  }[];
-  quizQuestions: {
+  }>;
+  quizQuestions: Array<{
     question: string;
     answer: string;
-    type: 'definition' | 'problem' | 'theorem';
-  }[];
-  relatedProblems: {
+    type: string;
+  }>;
+  relatedProblems: Array<{
     problem: string;
     solution: string;
-  }[];
+  }>;
 }
 
 export interface ChatMessage {
   role: 'user' | 'model';
   content: string;
+}
+
+export interface AnalysisHistory {
+  id: string;
+  title: string;
+  subject: string;
+  notes: string;
+  processedData: ProcessedData;
+  timestamp: number;
+  tags?: string[];
 }

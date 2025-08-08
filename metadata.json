@@ -1,10 +1,6 @@
 {
-  "name": "Gauss MathMind: IA",
-  "description": "Un asistente inteligente para estudiantes avanzados de matemáticas para tomar apuntes, procesarlos con IA y facilitar un estudio eficiente. Está diseñado para estudiantes que también trabajan y necesitan maximizar su tiempo de estudio.",
-  "author": "4ailabs",
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
-  ],
-  "prompt": ""
+  "name": "Gauss∑ AI",
+  "description": "Asistente de IA para procesamiento inteligente de apuntes matemáticos",
+  "version": "1.0.0",
+  "author": "Gauss∑ AI Team"
 }

@@ -21,7 +21,15 @@ import {
   Zap,
   Star,
   Copy,
-  X
+  X,
+  Search,
+  Upload,
+  HelpCircle,
+  Bell,
+  ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
+  Check
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -51,3 +59,13 @@ export const ZapIcon: React.FC<IconProps> = (props) => <Zap {...props} />;
 export const StarIcon: React.FC<IconProps> = (props) => <Star {...props} />;
 export const CopyIcon: React.FC<IconProps> = (props) => <Copy {...props} />;
 export const XIcon: React.FC<IconProps> = (props) => <X {...props} />;
+
+// Iconos para la interfaz de Elicit
+export const SearchIcon: React.FC<IconProps> = (props) => <Search {...props} />;
+export const UploadIcon: React.FC<IconProps> = (props) => <Upload {...props} />;
+export const HelpCircleIcon: React.FC<IconProps> = (props) => <HelpCircle {...props} />;
+export const BellIcon: React.FC<IconProps> = (props) => <Bell {...props} />;
+export const ChevronDownIcon: React.FC<IconProps> = (props) => <ChevronDown {...props} />;
+export const ChevronRightIcon: React.FC<IconProps> = (props) => <ChevronRight {...props} />;
+export const MoreHorizontalIcon: React.FC<IconProps> = (props) => <MoreHorizontal {...props} />;
+export const CheckIcon: React.FC<IconProps> = (props) => <Check {...props} />;

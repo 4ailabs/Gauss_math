@@ -1,120 +1,155 @@
-# Gauss∑ AI
+# Gauss∑ AI - Research Assistant
 
-**Gauss∑ AI** es una aplicación web avanzada que utiliza inteligencia artificial para transformar la forma en que los estudiantes procesan y comprenden apuntes de matemáticas avanzadas.
+Una aplicación de investigación asistida por IA que replica la interfaz y funcionalidad de Elicit, diseñada para procesar y analizar contenido académico con un enfoque en matemáticas avanzadas.
 
-## 🚀 Características Principales
+## 🎯 Características Principales
 
-- **📝 Procesamiento Inteligente**: IA que analiza y estructura apuntes complejos
-- **🎯 Conceptos Clave**: Extracción automática de puntos importantes
-- **❓ Generación de Preguntas**: Quiz interactivo para evaluar comprensión
-- **📄 Exportación**: Generación de documentos para estudio offline
-- **🤖 Asistente IA**: Chat inteligente para resolver dudas
-- **📱 Diseño Responsivo**: Optimizado para móviles y escritorio
-- **📸 Escaneo de Imágenes**: OCR para extraer texto de fotos
-- **🎤 Reconocimiento de Voz**: Dictado por voz para apuntes
+### 🔍 **Interfaz de Elicit**
+- **Diseño moderno y limpio** inspirado en Elicit
+- **Navegación superior** con logo, enlaces y acciones de usuario
+- **Tarjetas y botones** con estilo moderno y responsive
+- **Tema claro** con tipografía legible y espaciado generoso
 
-## 🚀 Tecnologías
+### 📊 **Tipos de Investigación**
+- **Research Report**: Análisis completo de contenido
+- **Systematic Review**: Revisión sistemática (PRO)
+- **Find Papers**: Búsqueda de papers académicos
 
-- **Frontend**: React 19 + TypeScript + Vite
-- **UI**: Tailwind CSS
-- **IA**: Google Gemini 2.5 Flash
-- **Matemáticas**: KaTeX
-- **Exportación**: jsPDF + html2canvas
+### 🧠 **Procesamiento Inteligente**
+- **Análisis de contenido** con IA avanzada
+- **Extracción de conceptos clave** automática
+- **Generación de preguntas de práctica** personalizadas
+- **Identificación de problemas relacionados**
 
-## 📦 Instalación Local
+### 💬 **Chat Interactivo**
+- **Conversación con el reporte** generado
+- **Soporte para imágenes** en el chat
+- **Respuestas en tiempo real** con streaming
+- **Historial de conversación** persistente
 
-### Prerrequisitos
-- Node.js 18+ 
-- API Key de Google Gemini
+### 📱 **Funcionalidades Avanzadas**
+- **Escaneo de imágenes** para extraer texto
+- **Grabación de voz** para entrada de audio
+- **Exportación de resultados** en múltiples formatos
+- **Sistema de materias** personalizable
 
-### Pasos
+## 🚀 Tecnologías Utilizadas
 
-1. **Clona el repositorio**
+- **React 18** con TypeScript
+- **Tailwind CSS** para estilos modernos
+- **Google Gemini AI** para procesamiento de IA
+- **Lucide React** para iconografía
+- **Vite** para desarrollo rápido
+
+## 📦 Instalación
+
+1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/4ailabs/gauss-sum-ai.git
-   cd gauss-sum-ai
+   git clone https://github.com/tu-usuario/Gauss-MathMind-IA.git
+   cd Gauss-MathMind-IA
    ```
 
-2. **Instala dependencias**
+2. **Instalar dependencias**
    ```bash
    npm install
    ```
 
-3. **Configura las variables de entorno**
-   ```bash
-   cp env.example .env.local
-   ```
-   Edita `.env.local` y agrega tu API key de Gemini:
-   ```
+3. **Configurar API Key**
+   - Obtén tu API key de [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Crea un archivo `.env` en la raíz del proyecto:
+   ```env
    GEMINI_API_KEY=tu_api_key_aqui
    ```
 
-4. **Ejecuta en desarrollo**
+4. **Ejecutar en desarrollo**
    ```bash
    npm run dev
    ```
 
-5. **Abre en tu navegador**
-   ```
-   http://localhost:5173
-   ```
+## 🎨 Características de la Interfaz
 
-## 🌐 Deployment en Vercel
+### **Barra de Navegación Superior**
+- Logo "Gauss∑ AI" prominente
+- Enlaces de navegación: Recent, Library, Alerts
+- Botón de Upgrade con badge PRO
+- Acciones de usuario: Help, Profile
 
-### Opción 1: Deploy Automático (Recomendado)
+### **Área de Búsqueda Principal**
+- Selectores de tipo de investigación
+- Campo de entrada principal con botón de búsqueda
+- Sugerencias de refinamiento de consulta
+- Opciones de recopilación de datos
 
-1. **Conecta tu repositorio a Vercel**
-   - Ve a [vercel.com](https://vercel.com)
-   - Importa tu repositorio de GitHub
-   - Vercel detectará automáticamente la configuración
+### **Vista de Resultados**
+- Indicador de progreso visual
+- Resumen generado por IA
+- Conceptos clave identificados
+- Preguntas de práctica generadas
+- Problemas relacionados
 
-2. **Configura la variable de entorno**
-   - En el dashboard de Vercel, ve a Settings > Environment Variables
-   - Agrega `GEMINI_API_KEY` con tu API key de Gemini
-
-3. **¡Listo!** Tu app se desplegará automáticamente
-
-### Opción 2: Deploy Manual
-
-1. **Instala Vercel CLI**
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Deploy**
-   ```bash
-   vercel
-   ```
-
-3. **Configura variables de entorno**
-   ```bash
-   vercel env add GEMINI_API_KEY
-   ```
+### **Chat Interactivo**
+- Interfaz de chat moderna
+- Soporte para imágenes
+- Respuestas en streaming
+- Historial persistente
 
 ## 🔧 Configuración
 
-### Obtener API Key de Gemini
+### **Variables de Entorno**
+```env
+GEMINI_API_KEY=tu_api_key_de_google_ai
+```
 
-1. Ve a [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Crea una nueva API key
-3. Copia la key y configúrala en las variables de entorno
-
-### Materias Soportadas
-
-La aplicación está configurada para:
-- Investigación en Matemáticas Aplicadas y Computación
-- Administración de Bases de Datos  
-- Elementos de Finanzas e Inversiones
-
-Puedes modificar las materias en `App.tsx` línea 50.
+### **Materias Disponibles**
+- **Investigación en Matemáticas Aplicadas y Computación**: Análisis de algoritmos, optimización, machine learning
+- **Administración de Bases de Datos**: Diseño de bases de datos, SQL, gestión de datos
+- **Elementos de Finanzas e Inversiones**: Matemáticas financieras, análisis de inversiones, modelos de riesgo
 
 ## 📱 Uso
 
-1. **Editor**: Escribe o pega tus apuntes matemáticos
-2. **IA**: Haz preguntas específicas sobre la materia
-3. **Procesamiento**: Analiza automáticamente tus apuntes
-4. **Quiz**: Evalúa tu comprensión con preguntas interactivas
-5. **Exportación**: Genera documentos para estudio offline
+### **1. Iniciar Investigación**
+- Selecciona el tipo de investigación
+- Escribe tu consulta en el campo principal
+- Haz clic en el botón de búsqueda
+
+### **2. Procesar Contenido**
+- La IA analiza automáticamente el contenido
+- Extrae conceptos clave y genera preguntas
+- Identifica problemas relacionados
+
+### **3. Explorar Resultados**
+- Revisa el resumen generado
+- Estudia los conceptos clave
+- Practica con las preguntas generadas
+
+### **4. Chatear con el Reporte**
+- Haz preguntas específicas sobre el contenido
+- Adjunta imágenes para análisis adicional
+- Recibe respuestas detalladas en tiempo real
+
+## 🎯 Casos de Uso
+
+### **Estudiantes**
+- Procesar apuntes de matemáticas
+- Generar preguntas de práctica
+- Obtener explicaciones personalizadas
+
+### **Investigadores**
+- Analizar papers académicos
+- Extraer conceptos clave
+- Identificar problemas relacionados
+
+### **Educadores**
+- Crear contenido educativo
+- Generar ejercicios automáticamente
+- Proporcionar feedback personalizado
+
+## 🔒 Privacidad y Seguridad
+
+- **Datos locales**: El contenido se procesa localmente
+- **API segura**: Conexión segura con Google AI
+- **Sin almacenamiento**: No se guardan datos sensibles
+- **Control total**: Tú controlas tu información
 
 ## 🤝 Contribuir
 
@@ -126,12 +161,22 @@ Puedes modificar las materias en `App.tsx` línea 50.
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 👨‍💻 Autor
+## 🙏 Agradecimientos
 
-**4ailabs** - [GitHub](https://github.com/4ailabs)
+- **Google AI** por proporcionar la API de Gemini
+- **Elicit** por la inspiración en el diseño de la interfaz
+- **Lucide** por los iconos hermosos
+- **Tailwind CSS** por el framework de estilos
+
+## 📞 Soporte
+
+Si tienes preguntas o necesitas ayuda:
+- Abre un issue en GitHub
+- Contacta al equipo de desarrollo
+- Revisa la documentación de la API
 
 ---
 
-⭐ Si te gusta este proyecto, ¡dale una estrella en GitHub!
+**Desarrollado con ❤️ por 4ailabs**

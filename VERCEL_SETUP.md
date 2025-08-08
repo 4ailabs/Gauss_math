@@ -1,4 +1,4 @@
-# Configuración de Vercel para Gauss MathMind IA
+# Configuración de Vercel para Gauss∑ AI
 
 ## 🔑 Configuración de la API Key de Gemini
 
