@@ -52,7 +52,7 @@ const App: React.FC = () => {
   const [isSpeechSupported, setIsSpeechSupported] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isApiKeyMissing, setIsApiKeyMissing] = useState<boolean>(false);
-  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library'>('search');
+  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help'>('search');
   const [searchType, setSearchType] = useState<'research' | 'systematic' | 'papers'>('research');
   const [gatherType, setGatherType] = useState<'papers' | 'trials'>('papers');
   const [selectedSubject, setSelectedSubject] = useState<string>('Cálculo Diferencial e Integral');
@@ -112,41 +112,73 @@ const App: React.FC = () => {
     if (!processedData) return;
     
     try {
-      const shareData = {
-        title: `Análisis de ${selectedSubject} - Gauss∑ AI`,
-        text: `Análisis de apuntes de ${selectedSubject} generado con Gauss∑ AI`,
-        url: window.location.href
-      };
+      // Detectar el tipo de dispositivo y contexto
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSocialMedia = window.location.href.includes('facebook') || window.location.href.includes('twitter') || window.location.href.includes('whatsapp');
       
-      if (navigator.share) {
-        await navigator.share(shareData);
+      // Crear diferentes formatos según el contexto
+      let shareText = '';
+      let shareTitle = `Análisis de ${selectedSubject} - Gauss∑ AI`;
+      
+      if (isMobile || isSocialMedia) {
+        // Formato corto para móviles y redes sociales
+        shareText = `📚 Análisis de ${selectedSubject} generado con Gauss∑ AI
+
+🔍 Resumen: ${processedData.summary.substring(0, 200)}${processedData.summary.length > 200 ? '...' : ''}
+
+📝 Conceptos clave: ${processedData.keyConcepts.length} conceptos identificados
+❓ Preguntas de práctica: ${processedData.quizQuestions.length} preguntas generadas
+🔢 Problemas relacionados: ${processedData.relatedProblems.length} problemas adicionales
+
+💡 Herramienta: Gauss∑ AI - Procesamiento inteligente de apuntes matemáticos`;
       } else {
-        // Fallback: copiar al portapapeles
-        const content = `
-Análisis de ${selectedSubject}
+        // Formato completo para desktop y portapapeles
+        shareText = `📚 Análisis de ${selectedSubject}
 Generado con Gauss∑ AI
 
-RESUMEN:
+📋 RESUMEN:
 ${processedData.summary}
 
-CONCEPTOS CLAVE:
+🎯 CONCEPTOS CLAVE:
 ${processedData.keyConcepts.map((concept, index) => 
   `${index + 1}. ${concept.concept}: ${concept.definition}`
 ).join('\n')}
 
-PREGUNTAS DE PRÁCTICA:
+❓ PREGUNTAS DE PRÁCTICA:
 ${processedData.quizQuestions.map((question, index) => 
   `${index + 1}. ${question.question}\n   Respuesta: ${question.answer}`
 ).join('\n')}
 
-PROBLEMAS RELACIONADOS:
+🔢 PROBLEMAS RELACIONADOS:
 ${processedData.relatedProblems.map((problem, index) => 
   `${index + 1}. ${problem.problem}\n   Solución: ${problem.solution}`
 ).join('\n')}
-        `.trim();
+
+🌐 Generado con: Gauss∑ AI - Procesamiento inteligente de apuntes matemáticos`;
+      }
+      
+      const shareData = {
+        title: shareTitle,
+        text: shareText,
+        url: window.location.href
+      };
+      
+      if (navigator.share && isMobile) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copiar al portapapeles
+        await navigator.clipboard.writeText(shareText);
         
-        await navigator.clipboard.writeText(content);
-        alert('Análisis copiado al portapapeles');
+        // Mostrar notificación más elegante
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-teal-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+        notification.textContent = '✅ Análisis copiado al portapapeles';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => document.body.removeChild(notification), 300);
+        }, 2000);
       }
     } catch (error) {
       console.error('Error al compartir:', error);
@@ -660,15 +692,13 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
 
             {/* Right side - User Actions */}
             <div className="flex items-center space-x-4">
-              <button className="text-gray-700 hover:text-gray-900 p-2">
+              <button 
+                onClick={() => setActiveView('help')}
+                className="text-gray-700 hover:text-gray-900 p-2 transition-colors"
+                title="Ayuda"
+              >
                 <HelpCircleIcon className="w-5 h-5" />
               </button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  4
-                </div>
-                <span className="text-sm font-medium text-gray-900">4ailabs</span>
-              </div>
             </div>
           </div>
         </div>
@@ -1184,10 +1214,24 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                   >
                     {assistantHistory.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
-                        <div className="text-center space-y-3">
-                          <div>
-                            <p className="text-base font-semibold text-gray-900 mb-1">Pregúntame cualquier cosa</p>
-                            <p className="text-gray-600 mt-1 text-sm">¡Puedo ayudarte a entender conceptos, resolver problemas y explicar temas matemáticos!</p>
+                        <div className="text-center space-y-6 max-w-md">
+                          <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                            <BrainCircuitIcon className="w-8 h-8 text-white"/>
+                          </div>
+                          <div className="space-y-3">
+                            <h3 className="text-xl font-bold text-gray-900">¡Hola! Soy tu asistente matemático</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                              Puedo ayudarte a entender conceptos, resolver problemas y explicar temas matemáticos de manera clara y detallada.
+                            </p>
+                          </div>
+                          <div className="bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-xl p-4">
+                            <h4 className="font-semibold text-teal-800 mb-2">💡 Ejemplos de preguntas:</h4>
+                            <ul className="text-sm text-teal-700 space-y-1">
+                              <li>• "¿Qué es una derivada?"</li>
+                              <li>• "Explícame el teorema fundamental del cálculo"</li>
+                              <li>• "¿Cómo resuelvo esta ecuación?"</li>
+                              <li>• "Dame ejemplos de aplicaciones de las integrales"</li>
+                            </ul>
                           </div>
                         </div>
                       </div>
@@ -1208,18 +1252,86 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                           }
 
                           return (
-                            <div key={index} className={`flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                            <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''} animate-in fade-in duration-300`}>
                               {msg.role === 'model' && (
-                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                                  <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                                  <BrainCircuitIcon className="w-4 h-4 text-white"/>
                                 </div>
                               )}
-                              <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-sm ${
+                              <div className={`max-w-[85%] p-4 rounded-2xl text-sm shadow-sm transition-all duration-200 hover:shadow-md ${
                                 msg.role === 'user' 
-                                  ? 'bg-teal-600 text-white' 
-                                  : 'bg-gray-50 text-gray-900 border border-gray-200'
+                                  ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white' 
+                                  : 'bg-white text-gray-900 border border-gray-200'
                               }`}>
-                                <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
+                                <div className={`prose prose-sm max-w-none ${
+                                  msg.role === 'user' ? 'prose-invert' : ''
+                                }`}>
+                                  <div className="whitespace-pre-wrap break-words leading-relaxed">
+                                    {msg.role === 'model' ? (
+                                      <div className="space-y-3">
+                                        {msg.content.split('\n').map((line, lineIndex) => {
+                                          // Detectar títulos (###)
+                                          if (line.startsWith('###')) {
+                                            return (
+                                              <h3 key={lineIndex} className="text-lg font-bold text-teal-700 border-b border-teal-200 pb-2">
+                                                {line.replace('###', '').trim()}
+                                              </h3>
+                                            );
+                                          }
+                                          // Detectar subtítulos (##)
+                                          if (line.startsWith('##')) {
+                                            return (
+                                              <h2 key={lineIndex} className="text-xl font-bold text-teal-800 border-b border-teal-200 pb-2">
+                                                {line.replace('##', '').trim()}
+                                              </h2>
+                                            );
+                                          }
+                                          // Detectar títulos principales (#)
+                                          if (line.startsWith('#')) {
+                                            return (
+                                              <h1 key={lineIndex} className="text-2xl font-bold text-teal-900 border-b border-teal-200 pb-2">
+                                                {line.replace('#', '').trim()}
+                                              </h1>
+                                            );
+                                          }
+                                          // Detectar listas con •
+                                          if (line.trim().startsWith('•')) {
+                                            return (
+                                              <div key={lineIndex} className="flex items-start gap-2">
+                                                <span className="text-teal-600 font-bold mt-1">•</span>
+                                                <span>{line.replace('•', '').trim()}</span>
+                                              </div>
+                                            );
+                                          }
+                                          // Detectar fórmulas matemáticas ($$)
+                                          if (line.includes('$$')) {
+                                            return (
+                                              <div key={lineIndex} className="bg-gray-50 p-3 rounded-lg border border-gray-200 my-2">
+                                                <code className="text-sm font-mono text-gray-800">{line}</code>
+                                              </div>
+                                            );
+                                          }
+                                          // Detectar código inline (`)
+                                          if (line.includes('`')) {
+                                            return (
+                                              <div key={lineIndex} className="bg-gray-50 p-2 rounded border border-gray-200 my-1">
+                                                <code className="text-sm font-mono text-gray-800">{line}</code>
+                                              </div>
+                                            );
+                                          }
+                                          // Texto normal
+                                          return (
+                                            <p key={lineIndex} className={line.trim() ? '' : 'mb-2'}>
+                                              {line}
+                                            </p>
+                                          );
+                                        })}
+                                      </div>
+                                    ) : (
+                                      <p>{msg.content}</p>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           );
@@ -1238,14 +1350,18 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                       })
                     )}
                     {isAssistantLoading && assistantHistory[assistantHistory.length-1]?.role === 'user' && (
-                      <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                          <BrainCircuitIcon className="w-3 h-3 text-white"/>
+                      <div className="flex items-start gap-3 animate-in fade-in duration-300">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                          <BrainCircuitIcon className="w-4 h-4 text-white"/>
                         </div>
-                        <div className="max-w-[85%] p-3 rounded-xl bg-gray-50 border border-gray-200 shadow-sm">
-                          <div className="flex items-center gap-2">
-                            <LoaderCircleIcon className="w-4 h-4 animate-spin text-teal-600"/>
-                            <span className="text-gray-600 text-sm">Pensando...</span>
+                        <div className="max-w-[85%] p-4 rounded-2xl bg-white border border-gray-200 shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
+                            <span className="text-gray-600 text-sm font-medium">Procesando respuesta...</span>
                           </div>
                         </div>
                       </div>
@@ -1536,6 +1652,204 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
               <button
                 onClick={() => setActiveView('search')}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                ← Volver a Búsqueda
+              </button>
+            </div>
+          </div>
+        )}
+
+        {activeView === 'help' && (
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Centro de Ayuda</h1>
+              <p className="text-lg text-gray-600">Aprende a usar Gauss∑ AI de manera efectiva</p>
+            </div>
+
+            {/* Quick Start Guide */}
+            <div className="bg-white border border-gray-200 rounded-xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">🚀 Guía de Inicio Rápido</h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">1</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Pega tus apuntes</h3>
+                      <p className="text-gray-600 text-sm">Copia y pega tus apuntes de matemáticas en el área de texto principal.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">2</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Selecciona la materia</h3>
+                      <p className="text-gray-600 text-sm">Elige la materia correspondiente para un análisis más preciso.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">3</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Procesa con IA</h3>
+                      <p className="text-gray-600 text-sm">Haz clic en la flecha para generar el análisis inteligente.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">4</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Revisa los resultados</h3>
+                      <p className="text-gray-600 text-sm">Explora el resumen, conceptos clave, preguntas y problemas generados.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">5</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Haz preguntas</h3>
+                      <p className="text-gray-600 text-sm">Usa el chat para profundizar en conceptos específicos.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm mt-1">6</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Guarda y comparte</h3>
+                      <p className="text-gray-600 text-sm">Descarga el análisis o compártelo con otros estudiantes.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                    <BookOpenIcon className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">Procesamiento de Apuntes</h3>
+                </div>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Análisis inteligente de contenido matemático</li>
+                  <li>• Extracción automática de conceptos clave</li>
+                  <li>• Generación de resúmenes estructurados</li>
+                  <li>• Identificación de fórmulas y teoremas</li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                    <MessageCircleIcon className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">Chat Inteligente</h3>
+                </div>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Preguntas específicas sobre conceptos</li>
+                  <li>• Explicaciones paso a paso</li>
+                  <li>• Soporte para imágenes y fórmulas</li>
+                  <li>• Respuestas contextualizadas</li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                    <MicIcon className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">Entrada por Voz</h3>
+                </div>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Dictado de apuntes por voz</li>
+                  <li>• Reconocimiento en español</li>
+                  <li>• Transcripción en tiempo real</li>
+                  <li>• Ideal para notas rápidas</li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                    <UploadIcon className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">Escaneo de Imágenes</h3>
+                </div>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Extracción de texto de imágenes</li>
+                  <li>• Soporte para fotos de apuntes</li>
+                  <li>• Preservación de fórmulas LaTeX</li>
+                  <li>• Procesamiento automático</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">💡 Consejos para Mejores Resultados</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-1">✓</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Incluye contexto</h4>
+                      <p className="text-gray-600 text-sm">Agrega ejemplos y aplicaciones para análisis más ricos.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-1">✓</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Usa fórmulas claras</h4>
+                      <p className="text-gray-600 text-sm">Escribe fórmulas en formato LaTeX para mejor interpretación.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-1">✓</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Haz preguntas específicas</h4>
+                      <p className="text-gray-600 text-sm">En el chat, sé específico para obtener respuestas más útiles.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-teal-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-1">✓</div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Revisa el historial</h4>
+                      <p className="text-gray-600 text-sm">Accede a análisis anteriores en la Biblioteca.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="bg-white border border-gray-200 rounded-xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">❓ Preguntas Frecuentes</h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">¿Qué materias soporta Gauss∑ AI?</h3>
+                  <p className="text-gray-600">Actualmente está optimizado para matemáticas, incluyendo cálculo, álgebra, estadística y matemáticas aplicadas.</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">¿Puedo usar imágenes de mis apuntes?</h3>
+                  <p className="text-gray-600">Sí, puedes subir imágenes de tus apuntes y la IA extraerá el texto automáticamente.</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">¿Se guardan mis datos?</h3>
+                  <p className="text-gray-600">Los análisis se guardan localmente en tu navegador. No se envían a servidores externos.</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">¿Cómo puedo compartir mis análisis?</h3>
+                  <p className="text-gray-600">Puedes descargar el análisis como archivo HTML o copiarlo al portapapeles para compartir.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Back to Search Button */}
+            <div className="text-center">
+              <button
+                onClick={() => setActiveView('search')}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
               >
                 ← Volver a Búsqueda
               </button>
