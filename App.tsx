@@ -236,30 +236,50 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   }, []);
 
   const handleProcessNotes = useCallback(async () => {
+    console.log("🚀 handleProcessNotes iniciado");
+    
     if (!notes.trim()) {
       setError("Los apuntes no pueden estar vacíos.");
       return;
     }
+    
+    console.log("⏳ Iniciando procesamiento...");
     setIsLoading(true);
     setError(null);
+    
     try {
+      console.log("📡 Llamando a processNotes...");
       const data = await processNotes(notes, selectedSubject);
+      console.log("✅ Datos procesados:", data);
+      
       setProcessedData(data);
       setActiveView('results');
       saveToHistory(data); // Save to history after processing
+      
+      console.log("🎉 Procesamiento completado exitosamente");
     } catch (e: any) {
-      console.error("Error processing notes:", e);
+      console.error("❌ Error processing notes:", e);
+      console.error("❌ Error details:", e.message);
       setError(e.message || "Ocurrió un error desconocido al procesar los apuntes.");
       setProcessedData(null);
     } finally {
       setIsLoading(false);
+      console.log("🏁 Procesamiento finalizado");
     }
   }, [notes, selectedSubject, saveToHistory]);
 
   const handleSearch = () => {
-    if (notes.trim()) {
-      handleProcessNotes();
+    console.log("🔍 handleSearch llamado");
+    console.log("📝 Notas:", notes);
+    console.log("📚 Materia:", selectedSubject);
+    
+    if (!notes.trim()) {
+      setError("Los apuntes no pueden estar vacíos.");
+      return;
     }
+    
+    console.log("✅ Notas válidas, iniciando procesamiento...");
+    handleProcessNotes();
   };
 
   const handleToggleRecording = () => {
@@ -595,12 +615,49 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <button
                       onClick={handleSearch}
                       disabled={isLoading || !notes.trim()}
-                      className="bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 text-white p-3 rounded-full transition-colors"
+                      className={`p-3 rounded-full transition-colors ${
+                        isLoading 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-teal-600 hover:bg-teal-700'
+                      } text-white`}
+                      title={isLoading ? 'Procesando...' : 'Procesar apuntes'}
                     >
-                      <ChevronRightIcon className="w-6 h-6" />
+                      {isLoading ? (
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <ChevronRightIcon className="w-6 h-6" />
+                      )}
                     </button>
                   </div>
                 </div>
+
+                {/* Loading State */}
+                {isLoading && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">Procesando apuntes...</p>
+                        <p className="text-xs text-blue-700">Esto puede tomar unos segundos</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">!</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-red-900">Error</p>
+                        <p className="text-xs text-red-700">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Query Refinement Suggestions */}
                 <div className="mt-4">
