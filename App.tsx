@@ -101,8 +101,11 @@ const App: React.FC = () => {
       nextReview: Date.now() + (24 * 60 * 60 * 1000)
     }));
 
-    setFlashcards(prev => [...prev, ...newFlashcards]);
-    localStorage.setItem('gaussmathmind_flashcards', JSON.stringify([...flashcards, ...newFlashcards]));
+    setFlashcards(prev => {
+      const updatedFlashcards = [...prev, ...newFlashcards];
+      localStorage.setItem('gaussmathmind_flashcards', JSON.stringify(updatedFlashcards));
+      return updatedFlashcards;
+    });
     
     // Crear recordatorio para repasar en 3 días
     const reviewDate = Date.now() + (3 * 24 * 60 * 60 * 1000);
@@ -116,9 +119,12 @@ const App: React.FC = () => {
       description: `Repasar: ${newHistoryItem.title}`
     };
     
-    setStudyReminders(prev => [...prev, newReminder]);
-    localStorage.setItem('gaussmathmind_reminders', JSON.stringify([...studyReminders, newReminder]));
-  }, [notes, selectedSubject, analysisHistory, flashcards, studyReminders]);
+    setStudyReminders(prev => {
+      const updatedReminders = [...prev, newReminder];
+      localStorage.setItem('gaussmathmind_reminders', JSON.stringify(updatedReminders));
+      return updatedReminders;
+    });
+  }, [notes, selectedSubject, analysisHistory]);
 
   const loadHistoryFromStorage = useCallback(() => {
     try {
