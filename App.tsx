@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { ProcessedData, ChatMessage, AnalysisHistory } from './types';
-import { processNotes, getAssistantResponseStream, resetAssistantChat, extractTextFromImage } from './services/geminiService';
+import { processNotes, getAssistantResponseStream, resetAssistantChat, extractTextFromImage, generateQuiz, findProblems } from './services/geminiService';
 import {
   BrainCircuitIcon,
   MessageCircleIcon,
@@ -417,10 +417,75 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     }
   }, [notes, selectedSubject, saveToHistory]);
 
+  const handleGenerateQuiz = useCallback(async () => {
+    console.log("🎯 handleGenerateQuiz iniciado");
+    
+    if (!notes.trim()) {
+      setError("Los apuntes no pueden estar vacíos.");
+      return;
+    }
+    
+    console.log("⏳ Generando quiz...");
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log("📡 Llamando a generateQuiz...");
+      const data = await generateQuiz(notes, selectedSubject);
+      console.log("✅ Quiz generado:", data);
+      
+      setProcessedData(data);
+      setActiveView('results');
+      saveToHistory(data);
+      
+      console.log("🎉 Quiz generado exitosamente");
+    } catch (e: any) {
+      console.error("❌ Error generating quiz:", e);
+      setError(e.message || "Ocurrió un error al generar el quiz.");
+      setProcessedData(null);
+    } finally {
+      setIsLoading(false);
+      console.log("🏁 Generación de quiz finalizada");
+    }
+  }, [notes, selectedSubject, saveToHistory]);
+
+  const handleFindProblems = useCallback(async () => {
+    console.log("🔍 handleFindProblems iniciado");
+    
+    if (!notes.trim()) {
+      setError("Los apuntes no pueden estar vacíos.");
+      return;
+    }
+    
+    console.log("⏳ Buscando problemas...");
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log("📡 Llamando a findProblems...");
+      const data = await findProblems(notes, selectedSubject);
+      console.log("✅ Problemas encontrados:", data);
+      
+      setProcessedData(data);
+      setActiveView('results');
+      saveToHistory(data);
+      
+      console.log("🎉 Búsqueda de problemas completada");
+    } catch (e: any) {
+      console.error("❌ Error finding problems:", e);
+      setError(e.message || "Ocurrió un error al buscar problemas.");
+      setProcessedData(null);
+    } finally {
+      setIsLoading(false);
+      console.log("🏁 Búsqueda de problemas finalizada");
+    }
+  }, [notes, selectedSubject, saveToHistory]);
+
   const handleSearch = () => {
     console.log("🔍 handleSearch llamado");
     console.log("📝 Notas:", notes);
     console.log("📚 Materia:", selectedSubject);
+    console.log("🎯 Tipo de búsqueda:", searchType);
     
     if (!notes.trim()) {
       setError("Los apuntes no pueden estar vacíos.");
@@ -428,7 +493,20 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
     }
     
     console.log("✅ Notas válidas, iniciando procesamiento...");
-    handleProcessNotes();
+    
+    switch (searchType) {
+      case 'research':
+        handleProcessNotes();
+        break;
+      case 'systematic':
+        handleGenerateQuiz();
+        break;
+      case 'papers':
+        handleFindProblems();
+        break;
+      default:
+        handleProcessNotes();
+    }
   };
 
   const handleToggleRecording = () => {
@@ -831,7 +909,13 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Pega tus apuntes de matemáticas aquí o describe lo que quieres estudiar..."
+                    placeholder={
+                      searchType === 'research' 
+                        ? "Pega tus apuntes de matemáticas aquí o describe lo que quieres estudiar..."
+                        : searchType === 'systematic'
+                        ? "Describe el tema o concepto para generar un quiz de evaluación..."
+                        : "Describe el tipo de problemas que quieres encontrar o generar..."
+                    }
                     className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
                     disabled={isLoading}
                   />
@@ -862,7 +946,15 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                           ? 'bg-gray-400 cursor-not-allowed' 
                           : 'bg-teal-600 hover:bg-teal-700'
                       } text-white`}
-                      title={isLoading ? 'Procesando...' : 'Procesar apuntes'}
+                      title={
+                        isLoading 
+                          ? 'Procesando...' 
+                          : searchType === 'research'
+                          ? 'Procesar apuntes'
+                          : searchType === 'systematic'
+                          ? 'Generar quiz'
+                          : 'Encontrar problemas'
+                      }
                     >
                       {isLoading ? (
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -879,7 +971,14 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                     <div className="flex items-center gap-3">
                       <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                       <div>
-                        <p className="text-sm font-medium text-blue-900">Procesando apuntes...</p>
+                        <p className="text-sm font-medium text-blue-900">
+                          {searchType === 'research' 
+                            ? 'Procesando apuntes...'
+                            : searchType === 'systematic'
+                            ? 'Generando quiz...'
+                            : 'Buscando problemas...'
+                          }
+                        </p>
                         <p className="text-xs text-blue-700">Esto puede tomar unos segundos</p>
                       </div>
                     </div>

@@ -482,3 +482,162 @@ export const generateQuizFromContent = async (content: string, subject: string):
         }
     }
 };
+
+// Schema para generar quiz estructurado
+const generateQuizSchema = {
+    type: Type.OBJECT,
+    properties: {
+        summary: {
+            type: Type.STRING,
+            description: "Un resumen breve del contenido sobre el cual se generó el quiz."
+        },
+        keyConcepts: {
+            type: Type.ARRAY,
+            description: "Los conceptos clave evaluados en el quiz.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    concept: { type: Type.STRING, description: "Nombre del concepto." },
+                    definition: { type: Type.STRING, description: "Definición del concepto." }
+                },
+                required: ["concept", "definition"]
+            }
+        },
+        quizQuestions: {
+            type: Type.ARRAY,
+            description: "Preguntas del quiz con opciones múltiples.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    question: { type: Type.STRING, description: "La pregunta del quiz." },
+                    answer: { type: Type.STRING, description: "La respuesta correcta con explicación." },
+                    type: { type: Type.STRING, enum: ['multiple_choice', 'true_false', 'problem'], description: "Tipo de pregunta." },
+                    options: { 
+                        type: Type.ARRAY, 
+                        description: "Opciones para preguntas de opción múltiple.",
+                        items: { type: Type.STRING }
+                    },
+                    correctOption: { type: Type.STRING, description: "Letra de la opción correcta (A, B, C, D)." }
+                },
+                required: ["question", "answer", "type"]
+            }
+        },
+        relatedProblems: {
+            type: Type.ARRAY,
+            description: "Problemas adicionales para práctica.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    problem: { type: Type.STRING, description: "Enunciado del problema." },
+                    solution: { type: Type.STRING, description: "Solución detallada." }
+                },
+                required: ["problem", "solution"]
+            }
+        }
+    },
+    required: ["summary", "keyConcepts", "quizQuestions", "relatedProblems"]
+};
+
+export const generateQuiz = async (notes: string, subject: string): Promise<ProcessedData> => {
+    const prompt = `Eres un experto en educación matemática. Basándote en los siguientes apuntes de "${subject}", genera un quiz completo para evaluar la comprensión del estudiante.
+
+    Instrucciones:
+    1. Crea un resumen del contenido principal
+    2. Identifica los conceptos clave que se evaluarán
+    3. Genera 5 preguntas de quiz variadas (opción múltiple, verdadero/falso, problemas)
+    4. Incluye 2-3 problemas adicionales para práctica
+    5. Asegúrate de que las preguntas sean claras y apropiadas para el nivel
+
+    Apuntes: ${notes}
+
+    Genera una respuesta estructurada que incluya resumen, conceptos clave, preguntas de quiz y problemas de práctica.`;
+
+    try {
+        const response: GenerateContentResponse = await ai.models.generateContent({
+            model: model,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                temperature: 0.3,
+            }
+        });
+
+        if (!response.text) {
+            throw new Error("No se pudo generar el quiz.");
+        }
+
+        let parsedResponse;
+        try {
+            parsedResponse = JSON.parse(response.text);
+        } catch (parseError) {
+            console.error("Error parsing quiz response:", parseError);
+            throw new Error("Formato de respuesta inválido del quiz.");
+        }
+
+        // Validar y estructurar la respuesta
+        const processedData: ProcessedData = {
+            summary: parsedResponse.summary || "Quiz generado basado en los apuntes proporcionados.",
+            keyConcepts: parsedResponse.keyConcepts || [],
+            quizQuestions: parsedResponse.quizQuestions || [],
+            relatedProblems: parsedResponse.relatedProblems || []
+        };
+
+        return processedData;
+
+    } catch (error: any) {
+        console.error("Error generating quiz:", error);
+        throw new Error("No se pudo generar el quiz. Inténtalo de nuevo.");
+    }
+};
+
+export const findProblems = async (notes: string, subject: string): Promise<ProcessedData> => {
+    const prompt = `Eres un experto en matemáticas y educación. Basándote en los siguientes apuntes de "${subject}", identifica y genera problemas matemáticos relacionados.
+
+    Instrucciones:
+    1. Analiza los conceptos y temas de los apuntes
+    2. Identifica los tipos de problemas que se pueden generar
+    3. Crea problemas variados (básicos, intermedios, avanzados)
+    4. Proporciona soluciones detalladas paso a paso
+    5. Incluye problemas que refuercen los conceptos principales
+
+    Apuntes: ${notes}
+
+    Genera una respuesta estructurada que incluya resumen, conceptos clave, preguntas de práctica y problemas relacionados.`;
+
+    try {
+        const response: GenerateContentResponse = await ai.models.generateContent({
+            model: model,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                temperature: 0.3,
+            }
+        });
+
+        if (!response.text) {
+            throw new Error("No se pudieron encontrar problemas.");
+        }
+
+        let parsedResponse;
+        try {
+            parsedResponse = JSON.parse(response.text);
+        } catch (parseError) {
+            console.error("Error parsing problems response:", parseError);
+            throw new Error("Formato de respuesta inválido.");
+        }
+
+        // Validar y estructurar la respuesta
+        const processedData: ProcessedData = {
+            summary: parsedResponse.summary || "Problemas identificados basados en los apuntes proporcionados.",
+            keyConcepts: parsedResponse.keyConcepts || [],
+            quizQuestions: parsedResponse.quizQuestions || [],
+            relatedProblems: parsedResponse.relatedProblems || []
+        };
+
+        return processedData;
+
+    } catch (error: any) {
+        console.error("Error finding problems:", error);
+        throw new Error("No se pudieron encontrar problemas. Inténtalo de nuevo.");
+    }
+};
