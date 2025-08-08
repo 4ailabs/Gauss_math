@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { ProcessedData, ChatMessage, AnalysisHistory } from './types';
+import { ProcessedData, ChatMessage, AnalysisHistory, Flashcard, StudyProgress, StudyReminder } from './types';
 import { processNotes, getAssistantResponseStream, resetAssistantChat, extractTextFromImage, generateQuiz, findProblems } from './services/geminiService';
 import {
   BrainCircuitIcon,
@@ -63,6 +63,12 @@ const App: React.FC = () => {
   const [sidebarChatHistory, setSidebarChatHistory] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
   const [isSidebarChatLoading, setIsSidebarChatLoading] = useState(false);
   
+  // Estados para sistema de estudio
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [studyProgress, setStudyProgress] = useState<StudyProgress[]>([]);
+  const [studyReminders, setStudyReminders] = useState<StudyReminder[]>([]);
+  const [activeView, setActiveView] = useState<'search' | 'results' | 'chat' | 'library' | 'help' | 'recent' | 'study'>('search');
+  
   // Funciones para manejar el historial
   const saveToHistory = useCallback((processedData: ProcessedData) => {
     const newHistoryItem: AnalysisHistory = {
@@ -72,13 +78,30 @@ const App: React.FC = () => {
       notes: notes,
       processedData: processedData,
       timestamp: Date.now(),
-      tags: [selectedSubject]
+      tags: [selectedSubject],
+      topics: processedData.keyConcepts.map(c => c.concept.split(' ')[0]),
+      confidence: 0.5,
+      lastReviewed: Date.now(),
+      reviewCount: 0
     };
     
     const updatedHistory = [newHistoryItem, ...analysisHistory];
     setAnalysisHistory(updatedHistory);
     localStorage.setItem('gaussmathmind_history', JSON.stringify(updatedHistory));
-  }, [notes, selectedSubject, analysisHistory]);
+    
+    // Crear flashcards automáticamente
+    createFlashcards(processedData, selectedSubject);
+    
+    // Crear recordatorio para repasar en 3 días
+    const reviewDate = Date.now() + (3 * 24 * 60 * 60 * 1000);
+    addStudyReminder(
+      newHistoryItem.title,
+      selectedSubject,
+      reviewDate,
+      'medium',
+      `Repasar: ${newHistoryItem.title}`
+    );
+  }, [notes, selectedSubject, analysisHistory, createFlashcards, addStudyReminder]);
 
   const loadHistoryFromStorage = useCallback(() => {
     try {
@@ -370,7 +393,8 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
   // Load history from localStorage on component mount
   useEffect(() => {
     loadHistoryFromStorage();
-  }, [loadHistoryFromStorage]);
+    loadStudyData();
+  }, [loadHistoryFromStorage, loadStudyData]);
 
   // Load subject from localStorage
   useEffect(() => {
@@ -416,6 +440,110 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
       console.log("🏁 Procesamiento finalizado");
     }
   }, [notes, selectedSubject, saveToHistory]);
+
+  // Funciones para sistema de estudio
+  const createFlashcards = useCallback((processedData: ProcessedData, subject: string) => {
+    const newFlashcards: Flashcard[] = processedData.keyConcepts.map((concept, index) => ({
+      id: `${Date.now()}-${index}`,
+      concept: concept.concept,
+      definition: concept.definition,
+      topic: concept.concept.split(' ')[0], // Usar primera palabra como tema
+      subject: subject,
+      confidence: 0.5, // Confianza inicial media
+      lastReviewed: Date.now(),
+      reviewCount: 0,
+      nextReview: Date.now() + (24 * 60 * 60 * 1000) // Revisar en 24 horas
+    }));
+
+    setFlashcards(prev => [...prev, ...newFlashcards]);
+    localStorage.setItem('gaussmathmind_flashcards', JSON.stringify([...flashcards, ...newFlashcards]));
+  }, [flashcards]);
+
+  const updateFlashcardConfidence = useCallback((flashcardId: string, confidence: number) => {
+    setFlashcards(prev => prev.map(card => {
+      if (card.id === flashcardId) {
+        const nextReview = calculateNextReview(confidence, card.reviewCount);
+        return {
+          ...card,
+          confidence,
+          lastReviewed: Date.now(),
+          reviewCount: card.reviewCount + 1,
+          nextReview
+        };
+      }
+      return card;
+    }));
+  }, []);
+
+  const calculateNextReview = (confidence: number, reviewCount: number): number => {
+    const now = Date.now();
+    const baseInterval = 24 * 60 * 60 * 1000; // 24 horas
+    const multiplier = Math.pow(2, reviewCount) * (1 - confidence);
+    return now + (baseInterval * multiplier);
+  };
+
+  const updateStudyProgress = useCallback((topic: string, subject: string, action: 'practice' | 'review' | 'problem') => {
+    setStudyProgress(prev => {
+      const existing = prev.find(p => p.topic === topic && p.subject === subject);
+      if (existing) {
+        const updated = {
+          ...existing,
+          lastReviewed: Date.now(),
+          reviewCount: existing.reviewCount + 1,
+          confidence: Math.min(1, existing.confidence + 0.1),
+          [action === 'practice' ? 'practiceQuestions' : action === 'problem' ? 'problemsSolved' : 'reviewCount']: 
+            existing[action === 'practice' ? 'practiceQuestions' : action === 'problem' ? 'problemsSolved' : 'reviewCount'] + 1
+        };
+        return prev.map(p => p.topic === topic && p.subject === subject ? updated : p);
+      } else {
+        const newProgress: StudyProgress = {
+          topic,
+          subject,
+          confidence: 0.5,
+          practiceQuestions: action === 'practice' ? 1 : 0,
+          lastReviewed: Date.now(),
+          reviewCount: action === 'review' ? 1 : 0,
+          flashcards: 0,
+          problemsSolved: action === 'problem' ? 1 : 0
+        };
+        return [...prev, newProgress];
+      }
+    });
+  }, []);
+
+  const addStudyReminder = useCallback((topic: string, subject: string, dueDate: number, priority: 'low' | 'medium' | 'high', description: string) => {
+    const newReminder: StudyReminder = {
+      id: Date.now().toString(),
+      topic,
+      subject,
+      dueDate,
+      priority,
+      completed: false,
+      description
+    };
+    setStudyReminders(prev => [...prev, newReminder]);
+    localStorage.setItem('gaussmathmind_reminders', JSON.stringify([...studyReminders, newReminder]));
+  }, [studyReminders]);
+
+  const completeReminder = useCallback((reminderId: string) => {
+    setStudyReminders(prev => prev.map(r => 
+      r.id === reminderId ? { ...r, completed: true } : r
+    ));
+  }, []);
+
+  const loadStudyData = useCallback(() => {
+    try {
+      const savedFlashcards = localStorage.getItem('gaussmathmind_flashcards');
+      const savedProgress = localStorage.getItem('gaussmathmind_progress');
+      const savedReminders = localStorage.getItem('gaussmathmind_reminders');
+
+      if (savedFlashcards) setFlashcards(JSON.parse(savedFlashcards));
+      if (savedProgress) setStudyProgress(JSON.parse(savedProgress));
+      if (savedReminders) setStudyReminders(JSON.parse(savedReminders));
+    } catch (error) {
+      console.error('Error loading study data:', error);
+    }
+  }, []);
 
   const handleGenerateQuiz = useCallback(async () => {
     console.log("🎯 handleGenerateQuiz iniciado");
@@ -823,6 +951,16 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
                 >
                   Biblioteca
+                </a>
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveView('study');
+                  }}
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+                >
+                  Estudio
                 </a>
                 <a href="#" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">Ayuda</a>
               </nav>
@@ -2241,6 +2379,176 @@ Como podemos ver, el valor de \\(\\theta\\) se acerca iterativamente a 0, que es
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {activeView === 'study' && (
+          <div className="max-w-6xl mx-auto space-y-8">
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Centro de Estudio</h1>
+              <p className="text-gray-600">Organiza tu aprendizaje y prepárate para los exámenes</p>
+            </div>
+
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-teal-600 font-bold text-xl">{flashcards.length}</span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Flashcards</h3>
+                <p className="text-sm text-gray-600">Conceptos para repasar</p>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-blue-600 font-bold text-xl">{studyProgress.length}</span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Temas</h3>
+                <p className="text-sm text-gray-600">En progreso</p>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-green-600 font-bold text-xl">
+                    {studyProgress.reduce((sum, p) => sum + p.practiceQuestions, 0)}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Preguntas</h3>
+                <p className="text-sm text-gray-600">Practicadas</p>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-yellow-600 font-bold text-xl">
+                    {studyReminders.filter(r => !r.completed).length}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Recordatorios</h3>
+                <p className="text-sm text-gray-600">Pendientes</p>
+              </div>
+            </div>
+
+            {/* Main Content Tabs */}
+            <div className="bg-white border border-gray-200 rounded-lg">
+              <div className="border-b border-gray-200">
+                <nav className="flex space-x-8 px-6">
+                  <button className="py-4 px-1 border-b-2 border-teal-500 text-teal-600 font-medium text-sm">
+                    Flashcards
+                  </button>
+                  <button className="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                    Progreso
+                  </button>
+                  <button className="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                    Recordatorios
+                  </button>
+                </nav>
+              </div>
+              
+              <div className="p-6">
+                {/* Flashcards Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Flashcards para Repasar</h3>
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-medium">
+                        Todas ({flashcards.length})
+                      </button>
+                      <button className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                        Pendientes ({flashcards.filter(c => c.nextReview <= Date.now()).length})
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {flashcards.length > 0 ? (
+                    <div className="grid gap-4">
+                      {flashcards.slice(0, 5).map((card) => (
+                        <div key={card.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <span className="px-2 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-medium">
+                                {card.topic}
+                              </span>
+                              <span className="text-sm text-gray-600">{card.subject}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-500">
+                                Confianza: {Math.round(card.confidence * 100)}%
+                              </span>
+                              <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    onClick={() => updateFlashcardConfidence(card.id, star / 5)}
+                                    className={`w-4 h-4 rounded-full ${
+                                      star <= card.confidence * 5 ? 'bg-yellow-400' : 'bg-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-gray-900">{card.concept}</h4>
+                            <p className="text-gray-700 text-sm">{card.definition}</p>
+                          </div>
+                          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                            <span>Repasos: {card.reviewCount}</span>
+                            <span>
+                              Próximo repaso: {new Date(card.nextReview).toLocaleDateString('es-ES')}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <BookOpenIcon className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay flashcards</h3>
+                      <p className="text-gray-600 mb-4">Procesa apuntes para crear flashcards automáticamente</p>
+                      <button
+                        onClick={() => setActiveView('search')}
+                        className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                      >
+                        Crear Flashcards
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <button
+                onClick={() => setActiveView('search')}
+                className="bg-teal-600 hover:bg-teal-700 text-white p-6 rounded-lg text-center transition-colors"
+              >
+                <BookOpenIcon className="w-8 h-8 mx-auto mb-3" />
+                <h3 className="font-semibold mb-2">Nuevo Análisis</h3>
+                <p className="text-sm opacity-90">Procesa nuevos apuntes</p>
+              </button>
+              
+              <button
+                onClick={() => setActiveView('chat')}
+                className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg text-center transition-colors"
+              >
+                <MessageCircleIcon className="w-8 h-8 mx-auto mb-3" />
+                <h3 className="font-semibold mb-2">Hacer Preguntas</h3>
+                <p className="text-sm opacity-90">Consulta dudas específicas</p>
+              </button>
+              
+              <button
+                onClick={() => setActiveView('library')}
+                className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-lg text-center transition-colors"
+              >
+                <SearchIcon className="w-8 h-8 mx-auto mb-3" />
+                <h3 className="font-semibold mb-2">Biblioteca</h3>
+                <p className="text-sm opacity-90">Revisa análisis anteriores</p>
+              </button>
             </div>
           </div>
         )}
