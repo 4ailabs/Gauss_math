@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { ProcessedData, ChatMessage, AnalysisHistory, Flashcard, StudyProgress, StudyReminder } from './types';
-import { processNotes, getAssistantResponseStream, resetAssistantChat, extractTextFromImage, generateQuiz, findProblems } from './services/geminiService';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ProcessedData, ChatMessage, AnalysisHistory } from './types';
+import { processNotes, getAssistantResponseStream, extractTextFromImage } from './services/geminiService';
 import {
   BrainCircuitIcon,
   MessageCircleIcon,
@@ -36,18 +36,8 @@ const App: React.FC = () => {
   const [processedData, setProcessedData] = useState<ProcessedData | null>(null);
   const [assistantHistory, setAssistantHistory] = useState<ChatMessage[]>([]);
   const [assistantInput, setAssistantInput] = useState<string>('');
-  const [assistantImage, setAssistantImage] = useState<string | null>(null);
-  const [isQuizMode, setIsQuizMode] = useState(false);
-  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
-  const [quizScore, setQuizScore] = useState<number | null>(null);
-  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
-  const [renderError, setRenderError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAssistantLoading, setIsAssistantLoading] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(false);
-  const [isExporting, setIsExporting] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isSpeechSupported, setIsSpeechSupported] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,21 +47,10 @@ const App: React.FC = () => {
   const [gatherType, setGatherType] = useState<'papers' | 'trials'>('papers');
   const [selectedSubject, setSelectedSubject] = useState<string>('Cálculo Diferencial e Integral');
   const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistory[]>([]);
-  const [librarySearchTerm, setLibrarySearchTerm] = useState<string>('');
-  const [selectedHistoryItem, setSelectedHistoryItem] = useState<AnalysisHistory | null>(null);
-  const [sidebarChatMessage, setSidebarChatMessage] = useState('');
-  const [sidebarChatHistory, setSidebarChatHistory] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
-  const [isSidebarChatLoading, setIsSidebarChatLoading] = useState(false);
-  
-  // Estados para sistema de estudio
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
-  const [studyProgress, setStudyProgress] = useState<StudyProgress[]>([]);
-  const [studyReminders, setStudyReminders] = useState<StudyReminder[]>([]);
 
   // Refs
   const recognitionRef = useRef<any>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const assistantImageInputRef = useRef<HTMLInputElement>(null);
   const notesOnRecordStartRef = useRef<string>('');
 
   // Función simplificada para manejar el historial
@@ -130,7 +109,7 @@ const App: React.FC = () => {
 
   // Función simplificada para toggle de grabación
   const handleToggleRecording = () => {
-    if (!isSpeechSupported || isLoading || isScanning || isExporting) return;
+    if (!isSpeechSupported || isLoading || isScanning) return;
     
     if (isRecording) {
       recognitionRef.current?.stop();
@@ -218,39 +197,6 @@ const App: React.FC = () => {
       setError(e.message || "Error al procesar la imagen.");
       setIsScanning(false);
     }
-  };
-
-  // Función simplificada para chat del sidebar
-  const handleSidebarChat = async () => {
-    if (!sidebarChatMessage.trim() || !processedData) return;
-    
-    setIsSidebarChatLoading(true);
-    
-    try {
-      const response = await getAssistantResponseStream(sidebarChatMessage, selectedSubject);
-      setSidebarChatHistory(prev => [...prev, 
-        { role: 'user', content: sidebarChatMessage },
-        { role: 'assistant', content: response }
-      ]);
-      setSidebarChatMessage('');
-    } catch (e: any) {
-      console.error("Error in sidebar chat:", e);
-      setError(e.message || "Error en el chat.");
-    } finally {
-      setIsSidebarChatLoading(false);
-    }
-  };
-
-  // Función simplificada para imagen del asistente
-  const handleAssistantImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setAssistantImage(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
   };
 
   // useEffect simplificado
@@ -378,151 +324,151 @@ const App: React.FC = () => {
 
             {/* Main Search Card */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                {/* Main Search Input */}
-                <div className="relative">
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder={
-                      searchType === 'research' 
-                        ? "Pega tus apuntes de matemáticas aquí o describe lo que quieres estudiar..."
-                        : searchType === 'systematic'
-                        ? "Describe el tema o concepto para generar un quiz de evaluación..."
-                        : "Describe el tipo de problemas que quieres encontrar o generar..."
-                    }
-                    className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
+              {/* Main Search Input */}
+              <div className="relative">
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={
+                    searchType === 'research' 
+                      ? "Pega tus apuntes de matemáticas aquí o describe lo que quieres estudiar..."
+                      : searchType === 'systematic'
+                      ? "Describe el tema o concepto para generar un quiz de evaluación..."
+                      : "Describe el tipo de problemas que quieres encontrar o generar..."
+                  }
+                  className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
+                  disabled={isLoading}
+                />
+                {isRecording && (
+                  <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    Grabando...
+                  </div>
+                )}
+                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                  <button
+                    onClick={handleToggleRecording}
                     disabled={isLoading}
-                  />
-                  {isRecording && (
-                    <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                      Grabando...
-                    </div>
-                  )}
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button
-                      onClick={handleToggleRecording}
-                      disabled={isLoading}
-                      className={`p-2 rounded-full transition-colors ${
-                        isRecording 
-                          ? 'bg-red-500 hover:bg-red-600 text-white' 
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-                      }`}
-                      title={isRecording ? 'Detener grabación' : 'Grabar voz'}
-                    >
-                      <MicIcon className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={handleSearch}
-                      disabled={isLoading || !notes.trim()}
-                      className={`p-3 rounded-full transition-colors ${
-                        isLoading 
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-teal-600 hover:bg-teal-700'
-                      } text-white`}
-                      title={
-                        isLoading 
-                          ? 'Procesando...' 
-                          : searchType === 'research'
-                          ? 'Procesar apuntes'
-                          : searchType === 'systematic'
-                          ? 'Generar quiz'
-                          : 'Encontrar problemas'
-                      }
-                    >
-                      {isLoading ? (
-                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <ChevronRightIcon className="w-6 h-6" />
-                      )}
-                    </button>
-                  </div>
+                    className={`p-2 rounded-full transition-colors ${
+                      isRecording 
+                        ? 'bg-red-500 hover:bg-red-600 text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                    title={isRecording ? 'Detener grabación' : 'Grabar voz'}
+                  >
+                    <MicIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleSearch}
+                    disabled={isLoading || !notes.trim()}
+                    className={`p-3 rounded-full transition-colors ${
+                      isLoading 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-teal-600 hover:bg-teal-700'
+                    } text-white`}
+                    title={
+                      isLoading 
+                        ? 'Procesando...' 
+                        : searchType === 'research'
+                        ? 'Procesar apuntes'
+                        : searchType === 'systematic'
+                        ? 'Generar quiz'
+                        : 'Encontrar problemas'
+                    }
+                  >
+                    {isLoading ? (
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <ChevronRightIcon className="w-6 h-6" />
+                    )}
+                  </button>
                 </div>
-
-                {/* Loading State */}
-                {isLoading && (
-                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                      <div>
-                        <p className="text-sm font-medium text-blue-900">
-                          {searchType === 'research' 
-                            ? 'Procesando apuntes...'
-                            : searchType === 'systematic'
-                            ? 'Generando quiz...'
-                            : 'Buscando problemas...'
-                          }
-                        </p>
-                        <p className="text-xs text-blue-700">Esto puede tomar unos segundos</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Error State */}
-                {error && (
-                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">!</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-red-900">Error</p>
-                        <p className="text-xs text-red-700">{error}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Query Refinement Suggestions */}
-                <div className="mt-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <p className="text-sm text-gray-700">Las preguntas más precisas funcionan mejor. Intenta agregar elementos como estos:</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
-                      Conceptos matemáticos
-                    </button>
-                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
-                      Fórmulas y ecuaciones
-                    </button>
-                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
-                      Ejemplos de problemas
-                    </button>
-                  </div>
-                </div>
-
-                {/* Gather Options */}
-                <div className="flex items-center gap-3 mt-4">
-                  <span className="text-sm font-medium text-gray-800">Generar:</span>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => setGatherType('papers')}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                        gatherType === 'papers'
-                          ? 'bg-teal-100 text-teal-800'
-                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                      }`}
-                    >
-                      Resumen y Conceptos
-                    </button>
-                    <button
-                      onClick={() => setGatherType('trials')}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                        gatherType === 'trials'
-                          ? 'bg-teal-100 text-teal-800'
-                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                      }`}
-                    >
-                      Problemas de Práctica
-                    </button>
-                  </div>
-                </div>
-
-                                {/* Inputs ocultos para imágenes */}
-                <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
               </div>
+
+              {/* Loading State */}
+              {isLoading && (
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div>
+                      <p className="text-sm font-medium text-blue-900">
+                        {searchType === 'research' 
+                          ? 'Procesando apuntes...'
+                          : searchType === 'systematic'
+                          ? 'Generando quiz...'
+                          : 'Buscando problemas...'
+                        }
+                      </p>
+                      <p className="text-xs text-blue-700">Esto puede tomar unos segundos</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error State */}
+              {error && (
+                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">!</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-red-900">Error</p>
+                      <p className="text-xs text-red-700">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Query Refinement Suggestions */}
+              <div className="mt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <p className="text-sm text-gray-700">Las preguntas más precisas funcionan mejor. Intenta agregar elementos como estos:</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                    Conceptos matemáticos
+                  </button>
+                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                    Fórmulas y ecuaciones
+                  </button>
+                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                    Ejemplos de problemas
+                  </button>
+                </div>
+              </div>
+
+              {/* Gather Options */}
+              <div className="flex items-center gap-3 mt-4">
+                <span className="text-sm font-medium text-gray-800">Generar:</span>
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => setGatherType('papers')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      gatherType === 'papers'
+                        ? 'bg-teal-100 text-teal-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    Resumen y Conceptos
+                  </button>
+                  <button
+                    onClick={() => setGatherType('trials')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      gatherType === 'trials'
+                        ? 'bg-teal-100 text-teal-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    Problemas de Práctica
+                  </button>
+                </div>
+              </div>
+
+              {/* Inputs ocultos para imágenes */}
+              <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
+            </div>
 
             {/* More Tools Section */}
             <div className="mt-8">
