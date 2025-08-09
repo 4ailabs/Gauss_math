@@ -319,84 +319,272 @@ const App: React.FC = () => {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeView === 'search' && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Procesa tus apuntes matemáticos con IA
-              </h2>
-              <p className="text-lg text-gray-600">
-                Sube tus notas, genera resúmenes, conceptos clave y preguntas de práctica
-              </p>
+          <div className="space-y-8">
+            {/* Search Type Selectors */}
+            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setSearchType('research')}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
+                  searchType === 'research'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <BookOpenIcon className="w-4 h-4" />
+                Procesar Apuntes
+              </button>
+              <button
+                onClick={() => setSearchType('systematic')}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
+                  searchType === 'systematic'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MessageCircleIcon className="w-4 h-4" />
+                Generar Quiz
+              </button>
+              <button
+                onClick={() => setSearchType('papers')}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
+                  searchType === 'papers'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <SearchIcon className="w-4 h-4" />
+                Encontrar Problemas
+              </button>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Materia
-                  </label>
-                  <select
-                    value={selectedSubject}
-                    onChange={(e) => setSelectedSubject(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  >
-                    <option value="Cálculo Diferencial e Integral">Cálculo Diferencial e Integral</option>
-                    <option value="Álgebra Lineal">Álgebra Lineal</option>
-                    <option value="Probabilidad y Estadística">Probabilidad y Estadística</option>
-                  </select>
-                </div>
+            {/* Subject Selector */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+              <label htmlFor="subject-select" className="block text-sm font-medium text-gray-800 mb-2">
+                Seleccionar Materia
+              </label>
+              <div className="relative">
+                <select
+                  id="subject-select"
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm text-gray-900 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                >
+                  <option value="Cálculo Diferencial e Integral">Cálculo Diferencial e Integral</option>
+                  <option value="Álgebra Lineal">Álgebra Lineal</option>
+                  <option value="Probabilidad y Estadística">Probabilidad y Estadística</option>
+                </select>
+              </div>
+            </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Apuntes
-                  </label>
+            {/* Main Search Card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                {/* Main Search Input */}
+                <div className="relative">
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Pega aquí tus apuntes de clase..."
-                    className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                  />
-                </div>
-
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleSearch}
+                    placeholder={
+                      searchType === 'research' 
+                        ? "Pega tus apuntes de matemáticas aquí o describe lo que quieres estudiar..."
+                        : searchType === 'systematic'
+                        ? "Describe el tema o concepto para generar un quiz de evaluación..."
+                        : "Describe el tipo de problemas que quieres encontrar o generar..."
+                    }
+                    className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
                     disabled={isLoading}
-                    className="flex-1 bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
-                  >
-                    {isLoading ? 'Procesando...' : 'Procesar Apuntes'}
-                  </button>
-                  <button
-                    onClick={handleToggleRecording}
-                    disabled={!isSpeechSupported || isLoading}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
-                  >
-                    <MicIcon className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={handleScanClick}
-                    disabled={isScanning}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
-                  >
-                    <CameraIcon className="w-5 h-5" />
-                  </button>
+                  />
+                  {isRecording && (
+                    <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      Grabando...
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                    <button
+                      onClick={handleToggleRecording}
+                      disabled={isLoading}
+                      className={`p-2 rounded-full transition-colors ${
+                        isRecording 
+                          ? 'bg-red-500 hover:bg-red-600 text-white' 
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                      }`}
+                      title={isRecording ? 'Detener grabación' : 'Grabar voz'}
+                    >
+                      <MicIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleSearch}
+                      disabled={isLoading || !notes.trim()}
+                      className={`p-3 rounded-full transition-colors ${
+                        isLoading 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-teal-600 hover:bg-teal-700'
+                      } text-white`}
+                      title={
+                        isLoading 
+                          ? 'Procesando...' 
+                          : searchType === 'research'
+                          ? 'Procesar apuntes'
+                          : searchType === 'systematic'
+                          ? 'Generar quiz'
+                          : 'Encontrar problemas'
+                      }
+                    >
+                      {isLoading ? (
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <ChevronRightIcon className="w-6 h-6" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                <input
-                  ref={imageInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelected}
-                  className="hidden"
-                />
+                {/* Loading State */}
+                {isLoading && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">
+                          {searchType === 'research' 
+                            ? 'Procesando apuntes...'
+                            : searchType === 'systematic'
+                            ? 'Generando quiz...'
+                            : 'Buscando problemas...'
+                          }
+                        </p>
+                        <p className="text-xs text-blue-700">Esto puede tomar unos segundos</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">!</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-red-900">Error</p>
+                        <p className="text-xs text-red-700">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Query Refinement Suggestions */}
+                <div className="mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <p className="text-sm text-gray-700">Las preguntas más precisas funcionan mejor. Intenta agregar elementos como estos:</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                      Conceptos matemáticos
+                    </button>
+                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                      Fórmulas y ecuaciones
+                    </button>
+                    <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                      Ejemplos de problemas
+                    </button>
+                  </div>
+                </div>
+
+                {/* Gather Options */}
+                <div className="flex items-center gap-3 mt-4">
+                  <span className="text-sm font-medium text-gray-800">Generar:</span>
+                  <div className="flex space-x-1">
+                    <button
+                      onClick={() => setGatherType('papers')}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        gatherType === 'papers'
+                          ? 'bg-teal-100 text-teal-800'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      Resumen y Conceptos
+                    </button>
+                    <button
+                      onClick={() => setGatherType('trials')}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        gatherType === 'trials'
+                          ? 'bg-teal-100 text-teal-800'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      Problemas de Práctica
+                    </button>
+                  </div>
+                </div>
+
+                                {/* Inputs ocultos para imágenes */}
+                <input type="file" ref={imageInputRef} onChange={handleImageSelected} accept="image/*" className="hidden"/>
+              </div>
+
+            {/* More Tools Section */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Herramientas Adicionales</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button 
+                  onClick={handleScanClick}
+                  className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                >
+                  <UploadIcon className="w-6 h-6 text-teal-600" />
+                  <div className="text-left">
+                    <h4 className="font-medium text-gray-900">Escanear Notas</h4>
+                    <p className="text-sm text-gray-700">Sube imágenes de tus apuntes</p>
+                  </div>
+                </button>
+                <button 
+                  onClick={handleToggleRecording}
+                  disabled={isLoading}
+                  className={`flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors ${
+                    isRecording ? 'border-red-300 bg-red-50' : ''
+                  }`}
+                >
+                  <MicIcon className={`w-6 h-6 ${isRecording ? 'text-red-600' : 'text-teal-600'}`} />
+                  <div className="text-left">
+                    <h4 className="font-medium text-gray-900">
+                      {isRecording ? 'Grabando...' : 'Grabar Voz'}
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      {isRecording ? 'Toca para detener' : 'Dicta tus notas por voz'}
+                    </p>
+                  </div>
+                </button>
+                <button 
+                  onClick={() => setActiveView('chat')}
+                  className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                >
+                  <MessageCircleIcon className="w-6 h-6 text-teal-600" />
+                  <div className="text-left">
+                    <h4 className="font-medium text-gray-900">Hacer Preguntas</h4>
+                    <p className="text-sm text-gray-700">Chat con IA sobre matemáticas</p>
+                  </div>
+                </button>
               </div>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">{error}</p>
+            {/* Recent Activity Section */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Reciente</h3>
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-4 h-4 text-teal-600" />
+                    <span className="text-sm font-medium text-gray-900">Optimización de Descenso de Gradiente</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-600">Procesado</span>
+                    <span className="text-xs text-gray-500">9:49am Abr 7</span>
+                    <MoreHorizontalIcon className="w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         )}
 
