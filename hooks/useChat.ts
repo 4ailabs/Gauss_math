@@ -67,8 +67,13 @@ export const useChat = () => {
         if (typeof chunk === 'string') {
           textChunk = chunk;
         } else if (chunk && typeof chunk === 'object') {
-          // Para Gemini, los chunks tienen una estructura específica
-          if (chunk.text) {
+          // Para la estructura real de Gemini que vemos en los logs
+          if (chunk.candidates && Array.isArray(chunk.candidates) && chunk.candidates[0]) {
+            const candidate = chunk.candidates[0];
+            if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+              textChunk = candidate.content.parts[0].text || '';
+            }
+          } else if (chunk.text) {
             textChunk = chunk.text;
           } else if (chunk.content) {
             textChunk = chunk.content;
@@ -79,15 +84,10 @@ export const useChat = () => {
             textChunk = chunk.parts
               .map(part => part.text || '')
               .join('');
-          } else if (chunk.role === 'model' && chunk.parts) {
-            // Estructura específica de Gemini
-            textChunk = chunk.parts
-              .map(part => part.text || '')
-              .join('');
           } else {
             // Debug: mostrar la estructura completa del chunk
             console.log('Estructura del chunk no reconocida:', Object.keys(chunk));
-            console.log('Chunk completo:', chunk);
+            console.log('Chunk completo:', JSON.stringify(chunk, null, 2));
             // Intentar extraer texto de cualquier propiedad que pueda contenerlo
             const possibleTextProps = ['text', 'content', 'response', 'message', 'value'];
             for (const prop of possibleTextProps) {
@@ -97,9 +97,17 @@ export const useChat = () => {
                 break;
               }
             }
-            // Si no se encontró texto, usar JSON.stringify como fallback
-            if (!textChunk) {
-              textChunk = JSON.stringify(chunk);
+            // Si no se encontró texto, intentar con candidates
+            if (!textChunk && chunk.candidates) {
+              console.log('Intentando extraer de candidates...');
+              try {
+                const candidate = chunk.candidates[0];
+                if (candidate && candidate.content && candidate.content.parts) {
+                  textChunk = candidate.content.parts.map(p => p.text || '').join('');
+                }
+              } catch (e) {
+                console.log('Error extrayendo de candidates:', e);
+              }
             }
           }
         } else {
@@ -108,6 +116,7 @@ export const useChat = () => {
         
         console.log('Texto extraído del chunk:', textChunk);
         fullResponse += textChunk;
+        console.log('Actualizando mensaje con respuesta parcial:', fullResponse.substring(0, 100) + '...');
         updateLastAssistantMessage(fullResponse);
         scrollChatToBottom();
       }

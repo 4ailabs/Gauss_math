@@ -113,11 +113,25 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, assistantHistory: [...state.assistantHistory, action.payload] };
     case 'UPDATE_LAST_ASSISTANT_MESSAGE':
       const updatedHistory = [...state.assistantHistory];
-      // Buscar el último mensaje del modelo (asistente) y actualizarlo
-      for (let i = updatedHistory.length - 1; i >= 0; i--) {
-        if (updatedHistory[i].role === 'model') {
-          updatedHistory[i].content = action.payload;
-          break;
+      if (updatedHistory.length > 0) {
+        const lastMessage = updatedHistory[updatedHistory.length - 1];
+        if (lastMessage && lastMessage.role === 'model') {
+          // Actualizar el último mensaje si es del modelo
+          updatedHistory[updatedHistory.length - 1] = {
+            ...lastMessage,
+            content: action.payload
+          };
+        } else {
+          // Si el último mensaje no es del modelo, buscar el último mensaje del modelo
+          for (let i = updatedHistory.length - 1; i >= 0; i--) {
+            if (updatedHistory[i].role === 'model') {
+              updatedHistory[i] = {
+                ...updatedHistory[i],
+                content: action.payload
+              };
+              break;
+            }
+          }
         }
       }
       return { ...state, assistantHistory: updatedHistory };

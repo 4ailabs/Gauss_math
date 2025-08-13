@@ -474,48 +474,64 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
         } else {
             console.log("Procesando pregunta sin imagen...");
             
-            // Usar generateContent directamente sin stream (para simplificar)
-            console.log("Llamando a generateContent...");
+            // Usar generateContentStream para streaming real
+            console.log("Llamando a generateContentStream...");
             
             const systemInstruction = `Eres una IA experta en "${subject}". Tu propósito es ayudar a los estudiantes a entender conceptos complejos, resolver dudas, y ser más eficientes en su estudio. Puedes responder preguntas generales sobre la materia, ayudar a formular ideas para tomar apuntes, y ofrecer ejemplos prácticos. Sé proactivo, amigable, y pedagógico en tus respuestas. Fomenta el pensamiento crítico haciendo preguntas de seguimiento.`;
             
-            const response = await ai.models.generateContent({
-                model: model,
-                contents: `${systemInstruction}\n\nPregunta del estudiante: ${newQuestion}`,
-                config: {
-                    temperature: 0.6
-                }
-            });
-            
-            console.log("Respuesta generada:", !!response);
-            console.log("Respuesta completa:", response);
-            
-            // Extraer el texto de la respuesta
-            let text = '';
-            if (response && response.text) {
-                text = response.text;
-            } else if (response && response.candidates && response.candidates[0]) {
-                const candidate = response.candidates[0];
-                if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
-                    text = candidate.content.parts[0].text || '';
-                }
-            }
-            
-            console.log("Texto extraído de la respuesta:", text);
-            
-            // Simular stream con la respuesta completa
-            const words = text.split(' ');
-            const stream = {
-                async *[Symbol.asyncIterator]() {
-                    for (const word of words) {
-                        yield word + ' ';
-                        await new Promise(resolve => setTimeout(resolve, 30));
+            try {
+                const response = await ai.models.generateContentStream({
+                    model: model,
+                    contents: `${systemInstruction}\n\nPregunta del estudiante: ${newQuestion}`,
+                    config: {
+                        temperature: 0.6
+                    }
+                });
+                
+                console.log("Stream generado:", !!response);
+                responseStream = response;
+                
+            } catch (streamError) {
+                console.log("Error con streaming, intentando sin stream:", streamError);
+                
+                // Fallback a respuesta sin stream si el streaming falla
+                const response = await ai.models.generateContent({
+                    model: model,
+                    contents: `${systemInstruction}\n\nPregunta del estudiante: ${newQuestion}`,
+                    config: {
+                        temperature: 0.6
+                    }
+                });
+                
+                console.log("Respuesta sin stream generada:", !!response);
+                
+                // Extraer el texto de la respuesta
+                let text = '';
+                if (response && response.text) {
+                    text = response.text;
+                } else if (response && response.candidates && response.candidates[0]) {
+                    const candidate = response.candidates[0];
+                    if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+                        text = candidate.content.parts[0].text || '';
                     }
                 }
-            };
-            
-            console.log("Stream simulado creado");
-            responseStream = stream;
+                
+                console.log("Texto extraído de la respuesta:", text);
+                
+                // Simular stream con la respuesta completa
+                const words = text.split(' ');
+                const stream = {
+                    async *[Symbol.asyncIterator]() {
+                        for (const word of words) {
+                            yield word + ' ';
+                            await new Promise(resolve => setTimeout(resolve, 30));
+                        }
+                    }
+                };
+                
+                console.log("Stream simulado creado como fallback");
+                responseStream = stream;
+            }
         }
         
         if (!responseStream) {
