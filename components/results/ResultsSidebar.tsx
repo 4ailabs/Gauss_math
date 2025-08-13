@@ -26,7 +26,7 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
   };
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 p-6 space-y-6">
+    <div className="h-full overflow-y-auto p-6 space-y-6">
       {/* Report Status */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Estado del Reporte</h3>

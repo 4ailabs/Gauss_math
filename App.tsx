@@ -24,7 +24,7 @@ const ViewRouter: React.FC = React.memo(() => {
       case 'search':
         return <SearchView />;
       case 'results':
-        return <ResultsView />;
+        return <ResultsView />; // ResultsView no necesita Layout, maneja su propio fullscreen
       case 'chat':
         return <ChatView />;
       case 'library':
@@ -39,6 +39,15 @@ const ViewRouter: React.FC = React.memo(() => {
         return <SearchView />;
     }
   };
+
+  // Si estamos en results, no usamos Layout para fullscreen
+  if (activeView === 'results') {
+    return (
+      <Suspense fallback={<ViewLoadingFallback />}>
+        <ResultsView />
+      </Suspense>
+    );
+  }
 
   return (
     <Suspense fallback={<ViewLoadingFallback />}>
@@ -60,10 +69,27 @@ const ViewLoadingFallback: React.FC = () => (
 
 // Main App Content Component
 const AppContent: React.FC = () => {
-  const { state: { isApiKeyMissing, error }, setError } = useApp();
+  const { state: { isApiKeyMissing, error, activeView }, setError } = useApp();
   
   // Initialize app
   useAppInitialization();
+
+  // Si estamos en results, renderizar sin Layout para fullscreen
+  if (activeView === 'results') {
+    return (
+      <>
+        {isApiKeyMissing && (
+          <div className="fixed top-4 left-4 right-4 z-50">
+            <ErrorDisplay
+              message="API Key de Google Gemini no configurada. Por favor, configura tu API Key en el archivo .env"
+              onDismiss={() => setError(null)}
+            />
+          </div>
+        )}
+        <ViewRouter />
+      </>
+    );
+  }
 
   return (
     <Layout>

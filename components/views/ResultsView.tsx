@@ -45,52 +45,62 @@ ${processedData.relatedProblems.map((p, i) => `${i+1}. ${p.problem}`).join('\n')
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex min-h-screen">
-        <div className="flex-1 max-w-4xl">
-          <ResultsHeader 
-            subject={selectedSubject}
-            onExport={handleExport}
-          />
-          
-          <div className="space-y-8 p-6">
+    <div className="results-fullscreen">
+      {/* Fixed Header */}
+      <div className="results-header-fixed">
+        <ResultsHeader 
+          subject={selectedSubject}
+          onExport={handleExport}
+        />
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="results-content-area">
+        {/* Left Content Panel */}
+        <div className="results-main-panel">
+          <div className="max-w-5xl mx-auto p-8 space-y-8">
             <ResultsSummary summary={processedData.summary} />
             
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 METODOLOGÍA
                 <ChevronRightIcon className="w-4 h-4" />
               </h2>
-              <p className="text-gray-800 leading-relaxed text-sm">
+              <p className="text-gray-800 leading-relaxed">
                 Analizamos los apuntes proporcionados usando inteligencia artificial avanzada. 
-                Se identificaron {processedData.keyConcepts.length} conceptos clave, 
-                se generaron {processedData.quizQuestions.length} preguntas de práctica, 
-                y se crearon {processedData.relatedProblems.length} problemas relacionados. 
+                Se identificaron <span className="font-semibold text-teal-600">{processedData.keyConcepts.length} conceptos clave</span>, 
+                se generaron <span className="font-semibold text-blue-600">{processedData.quizQuestions.length} preguntas de práctica</span>, 
+                y se crearon <span className="font-semibold text-green-600">{processedData.relatedProblems.length} problemas relacionados</span>. 
                 Cada elemento fue revisado para asegurar precisión matemática y relevancia educativa.
               </p>
             </div>
 
             <div className="space-y-8">
-              <h2 className="text-xl font-semibold text-gray-900">RESULTADOS</h2>
+              <h2 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-3">RESULTADOS</h2>
               
               <ConceptsSection concepts={processedData.keyConcepts} />
               <QuestionsSection questions={processedData.quizQuestions} />
               <ProblemsSection problems={processedData.relatedProblems} />
             </div>
+            
+            {/* Back Button */}
+            <div className="text-center py-12">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setActiveView('search')}
+                icon={<span>←</span>}
+              >
+                Volver a Búsqueda
+              </Button>
+            </div>
           </div>
         </div>
 
-        <ResultsSidebar processedData={processedData} />
-      </div>
-      
-      <div className="text-center py-8">
-        <Button
-          variant="secondary"
-          onClick={() => setActiveView('search')}
-          icon={<span>←</span>}
-        >
-          Volver a Búsqueda
-        </Button>
+        {/* Right Sidebar */}
+        <div className="results-sidebar-panel">
+          <ResultsSidebar processedData={processedData} />
+        </div>
       </div>
     </div>
   );
