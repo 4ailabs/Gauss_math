@@ -113,14 +113,12 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, assistantHistory: [...state.assistantHistory, action.payload] };
     case 'UPDATE_LAST_ASSISTANT_MESSAGE':
       const updatedHistory = [...state.assistantHistory];
-      const lastMessage = updatedHistory[updatedHistory.length - 1];
-      if (lastMessage && lastMessage.role === 'model') {
-        lastMessage.content = action.payload;
-      } else {
-        updatedHistory.push({
-          role: 'model',
-          content: action.payload
-        });
+      // Buscar el último mensaje del modelo (asistente) y actualizarlo
+      for (let i = updatedHistory.length - 1; i >= 0; i--) {
+        if (updatedHistory[i].role === 'model') {
+          updatedHistory[i].content = action.payload;
+          break;
+        }
       }
       return { ...state, assistantHistory: updatedHistory };
     case 'SET_ASSISTANT_INPUT':
