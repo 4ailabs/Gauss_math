@@ -21,6 +21,7 @@ import {
   DownloadIcon,
   XIcon
 } from './components/ui/Icons';
+import './App.css';
 
 declare global {
   interface Window {
@@ -97,6 +98,48 @@ const App: React.FC = () => {
       setIsLoading(false);
     }
   }, [notes, selectedSubject, saveToHistory]);
+
+  // Función para manejar el chat
+  const handleChatMessage = useCallback(async (message: string) => {
+    if (!message.trim()) return;
+    
+    const userMessage: ChatMessage = {
+      role: 'user',
+      content: message
+    };
+    
+    setAssistantHistory(prev => [...prev, userMessage]);
+    setAssistantInput('');
+    
+    try {
+      const stream = await getAssistantResponseStream(message, selectedSubject);
+      let fullResponse = '';
+      
+      for await (const chunk of stream) {
+        fullResponse += chunk;
+        // Actualizar la respuesta en tiempo real
+        setAssistantHistory(prev => {
+          const newHistory = [...prev];
+          const lastMessage = newHistory[newHistory.length - 1];
+          if (lastMessage && lastMessage.role === 'model') {
+            lastMessage.content = fullResponse;
+          } else {
+            newHistory.push({
+              role: 'model',
+              content: fullResponse
+            });
+          }
+          return newHistory;
+        });
+      }
+    } catch (error: any) {
+      console.error('Error en chat:', error);
+      setAssistantHistory(prev => [...prev, {
+        role: 'model',
+        content: `Error: ${error.message || 'No se pudo procesar tu mensaje'}`
+      }]);
+    }
+  }, [selectedSubject]);
 
   // Función simplificada para búsqueda
   const handleSearch = () => {
@@ -214,8 +257,20 @@ const App: React.FC = () => {
       setIsSpeechSupported(!!SpeechRecognition);
     };
 
+    const loadHistory = () => {
+      try {
+        const savedHistory = localStorage.getItem('gaussmathmind_history');
+        if (savedHistory) {
+          setAnalysisHistory(JSON.parse(savedHistory));
+        }
+      } catch (error) {
+        console.error('Error loading history:', error);
+      }
+    };
+
     checkApiKey();
     checkSpeechSupport();
+    loadHistory();
   }, []);
 
   // Renderizado simplificado
@@ -230,31 +285,31 @@ const App: React.FC = () => {
             <nav className="flex space-x-8">
               <button
                 onClick={() => setActiveView('search')}
-                className={`text-sm font-medium ${activeView === 'search' ? 'text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`text-sm font-medium ${activeView === 'search' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Buscar
               </button>
               <button
                 onClick={() => setActiveView('library')}
-                className={`text-sm font-medium ${activeView === 'library' ? 'text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`text-sm font-medium ${activeView === 'library' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Biblioteca
               </button>
               <button
                 onClick={() => setActiveView('recent')}
-                className={`text-sm font-medium ${activeView === 'recent' ? 'text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`text-sm font-medium ${activeView === 'recent' ? 'active' : 'text-gray-700'}`}
               >
                 Recientes
               </button>
               <button
                 onClick={() => setActiveView('study')}
-                className={`text-sm font-medium ${activeView === 'study' ? 'text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`text-sm font-medium ${activeView === 'study' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Estudio
               </button>
               <button
                 onClick={() => setActiveView('help')}
-                className={`text-sm font-medium ${activeView === 'help' ? 'text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`text-sm font-medium ${activeView === 'help' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Ayuda
               </button>
@@ -267,12 +322,12 @@ const App: React.FC = () => {
         {activeView === 'search' && (
           <div className="space-y-8">
             {/* Search Type Selectors */}
-            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+            <div className="search-type-selector">
               <button
                 onClick={() => setSearchType('research')}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === 'research'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'active'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -283,7 +338,7 @@ const App: React.FC = () => {
                 onClick={() => setSearchType('systematic')}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === 'systematic'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'active'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -294,7 +349,7 @@ const App: React.FC = () => {
                 onClick={() => setSearchType('papers')}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === 'papers'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'active'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -325,7 +380,7 @@ const App: React.FC = () => {
             {/* Main Search Card */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               {/* Main Search Input */}
-              <div className="relative">
+              <div className="notes-input-area">
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -340,16 +395,16 @@ const App: React.FC = () => {
                   disabled={isLoading}
                 />
                 {isRecording && (
-                  <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                  <div className="recording-indicator">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     Grabando...
                   </div>
                 )}
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                <div className="action-buttons">
                   <button
                     onClick={handleToggleRecording}
                     disabled={isLoading}
-                    className={`p-2 rounded-full transition-colors ${
+                    className={`action-button ${
                       isRecording 
                         ? 'bg-red-500 hover:bg-red-600 text-white' 
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
@@ -361,7 +416,7 @@ const App: React.FC = () => {
                   <button
                     onClick={handleSearch}
                     disabled={isLoading || !notes.trim()}
-                    className={`p-3 rounded-full transition-colors ${
+                    className={`action-button ${
                       isLoading 
                         ? 'bg-gray-400 cursor-not-allowed' 
                         : 'bg-teal-600 hover:bg-teal-700'
@@ -377,7 +432,7 @@ const App: React.FC = () => {
                     }
                   >
                     {isLoading ? (
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="loading-spinner"></div>
                     ) : (
                       <ChevronRightIcon className="w-6 h-6" />
                     )}
@@ -387,9 +442,9 @@ const App: React.FC = () => {
 
               {/* Loading State */}
               {isLoading && (
-                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="loading-state">
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="loading-spinner"></div>
                     <div>
                       <p className="text-sm font-medium text-blue-900">
                         {searchType === 'research' 
@@ -407,7 +462,7 @@ const App: React.FC = () => {
 
               {/* Error State */}
               {error && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="error-state">
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs">!</span>
@@ -421,19 +476,19 @@ const App: React.FC = () => {
               )}
 
               {/* Query Refinement Suggestions */}
-              <div className="mt-4">
+              <div className="query-suggestions">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                   <p className="text-sm text-gray-700">Las preguntas más precisas funcionan mejor. Intenta agregar elementos como estos:</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                  <button className="suggestion-tag">
                     Conceptos matemáticos
                   </button>
-                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                  <button className="suggestion-tag">
                     Fórmulas y ecuaciones
                   </button>
-                  <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium transition-colors">
+                  <button className="suggestion-tag">
                     Ejemplos de problemas
                   </button>
                 </div>
@@ -473,10 +528,10 @@ const App: React.FC = () => {
             {/* More Tools Section */}
             <div className="mt-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Herramientas Adicionales</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="tools-grid">
                 <button 
                   onClick={handleScanClick}
-                  className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                  className="tool-card hover-lift"
                 >
                   <UploadIcon className="w-6 h-6 text-teal-600" />
                   <div className="text-left">
@@ -487,9 +542,7 @@ const App: React.FC = () => {
                 <button 
                   onClick={handleToggleRecording}
                   disabled={isLoading}
-                  className={`flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors ${
-                    isRecording ? 'border-red-300 bg-red-50' : ''
-                  }`}
+                  className={`tool-card hover-lift ${isRecording ? 'recording' : ''}`}
                 >
                   <MicIcon className={`w-6 h-6 ${isRecording ? 'text-red-600' : 'text-teal-600'}`} />
                   <div className="text-left">
@@ -503,7 +556,7 @@ const App: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setActiveView('chat')}
-                  className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                  className="tool-card hover-lift"
                 >
                   <MessageCircleIcon className="w-6 h-6 text-teal-600" />
                   <div className="text-left">
@@ -535,11 +588,11 @@ const App: React.FC = () => {
         )}
 
         {activeView === 'results' && processedData && (
-          <div className="flex h-screen">
+          <div className="results-container">
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="results-main">
               {/* Header with Report Info */}
-              <div className="border-b border-gray-200 bg-white p-8">
+              <div className="report-header">
                 {/* Document Title */}
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -548,7 +601,7 @@ const App: React.FC = () => {
                       month: 'long', 
                       day: 'numeric' 
                     }).toUpperCase()}</p>
-                    <h1 className="text-4xl font-bold text-teal-600">{selectedSubject}</h1>
+                    <h1 className="report-title">{selectedSubject}</h1>
                   </div>
                   <div className="flex items-center gap-4">
                     <button 
@@ -605,31 +658,31 @@ const App: React.FC = () => {
                 </div>
                 
                 {/* Progress Indicator */}
-                <div className="flex items-center gap-4">
-                  <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                <div className="progress-indicator">
+                  <div className="progress-dots">
+                    <div className="progress-dot"></div>
+                    <div className="progress-dot"></div>
+                    <div className="progress-dot"></div>
+                    <div className="progress-dot"></div>
+                    <div className="progress-dot"></div>
                   </div>
                   <span className="text-sm font-medium text-gray-700">Análisis Completado</span>
                 </div>
               </div>
 
               {/* Report Content */}
-              <div className="p-8 space-y-10">
+              <div className="report-content">
                 {/* ABSTRACT Section */}
-                <div>
-                  <h2 className="text-lg font-bold text-teal-700 mb-4">RESUMEN</h2>
+                <div className="report-section">
+                  <h2>RESUMEN</h2>
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                     <p className="text-gray-800 leading-relaxed text-sm">{processedData.summary}</p>
                   </div>
                 </div>
 
                 {/* METHODS Section */}
-                <div>
-                  <h2 className="text-lg font-bold text-teal-700 mb-4 flex items-center gap-2">
+                <div className="report-section">
+                  <h2>
                     METODOLOGÍA
                     <ChevronRightIcon className="w-4 h-4" />
                   </h2>
@@ -645,44 +698,32 @@ const App: React.FC = () => {
                 </div>
 
                 {/* RESULTS Section */}
-                <div>
-                  <h2 className="text-lg font-bold text-teal-700 mb-4">RESULTADOS</h2>
+                <div className="report-section">
+                  <h2>RESULTADOS</h2>
                   
                   {/* Summary Statistics */}
                   <div className="mb-8">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Resumen del Análisis</h3>
-                    <div className="grid grid-cols-3 gap-6">
-                      <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                            <span className="text-teal-600 font-bold text-lg">{processedData.keyConcepts.length}</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">Conceptos Clave</p>
-                            <p className="text-xs text-gray-600">Identificados</p>
-                          </div>
+                    <h3>Resumen del Análisis</h3>
+                    <div className="summary-stats">
+                      <div className="stat-card">
+                        <div className="stat-icon teal">{processedData.keyConcepts.length}</div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Conceptos Clave</p>
+                          <p className="text-xs text-gray-600">Identificados</p>
                         </div>
                       </div>
-                      <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 font-bold text-lg">{processedData.quizQuestions.length}</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">Preguntas</p>
-                            <p className="text-xs text-gray-600">De práctica</p>
-                          </div>
+                      <div className="stat-card">
+                        <div className="stat-icon blue">{processedData.quizQuestions.length}</div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Preguntas</p>
+                          <p className="text-xs text-gray-600">De práctica</p>
                         </div>
                       </div>
-                      <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <span className="text-green-600 font-bold text-lg">{processedData.relatedProblems.length}</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">Problemas</p>
-                            <p className="text-xs text-gray-600">Relacionados</p>
-                          </div>
+                      <div className="stat-card">
+                        <div className="stat-icon green">{processedData.relatedProblems.length}</div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Problemas</p>
+                          <p className="text-xs text-gray-600">Relacionados</p>
                         </div>
                       </div>
                     </div>
@@ -690,13 +731,13 @@ const App: React.FC = () => {
 
                   {/* Key Concepts */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Conceptos Clave Identificados</h3>
+                    <h3>Conceptos Clave Identificados</h3>
                     <div className="grid gap-4">
                       {processedData.keyConcepts.map((concept, index) => (
-                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-shadow">
+                        <div key={index} className="concept-card">
                           <div className="flex items-start gap-4">
-                            <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-sm font-bold text-white">{index + 1}</span>
+                            <div className="concept-number">
+                              {index + 1}
                             </div>
                             <div className="flex-1">
                               <h4 className="text-lg font-semibold text-gray-900 mb-3">{concept.concept}</h4>
@@ -710,18 +751,18 @@ const App: React.FC = () => {
 
                   {/* Practice Questions */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Preguntas de Práctica Generadas</h3>
+                    <h3>Preguntas de Práctica Generadas</h3>
                     <div className="grid gap-4">
                       {processedData.quizQuestions.map((question, index) => (
-                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-shadow">
+                        <div key={index} className="question-card">
                           <div className="flex items-start gap-4">
-                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-sm font-bold text-white">{index + 1}</span>
+                            <div className="question-number">
+                              {index + 1}
                             </div>
                             <div className="flex-1">
                               <h4 className="text-lg font-semibold text-gray-900 mb-3">{question.question}</h4>
                               <div className="flex items-center gap-2 mb-3">
-                                <span className="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+                                <span className="question-type">
                                   {question.type}
                                 </span>
                               </div>
@@ -735,13 +776,13 @@ const App: React.FC = () => {
 
                   {/* Related Problems */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Problemas Relacionados</h3>
+                    <h3>Problemas Relacionados</h3>
                     <div className="grid gap-4">
                       {processedData.relatedProblems.map((problem, index) => (
-                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-shadow">
+                        <div key={index} className="problem-card">
                           <div className="flex items-start gap-4">
-                            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-sm font-bold text-white">{index + 1}</span>
+                            <div className="problem-number">
+                              {index + 1}
                             </div>
                             <div className="flex-1">
                               <h4 className="text-lg font-semibold text-gray-900 mb-3">{problem.problem}</h4>
@@ -757,9 +798,9 @@ const App: React.FC = () => {
             </div>
 
             {/* Right Sidebar */}
-            <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-screen">
+            <div className="results-sidebar">
               {/* Report Status */}
-              <div className="p-6 border-b border-gray-200">
+              <div className="report-status">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Reporte</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -772,8 +813,8 @@ const App: React.FC = () => {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                    <div className="status-item">
+                      <div className="status-icon">
                         <CheckIcon className="w-3 h-3 text-white" />
                       </div>
                       <div className="flex-1">
@@ -781,8 +822,8 @@ const App: React.FC = () => {
                         <p className="text-xs text-gray-600">Análisis completado</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                    <div className="status-item">
+                      <div className="status-icon">
                         <CheckIcon className="w-3 h-3 text-white" />
                       </div>
                       <div className="flex-1">
@@ -790,8 +831,8 @@ const App: React.FC = () => {
                         <p className="text-xs text-gray-600">{processedData.keyConcepts.length} conceptos</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                    <div className="status-item">
+                      <div className="status-icon">
                         <CheckIcon className="w-3 h-3 text-white" />
                       </div>
                       <div className="flex-1">
@@ -799,8 +840,8 @@ const App: React.FC = () => {
                         <p className="text-xs text-gray-600">{processedData.quizQuestions.length} preguntas</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center">
+                    <div className="status-item">
+                      <div className="status-icon">
                         <CheckIcon className="w-3 h-3 text-white" />
                       </div>
                       <div className="flex-1">
@@ -813,11 +854,11 @@ const App: React.FC = () => {
               </div>
 
               {/* Chat Section */}
-              <div className="flex-1 p-6 flex flex-col">
+              <div className="chat-section">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Chat</h3>
                   <button 
-                    onClick={() => {/* Limpiar chat */}}
+                    onClick={() => setAssistantHistory([])}
                     className="text-gray-500 hover:text-gray-700"
                     title="Limpiar chat"
                   >
@@ -826,20 +867,25 @@ const App: React.FC = () => {
                 </div>
                 
                 {/* Chat Messages */}
-                <div className="flex-1 bg-gray-50 rounded-lg p-3 mb-4 overflow-y-auto max-h-64">
+                <div className="chat-messages">
                   <div className="text-center text-gray-500 text-sm">
                     <p>Haz preguntas sobre el análisis</p>
                   </div>
                 </div>
                 
                 {/* Chat Input */}
-                <div className="flex gap-2">
+                <div className="chat-input">
                   <input
                     type="text"
                     placeholder="Pregunta sobre el análisis..."
                     className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                    onKeyPress={(e) => e.key === 'Enter' && handleChatMessage(e.currentTarget.value)}
                   />
                   <button 
+                    onClick={() => {
+                      const input = document.querySelector('.chat-input input') as HTMLInputElement;
+                      if (input) handleChatMessage(input.value);
+                    }}
                     className="px-3 py-2 rounded-lg text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors"
                   >
                     <ChevronRightIcon className="w-4 h-4" />
@@ -859,7 +905,7 @@ const App: React.FC = () => {
             <div className="mt-8 text-center">
               <button
                 onClick={() => setActiveView('search')}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
+                className="back-button"
               >
                 ← Volver a Búsqueda
               </button>
@@ -898,9 +944,10 @@ const App: React.FC = () => {
                     onChange={(e) => setAssistantInput(e.target.value)}
                     placeholder="Escribe tu pregunta..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    onKeyPress={(e) => e.key === 'Enter' && handleChatMessage(assistantInput)}
                   />
                   <button
-                    onClick={() => {/* Implementar chat */}}
+                    onClick={() => handleChatMessage(assistantInput)}
                     className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                   >
                     Enviar
@@ -924,7 +971,21 @@ const App: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Biblioteca</h2>
-              <p className="text-gray-600">Aquí puedes ver tu historial de análisis</p>
+              <div className="space-y-4">
+                {analysisHistory.length === 0 ? (
+                  <p className="text-gray-600">No hay análisis guardados en tu biblioteca</p>
+                ) : (
+                  analysisHistory.map((item) => (
+                    <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                      <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{item.subject}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(item.timestamp).toLocaleDateString('es-ES')}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -933,7 +994,17 @@ const App: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Recientes</h2>
-              <p className="text-gray-600">Aquí puedes ver tus análisis recientes</p>
+              <div className="space-y-4">
+                {analysisHistory.slice(0, 5).map((item) => (
+                  <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                    <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{item.subject}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(item.timestamp).toLocaleDateString('es-ES')}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -942,7 +1013,16 @@ const App: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Estudio</h2>
-              <p className="text-gray-600">Aquí puedes gestionar tu estudio</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">Progreso General</h3>
+                  <p className="text-sm text-gray-600">Materias estudiadas: {analysisHistory.length}</p>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">Próxima Revisión</h3>
+                  <p className="text-sm text-gray-600">No hay revisiones programadas</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -951,7 +1031,29 @@ const App: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Ayuda</h2>
-              <p className="text-gray-600">Aquí puedes encontrar ayuda sobre cómo usar la aplicación</p>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">¿Cómo usar la aplicación?</h3>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
+                    <li>Selecciona la materia que quieres estudiar</li>
+                    <li>Pega tus apuntes o describe lo que quieres aprender</li>
+                    <li>Haz clic en "Procesar apuntes"</li>
+                    <li>Revisa el análisis generado</li>
+                    <li>Usa el chat para hacer preguntas adicionales</li>
+                  </ol>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Funciones disponibles</h3>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                    <li>Procesamiento de apuntes con IA</li>
+                    <li>Generación de quizzes</li>
+                    <li>Búsqueda de problemas relacionados</li>
+                    <li>Chat con IA para dudas</li>
+                    <li>Escaneo de imágenes</li>
+                    <li>Grabación de voz</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         )}

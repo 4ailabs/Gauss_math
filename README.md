@@ -1,19 +1,19 @@
-# Gauss∑ AI - Research Assistant
+# Gauss∑ AI
 
-Una aplicación de investigación asistida por IA que replica la interfaz y funcionalidad de Elicit, diseñada para procesar y analizar contenido académico con un enfoque en matemáticas avanzadas.
+Una aplicación de inteligencia artificial para procesar y analizar apuntes de matemáticas con una interfaz moderna y funcional.
 
 ## 🎯 Características Principales
 
-### 🔍 **Interfaz de Elicit**
-- **Diseño moderno y limpio** inspirado en Elicit
-- **Navegación superior** con logo, enlaces y acciones de usuario
-- **Tarjetas y botones** con estilo moderno y responsive
-- **Tema claro** con tipografía legible y espaciado generoso
+### 🔍 **Interfaz Moderna**
+- **Diseño limpio y responsive** con Tailwind CSS
+- **Navegación intuitiva** entre diferentes vistas
+- **Tarjetas interactivas** con efectos hover y animaciones
+- **Tema claro** con tipografía Inter y colores teal
 
-### 📊 **Tipos de Investigación**
-- **Research Report**: Análisis completo de contenido
-- **Systematic Review**: Revisión sistemática (PRO)
-- **Find Papers**: Búsqueda de papers académicos
+### 📊 **Tipos de Análisis**
+- **Procesar Apuntes**: Análisis completo de contenido matemático
+- **Generar Quiz**: Creación de preguntas de práctica
+- **Encontrar Problemas**: Identificación de problemas relacionados
 
 ### 🧠 **Procesamiento Inteligente**
 - **Análisis de contenido** con IA avanzada
@@ -35,11 +35,12 @@ Una aplicación de investigación asistida por IA que replica la interfaz y func
 
 ## 🚀 Tecnologías Utilizadas
 
-- **React 18** con TypeScript
+- **React 19** con TypeScript
 - **Tailwind CSS** para estilos modernos
 - **Google Gemini AI** para procesamiento de IA
 - **Lucide React** para iconografía
 - **Vite** para desarrollo rápido
+- **CSS personalizado** para estilos específicos
 
 ## 📦 Instalación
 
@@ -101,30 +102,30 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 ```
 
 ### **Materias Disponibles**
-- **Investigación en Matemáticas Aplicadas y Computación**: Análisis de algoritmos, optimización, machine learning
-- **Administración de Bases de Datos**: Diseño de bases de datos, SQL, gestión de datos
-- **Elementos de Finanzas e Inversiones**: Matemáticas financieras, análisis de inversiones, modelos de riesgo
+- **Cálculo Diferencial e Integral**: Derivadas, integrales, límites, series
+- **Álgebra Lineal**: Matrices, vectores, transformaciones lineales
+- **Probabilidad y Estadística**: Distribuciones, inferencia, análisis de datos
 
 ## 📱 Uso
 
-### **1. Iniciar Investigación**
-- Selecciona el tipo de investigación
-- Escribe tu consulta en el campo principal
-- Haz clic en el botón de búsqueda
+### **1. Iniciar Análisis**
+- Selecciona la materia que quieres estudiar
+- Pega tus apuntes o describe el tema
+- Haz clic en "Procesar apuntes"
 
 ### **2. Procesar Contenido**
-- La IA analiza automáticamente el contenido
+- La IA analiza automáticamente tus apuntes
 - Extrae conceptos clave y genera preguntas
-- Identifica problemas relacionados
+- Identifica problemas relacionados para práctica
 
 ### **3. Explorar Resultados**
-- Revisa el resumen generado
-- Estudia los conceptos clave
+- Revisa el resumen generado por la IA
+- Estudia los conceptos clave identificados
 - Practica con las preguntas generadas
 
-### **4. Chatear con el Reporte**
+### **4. Chatear con la IA**
 - Haz preguntas específicas sobre el contenido
-- Adjunta imágenes para análisis adicional
+- Usa el chat integrado para dudas adicionales
 - Recibe respuestas detalladas en tiempo real
 
 ## 🎯 Casos de Uso
@@ -133,16 +134,19 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 - Procesar apuntes de matemáticas
 - Generar preguntas de práctica
 - Obtener explicaciones personalizadas
-
-### **Investigadores**
-- Analizar papers académicos
-- Extraer conceptos clave
-- Identificar problemas relacionados
+- Practicar con problemas relacionados
 
 ### **Educadores**
 - Crear contenido educativo
 - Generar ejercicios automáticamente
-- Proporcionar feedback personalizado
+- Proporcionar material de práctica
+- Evaluar comprensión de conceptos
+
+### **Autodidactas**
+- Aprender matemáticas a su propio ritmo
+- Generar contenido de estudio personalizado
+- Practicar con problemas adaptados
+- Recibir feedback inmediato
 
 ## 🔒 Privacidad y Seguridad
 
@@ -166,17 +170,18 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 🙏 Agradecimientos
 
 - **Google AI** por proporcionar la API de Gemini
-- **Elicit** por la inspiración en el diseño de la interfaz
+- **React Team** por el framework moderno
 - **Lucide** por los iconos hermosos
 - **Tailwind CSS** por el framework de estilos
+- **Vite** por el bundler rápido
 
 ## 📞 Soporte
 
 Si tienes preguntas o necesitas ayuda:
 - Abre un issue en GitHub
-- Contacta al equipo de desarrollo
 - Revisa la documentación de la API
+- Consulta la sección de ayuda en la aplicación
 
 ---
 
-**Desarrollado con ❤️ por 4ailabs**
+**Desarrollado con ❤️ para estudiantes de matemáticas**
