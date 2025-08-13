@@ -69,16 +69,20 @@ export const useNoteProcessing = () => {
       
       addToHistory(newHistoryItem);
       
-      // Small delay before showing results
+      // Cambiar a la vista de resultados inmediatamente
+      setActiveView('results');
+      
+      // Cerrar el modal después de un pequeño delay para una transición suave
       setTimeout(() => {
-        setActiveView('results');
-      }, 500);
+        setLoading(false);
+        setProcessingProgress(0);
+        setProcessingStep('');
+      }, 300);
       
     } catch (e: any) {
       console.error("Error processing notes:", e);
       setError(e.message || "Ocurrió un error al procesar los apuntes.");
       setProcessedData(null);
-    } finally {
       setLoading(false);
       setProcessingProgress(0);
       setProcessingStep('');
