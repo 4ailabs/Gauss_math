@@ -59,7 +59,31 @@ export const useChat = () => {
       console.log('Procesando stream...');
       for await (const chunk of stream) {
         console.log('Chunk recibido:', chunk);
-        fullResponse += chunk;
+        console.log('Tipo de chunk:', typeof chunk);
+        console.log('Contenido del chunk:', chunk);
+        
+        // Extraer el texto del chunk correctamente
+        let textChunk = '';
+        if (typeof chunk === 'string') {
+          textChunk = chunk;
+        } else if (chunk && typeof chunk === 'object') {
+          // Si es un objeto, buscar la propiedad text
+          if (chunk.text) {
+            textChunk = chunk.text;
+          } else if (chunk.content) {
+            textChunk = chunk.content;
+          } else if (chunk.response) {
+            textChunk = chunk.response;
+          } else {
+            // Si no hay propiedades conocidas, convertir a string
+            textChunk = JSON.stringify(chunk);
+          }
+        } else {
+          textChunk = String(chunk);
+        }
+        
+        console.log('Texto extraído del chunk:', textChunk);
+        fullResponse += textChunk;
         updateLastAssistantMessage(fullResponse);
         scrollChatToBottom();
       }
