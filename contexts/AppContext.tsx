@@ -20,6 +20,8 @@ interface AppState {
   error: string | null;
   isApiKeyMissing: boolean;
   isSpeechSupported: boolean;
+  processingProgress: number;
+  processingStep: string;
   
   // Chat
   assistantHistory: ChatMessage[];
@@ -43,6 +45,8 @@ type AppAction =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_API_KEY_MISSING'; payload: boolean }
   | { type: 'SET_SPEECH_SUPPORTED'; payload: boolean }
+  | { type: 'SET_PROCESSING_PROGRESS'; payload: number }
+  | { type: 'SET_PROCESSING_STEP'; payload: string }
   | { type: 'SET_ASSISTANT_HISTORY'; payload: ChatMessage[] }
   | { type: 'ADD_ASSISTANT_MESSAGE'; payload: ChatMessage }
   | { type: 'UPDATE_LAST_ASSISTANT_MESSAGE'; payload: string }
@@ -65,6 +69,8 @@ const initialState: AppState = {
   error: null,
   isApiKeyMissing: false,
   isSpeechSupported: false,
+  processingProgress: 0,
+  processingStep: '',
   assistantHistory: [],
   assistantInput: '',
   analysisHistory: [],
@@ -97,6 +103,10 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, isApiKeyMissing: action.payload };
     case 'SET_SPEECH_SUPPORTED':
       return { ...state, isSpeechSupported: action.payload };
+    case 'SET_PROCESSING_PROGRESS':
+      return { ...state, processingProgress: action.payload };
+    case 'SET_PROCESSING_STEP':
+      return { ...state, processingStep: action.payload };
     case 'SET_ASSISTANT_HISTORY':
       return { ...state, assistantHistory: action.payload };
     case 'ADD_ASSISTANT_MESSAGE':
@@ -144,6 +154,8 @@ interface AppContextType {
   setError: (error: string | null) => void;
   setApiKeyMissing: (missing: boolean) => void;
   setSpeechSupported: (supported: boolean) => void;
+  setProcessingProgress: (progress: number) => void;
+  setProcessingStep: (step: string) => void;
   setAssistantHistory: (history: ChatMessage[]) => void;
   addAssistantMessage: (message: ChatMessage) => void;
   updateLastAssistantMessage: (content: string) => void;
@@ -213,6 +225,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_SPEECH_SUPPORTED', payload: supported });
   }, []);
 
+  const setProcessingProgress = useCallback((progress: number) => {
+    dispatch({ type: 'SET_PROCESSING_PROGRESS', payload: progress });
+  }, []);
+
+  const setProcessingStep = useCallback((step: string) => {
+    dispatch({ type: 'SET_PROCESSING_STEP', payload: step });
+  }, []);
+
   const setAssistantHistory = useCallback((history: ChatMessage[]) => {
     dispatch({ type: 'SET_ASSISTANT_HISTORY', payload: history });
   }, []);
@@ -259,6 +279,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setError,
     setApiKeyMissing,
     setSpeechSupported,
+    setProcessingProgress,
+    setProcessingStep,
     setAssistantHistory,
     addAssistantMessage,
     updateLastAssistantMessage,

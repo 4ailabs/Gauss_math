@@ -80,11 +80,17 @@ const HelpView: React.FC = React.memo(() => {
 
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Materias Soportadas</h3>
-            <div className="flex flex-wrap gap-2">
-              {['Cálculo Diferencial e Integral', 'Álgebra Lineal', 'Probabilidad y Estadística'].map((subject) => (
-                <span key={subject} className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {subject}
-                </span>
+            <div className="space-y-3">
+              {[
+                'Investigación en Matemáticas Aplicadas y Computación',
+                'Administración de Bases de Datos', 
+                'Elementos de Finanzas e Inversiones'
+              ].map((subject) => (
+                <div key={subject} className="bg-teal-50 border border-teal-200 rounded-lg p-3">
+                  <span className="text-teal-800 font-medium text-sm">
+                    {subject}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
