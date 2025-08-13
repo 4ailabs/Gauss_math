@@ -22,10 +22,16 @@ export const ChatInput: React.FC = React.memo(() => {
     setIsTyping(true);
     try {
       console.log('Calling handleChatMessage with:', assistantInput);
+      console.log('handleChatMessage function:', handleChatMessage);
       await handleChatMessage(assistantInput);
       console.log('handleChatMessage completed');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
+      console.error('Error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
     } finally {
       setIsTyping(false);
     }

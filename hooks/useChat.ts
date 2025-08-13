@@ -21,13 +21,21 @@ export const useChat = () => {
   }, []);
 
   const handleChatMessage = useCallback(async (message: string) => {
-    if (!message.trim()) return;
+    console.log('=== INICIO handleChatMessage ===');
+    console.log('Mensaje recibido:', message);
+    console.log('Subject:', selectedSubject);
+    
+    if (!message.trim()) {
+      console.log('Mensaje vacío, retornando');
+      return;
+    }
     
     const userMessage: ChatMessage = {
       role: 'user',
       content: message.trim()
     };
     
+    console.log('Agregando mensaje de usuario:', userMessage);
     addAssistantMessage(userMessage);
     setAssistantInput('');
     scrollChatToBottom();
@@ -37,15 +45,20 @@ export const useChat = () => {
       role: 'model',
       content: 'Pensando...'
     };
+    console.log('Agregando mensaje de carga:', loadingMessage);
     addAssistantMessage(loadingMessage);
     scrollChatToBottom();
     
     try {
       console.log('Enviando mensaje al chat:', message);
+      console.log('Llamando a getAssistantResponseStream...');
       const stream = await getAssistantResponseStream(message, selectedSubject);
+      console.log('Stream recibido:', stream);
       let fullResponse = '';
       
+      console.log('Procesando stream...');
       for await (const chunk of stream) {
+        console.log('Chunk recibido:', chunk);
         fullResponse += chunk;
         updateLastAssistantMessage(fullResponse);
         scrollChatToBottom();
@@ -54,6 +67,11 @@ export const useChat = () => {
       console.log('Respuesta completa recibida:', fullResponse);
     } catch (error: any) {
       console.error('Error en chat:', error);
+      console.error('Error completo:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
       updateLastAssistantMessage(`Error: ${error.message || 'No se pudo procesar tu mensaje. Intenta de nuevo.'}`);
       scrollChatToBottom();
     }
