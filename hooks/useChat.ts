@@ -62,21 +62,45 @@ export const useChat = () => {
         console.log('Tipo de chunk:', typeof chunk);
         console.log('Contenido del chunk:', chunk);
         
-        // Extraer el texto del chunk correctamente
+        // Extraer el texto del chunk correctamente para Gemini
         let textChunk = '';
         if (typeof chunk === 'string') {
           textChunk = chunk;
         } else if (chunk && typeof chunk === 'object') {
-          // Si es un objeto, buscar la propiedad text
+          // Para Gemini, los chunks tienen una estructura específica
           if (chunk.text) {
             textChunk = chunk.text;
           } else if (chunk.content) {
             textChunk = chunk.content;
           } else if (chunk.response) {
             textChunk = chunk.response;
+          } else if (chunk.parts && Array.isArray(chunk.parts)) {
+            // Gemini puede devolver chunks con parts
+            textChunk = chunk.parts
+              .map(part => part.text || '')
+              .join('');
+          } else if (chunk.role === 'model' && chunk.parts) {
+            // Estructura específica de Gemini
+            textChunk = chunk.parts
+              .map(part => part.text || '')
+              .join('');
           } else {
-            // Si no hay propiedades conocidas, convertir a string
-            textChunk = JSON.stringify(chunk);
+            // Debug: mostrar la estructura completa del chunk
+            console.log('Estructura del chunk no reconocida:', Object.keys(chunk));
+            console.log('Chunk completo:', chunk);
+            // Intentar extraer texto de cualquier propiedad que pueda contenerlo
+            const possibleTextProps = ['text', 'content', 'response', 'message', 'value'];
+            for (const prop of possibleTextProps) {
+              if (chunk[prop] && typeof chunk[prop] === 'string') {
+                textChunk = chunk[prop];
+                console.log(`Texto encontrado en propiedad '${prop}':`, textChunk);
+                break;
+              }
+            }
+            // Si no se encontró texto, usar JSON.stringify como fallback
+            if (!textChunk) {
+              textChunk = JSON.stringify(chunk);
+            }
           }
         } else {
           textChunk = String(chunk);
