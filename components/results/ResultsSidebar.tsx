@@ -16,12 +16,21 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
     clearAssistantHistory, 
     setAssistantInput 
   } = useApp();
-  const { handleChatMessage } = useChat();
+  const { handleChatMessage, scrollChatToBottom } = useChat();
 
   const handleQuickChat = (input: HTMLInputElement) => {
     if (input.value.trim()) {
-      handleChatMessage(input.value);
+      const message = input.value.trim();
       input.value = '';
+      handleChatMessage(message);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const target = e.currentTarget;
+      handleQuickChat(target);
     }
   };
 
@@ -84,22 +93,23 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
           </Button>
         </div>
         
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 h-32 overflow-y-auto">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 h-40 overflow-y-auto" id="chat-container">
           {assistantHistory.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm">
+            <div className="text-center text-gray-500 text-sm h-full flex items-center justify-center">
               <p>Haz preguntas sobre el análisis</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {assistantHistory.slice(-3).map((message, index) => (
-                <div key={index} className={`text-xs ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                  <div className={`inline-block px-2 py-1 rounded ${
+            <div className="space-y-3">
+              {assistantHistory.slice(-4).map((message, index) => (
+                <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] px-3 py-2 rounded-lg text-xs ${
                     message.role === 'user' 
-                      ? 'bg-teal-600 text-white' 
-                      : 'bg-white border border-gray-200'
+                      ? 'bg-teal-600 text-white rounded-br-sm' 
+                      : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
                   }`}>
-                    {message.content.substring(0, 100)}
-                    {message.content.length > 100 && '...'}
+                    <div className="whitespace-pre-wrap break-words">
+                      {message.content.length > 150 ? `${message.content.substring(0, 150)}...` : message.content}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -112,11 +122,8 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
             type="text"
             placeholder="Pregunta sobre el análisis..."
             className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleQuickChat(e.currentTarget);
-              }
-            }}
+            onKeyPress={handleKeyPress}
+            disabled={false}
           />
           <Button
             size="sm"
@@ -125,6 +132,7 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
               if (input) handleQuickChat(input);
             }}
             icon={<ChevronRightIcon className="w-4 h-4" />}
+            disabled={false}
           >
           </Button>
         </div>
