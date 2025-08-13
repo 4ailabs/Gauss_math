@@ -473,39 +473,49 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
             return stream;
         } else {
             console.log("Procesando pregunta sin imagen...");
-            // Enviar mensaje sin imagen
-            console.log("Llamando a sendMessageStream...");
-            responseStream = await assistantChatInstance.sendMessageStream({ message: newQuestion });
-            console.log("Stream sin imagen creado:", !!responseStream);
-            console.log("Tipo de responseStream:", typeof responseStream);
-            console.log("Métodos del responseStream:", Object.getOwnPropertyNames(responseStream));
             
-            // Verificar que el stream sea válido
-            if (!responseStream) {
-                console.error("Stream es null o undefined");
-                throw new Error("Stream de respuesta inválido");
-            }
+            // Usar generateContent directamente sin stream (para simplificar)
+            console.log("Llamando a generateContent...");
             
-            if (typeof responseStream[Symbol.asyncIterator] !== 'function') {
-                console.error("Stream no es iterable:", responseStream);
-                // Intentar convertir a stream si es posible
-                if (responseStream.text) {
-                    console.log("Convirtiendo respuesta a stream...");
-                    const text = responseStream.text;
-                    const chunks = text.split(' ');
-                    const stream = {
-                        async *[Symbol.asyncIterator]() {
-                            for (const chunk of chunks) {
-                                yield chunk + ' ';
-                                await new Promise(resolve => setTimeout(resolve, 50));
-                            }
-                        }
-                    };
-                    console.log("Stream convertido creado");
-                    return stream;
+            const systemInstruction = `Eres una IA experta en "${subject}". Tu propósito es ayudar a los estudiantes a entender conceptos complejos, resolver dudas, y ser más eficientes en su estudio. Puedes responder preguntas generales sobre la materia, ayudar a formular ideas para tomar apuntes, y ofrecer ejemplos prácticos. Sé proactivo, amigable, y pedagógico en tus respuestas. Fomenta el pensamiento crítico haciendo preguntas de seguimiento.`;
+            
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: `${systemInstruction}\n\nPregunta del estudiante: ${newQuestion}`,
+                config: {
+                    temperature: 0.6
                 }
-                throw new Error("Stream de respuesta inválido");
+            });
+            
+            console.log("Respuesta generada:", !!response);
+            console.log("Respuesta completa:", response);
+            
+            // Extraer el texto de la respuesta
+            let text = '';
+            if (response && response.text) {
+                text = response.text;
+            } else if (response && response.candidates && response.candidates[0]) {
+                const candidate = response.candidates[0];
+                if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+                    text = candidate.content.parts[0].text || '';
+                }
             }
+            
+            console.log("Texto extraído de la respuesta:", text);
+            
+            // Simular stream con la respuesta completa
+            const words = text.split(' ');
+            const stream = {
+                async *[Symbol.asyncIterator]() {
+                    for (const word of words) {
+                        yield word + ' ';
+                        await new Promise(resolve => setTimeout(resolve, 30));
+                    }
+                }
+            };
+            
+            console.log("Stream simulado creado");
+            responseStream = stream;
         }
         
         if (!responseStream) {
@@ -513,7 +523,7 @@ export const getAssistantResponseStream = async (newQuestion: string, subject: s
             throw new Error("No se pudo obtener respuesta del asistente.");
         }
         
-        console.log("=== ÉXITO getAssistantResponseStream (sin imagen) ===");
+        console.log("=== ÉXITO getAssistantResponseStream ===");
         return responseStream;
     } catch (error: any) {
         console.error("=== ERROR en getAssistantResponseStream ===");
