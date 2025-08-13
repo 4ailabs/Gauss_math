@@ -8,11 +8,11 @@ import {
   BookOpenIcon, 
   TrophyIcon, 
   ClockIcon, 
-  BarChart3Icon,
+  TargetIcon,
   RefreshCwIcon,
   PlayIcon,
   PauseIcon,
-  ArrowRightIcon
+  ChevronRightIcon
 } from '../ui/Icons';
 
 const StudyView: React.FC = React.memo(() => {

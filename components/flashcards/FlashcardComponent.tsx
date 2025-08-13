@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Flashcard } from '../../types';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { RotateCcwIcon, CheckIcon, XIcon, BarChart3Icon } from '../ui/Icons';
+import { RefreshCwIcon, CheckIcon, XIcon, TargetIcon } from '../ui/Icons';
 
 interface FlashcardComponentProps {
   flashcard: Flashcard;
@@ -63,7 +63,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <BarChart3Icon className="w-4 h-4" />
+                <TargetIcon className="w-4 h-4" />
                 Confianza: 
                 <span className={`px-2 py-1 rounded text-white text-xs ${getConfidenceColor(flashcard.confidence)}`}>
                   {Math.round(flashcard.confidence * 100)}%
@@ -152,7 +152,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
             variant="secondary"
             size="sm"
             onClick={() => handleConfidence(0.5)}
-            icon={<RotateCcwIcon className="w-4 h-4" />}
+            icon={<RefreshCwIcon className="w-4 h-4" />}
             className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
           >
             Normal
@@ -176,7 +176,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
           <Button
             variant="secondary"
             onClick={handleFlip}
-            icon={<RotateCcwIcon className="w-4 h-4" />}
+            icon={<RefreshCwIcon className="w-4 h-4" />}
           >
             Voltear Tarjeta
           </Button>

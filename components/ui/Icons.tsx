@@ -29,7 +29,11 @@ import {
   ChevronDown,
   ChevronRight,
   MoreHorizontal,
-  Check
+  Check,
+  Play,
+  Pause,
+  Clock,
+  Trophy
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -69,3 +73,7 @@ export const ChevronDownIcon: React.FC<IconProps> = (props) => <ChevronDown {...
 export const ChevronRightIcon: React.FC<IconProps> = (props) => <ChevronRight {...props} />;
 export const MoreHorizontalIcon: React.FC<IconProps> = (props) => <MoreHorizontal {...props} />;
 export const CheckIcon: React.FC<IconProps> = (props) => <Check {...props} />;
+export const PlayIcon: React.FC<IconProps> = (props) => <Play {...props} />;
+export const PauseIcon: React.FC<IconProps> = (props) => <Pause {...props} />;
+export const ClockIcon: React.FC<IconProps> = (props) => <Clock {...props} />;
+export const TrophyIcon: React.FC<IconProps> = (props) => <Trophy {...props} />;
