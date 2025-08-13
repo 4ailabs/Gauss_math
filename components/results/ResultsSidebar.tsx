@@ -121,9 +121,13 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
           <input
             type="text"
             placeholder="Pregunta sobre el análisis..."
-            className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+            className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
             onKeyPress={handleKeyPress}
             disabled={false}
+            style={{ 
+              color: '#111827 !important', 
+              backgroundColor: '#ffffff !important'
+            }}
           />
           <Button
             size="sm"
@@ -134,6 +138,7 @@ export const ResultsSidebar: React.FC<ResultsSidebarProps> = React.memo(({ proce
             icon={<ChevronRightIcon className="w-4 h-4" />}
             disabled={false}
           >
+            Enviar
           </Button>
         </div>
         
