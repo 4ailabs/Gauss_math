@@ -23,8 +23,10 @@ export const useNoteProcessing = () => {
     setError(null);
     
     try {
+      console.log('Iniciando procesamiento de notas...');
       // Procesar directamente sin simulación de progreso
       const data = await processNotes(notes, selectedSubject);
+      console.log('Notas procesadas exitosamente:', data);
       
       setProcessedData(data);
       
@@ -46,24 +48,17 @@ export const useNoteProcessing = () => {
       addToHistory(newHistoryItem);
       
       // Cambiar a la vista de resultados inmediatamente
+      setLoading(false);
+      console.log('Navegando a vista de resultados...');
       setActiveView('results');
-      
-      // Cerrar el modal después de un pequeño delay para una transición suave
-      setTimeout(() => {
-        setLoading(false);
-        setProcessingProgress(0);
-        setProcessingStep('');
-      }, 300);
       
     } catch (e: any) {
       console.error("Error processing notes:", e);
       setError(e.message || "Ocurrió un error al procesar los apuntes.");
       setProcessedData(null);
       setLoading(false);
-      setProcessingProgress(0);
-      setProcessingStep('');
     }
-  }, [notes, selectedSubject, setLoading, setError, setProcessedData, setActiveView, addToHistory, setProcessingProgress, setProcessingStep, simulateProgress]);
+  }, [notes, selectedSubject, setLoading, setError, setProcessedData, setActiveView, addToHistory]);
 
   const handleSearch = useCallback(() => {
     if (!notes.trim()) {
