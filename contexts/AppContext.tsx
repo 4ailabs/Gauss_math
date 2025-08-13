@@ -59,7 +59,7 @@ type AppAction =
 const initialState: AppState = {
   notes: '',
   processedData: null,
-  selectedSubject: 'Cálculo Diferencial e Integral',
+  selectedSubject: 'Investigación en Matemáticas Aplicadas y Computación',
   activeView: 'search',
   searchType: 'research',
   gatherType: 'papers',

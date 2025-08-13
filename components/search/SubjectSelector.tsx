@@ -6,26 +6,9 @@ export const SubjectSelector: React.FC = React.memo(() => {
   const { state: { selectedSubject }, setSelectedSubject } = useApp();
 
   const subjects = [
-    'Cálculo Diferencial',
-    'Cálculo Integral',
-    'Álgebra Lineal',
-    'Álgebra Superior',
-    'Geometría Analítica',
-    'Ecuaciones Diferenciales',
-    'Análisis Matemático',
-    'Métodos Numéricos',
-    'Probabilidad y Estadística',
-    'Matemáticas Discretas',
-    'Teoría de Números',
-    'Geometría Diferencial',
-    'Análisis Real',
-    'Análisis Complejo',
-    'Topología',
-    'Álgebra Abstracta',
-    'Física Matemática',
-    'Optimización',
-    'Investigación de Operaciones',
-    'Teoría de Grafos'
+    'Investigación en Matemáticas Aplicadas y Computación',
+    'Administración de Bases de Datos',
+    'Elementos de Finanzas e Inversiones'
   ];
 
   return (

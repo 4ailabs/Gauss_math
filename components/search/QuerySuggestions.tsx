@@ -1,11 +1,47 @@
 import React from 'react';
+import { useApp } from '../../contexts/AppContext';
 
 export const QuerySuggestions: React.FC = React.memo(() => {
-  const suggestions = [
-    'Conceptos matemáticos',
-    'Fórmulas y ecuaciones',
-    'Ejemplos de problemas',
-  ];
+  const { state: { selectedSubject } } = useApp();
+
+  const getSuggestions = () => {
+    switch (selectedSubject) {
+      case 'Investigación en Matemáticas Aplicadas y Computación':
+        return [
+          'Estructura IMRyD de artículos',
+          'Revisión de literatura científica',
+          'Metodología de investigación',
+          'Presentación de resultados',
+          'Discusión académica'
+        ];
+      case 'Administración de Bases de Datos':
+        return [
+          'Diseño de bases de datos',
+          'Consultas SQL avanzadas',
+          'Normalización y optimización',
+          'Transacciones y concurrencia',
+          'Seguridad de datos'
+        ];
+      case 'Elementos de Finanzas e Inversiones':
+        return [
+          'Interés simple y compuesto',
+          'Valor presente y futuro',
+          'Anualidades y rentas',
+          'Tablas de amortización',
+          'VAN y TIR',
+          'Mercado de capitales',
+          'Evaluación de proyectos'
+        ];
+      default:
+        return [
+          'Conceptos clave',
+          'Ejemplos prácticos',
+          'Metodología específica'
+        ];
+    }
+  };
+
+  const suggestions = getSuggestions();
 
   return (
     <div className="query-suggestions">

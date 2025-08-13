@@ -96,7 +96,132 @@ const processNotesSchema = {
 };
 
 export const processNotes = async (notes: string, subject: string): Promise<ProcessedData> => {
-    const prompt = `Eres un asistente experto de IA para estudiantes de la materia "${subject}". Analiza los siguientes apuntes, que pueden incluir texto y fórmulas LaTeX. Tu tarea es estructurar esta información para un estudio efectivo.
+    // Prompts especializados inline para evitar problemas de importación
+    const detectarUnidad = (contenido: string, materia: string): string => {
+        const contenidoLower = contenido.toLowerCase();
+        
+        if (materia === 'Investigación en Matemáticas Aplicadas y Computación') {
+            if (contenidoLower.includes('artículo') || contenidoLower.includes('imryd') || 
+                contenidoLower.includes('estructura') || contenidoLower.includes('investigación original')) {
+              return 'unidad1';
+            }
+            
+            if (contenidoLower.includes('literatura') || contenidoLower.includes('referencias') || 
+                contenidoLower.includes('citación') || contenidoLower.includes('índice')) {
+              return 'unidad2';
+            }
+            
+            if (contenidoLower.includes('hipótesis') || contenidoLower.includes('experimental') || 
+                contenidoLower.includes('diseño') || contenidoLower.includes('metodología')) {
+              return 'unidad3';
+            }
+            
+            if (contenidoLower.includes('resultados') || contenidoLower.includes('cuadros') || 
+                contenidoLower.includes('figuras')) {
+              return 'unidad4';
+            }
+            
+            if (contenidoLower.includes('discusión') || contenidoLower.includes('conclusiones') || 
+                contenidoLower.includes('limitaciones')) {
+              return 'unidad5';
+            }
+        } else if (materia === 'Elementos de Finanzas e Inversiones') {
+            if (contenidoLower.includes('interés') || contenidoLower.includes('simple') || 
+                contenidoLower.includes('compuesto') || contenidoLower.includes('valor presente') || 
+                contenidoLower.includes('valor futuro') || contenidoLower.includes('anualidades')) {
+              return 'finanzas_unidad1';
+            }
+            
+            if (contenidoLower.includes('amortización') || contenidoLower.includes('depreciación') || 
+                contenidoLower.includes('capitalización') || contenidoLower.includes('gradientes') || 
+                contenidoLower.includes('préstamos')) {
+              return 'finanzas_unidad2';
+            }
+            
+            if (contenidoLower.includes('mercado') || contenidoLower.includes('dinero') || 
+                contenidoLower.includes('capitales') || contenidoLower.includes('derivados') || 
+                contenidoLower.includes('instrumentos financieros') || contenidoLower.includes('bonos') || 
+                contenidoLower.includes('acciones')) {
+              return 'finanzas_unidad3';
+            }
+            
+            if (contenidoLower.includes('van') || contenidoLower.includes('tir') || 
+                contenidoLower.includes('valor actual neto') || contenidoLower.includes('tasa interna') || 
+                contenidoLower.includes('payback') || contenidoLower.includes('evaluación')) {
+              return 'finanzas_unidad4';
+            }
+        }
+        
+        return 'general';
+    };
+
+    const getUnidadPrompt = (unidad: string): string => {
+        switch (unidad) {
+            case 'unidad1':
+                return `UNIDAD 1: QUÉ ES UN ARTÍCULO DE INVESTIGACIÓN
+                Enfócate en: estructura IMRyD, investigación original vs revisión, importancia en la sociedad del conocimiento.`;
+            case 'unidad2':
+                return `UNIDAD 2: LA REVISIÓN DE LA LITERATURA  
+                Enfócate en: fuentes de calidad, Web of Knowledge, factor de impacto, gestores de referencias, estilos de citación.`;
+            case 'unidad3':
+                return `UNIDAD 3: MÉTODOS DE INVESTIGACIÓN
+                Enfócate en: formulación de hipótesis, diseños experimentales, recolección de datos empíricos.`;
+            case 'unidad4':
+                return `UNIDAD 4: PRESENTACIÓN DE RESULTADOS
+                Enfócate en: estándares, presentación discursiva, cuadros, figuras estadísticas.`;
+            case 'unidad5':
+                return `UNIDAD 5: DISCUSIÓN
+                Enfócate en: interpretación de resultados, contraste con literatura, limitaciones, futuras investigaciones.`;
+            case 'finanzas_unidad1':
+                return `UNIDAD 1: ELEMENTOS BÁSICOS DE MATEMÁTICAS FINANCIERAS (20 horas)
+                Enfócate en: definición de interés, interés simple vs compuesto, valor presente y futuro, anualidades, capitalización y descuento.`;
+            case 'finanzas_unidad2':
+                return `UNIDAD 2: APLICACIONES DE LAS MATEMÁTICAS FINANCIERAS (16 horas)
+                Enfócate en: tablas de amortización, depreciación, capitalización, gradientes, análisis de préstamos y créditos.`;
+            case 'finanzas_unidad3':
+                return `UNIDAD 3: MERCADO DE DINERO, DE CAPITALES Y DERIVADOS (14 horas)
+                Enfócate en: estructura del sistema financiero, instrumentos del mercado de dinero y capitales, productos derivados, bonos y acciones.`;
+            case 'finanzas_unidad4':
+                return `UNIDAD 4: MÉTODOS DE EVALUACIÓN FINANCIERA (14 horas)
+                Enfócate en: Valor Actual Neto (VAN), Tasa Interna de Retorno (TIR), período de recuperación (payback), análisis de sensibilidad.`;
+            default:
+                return 'ANÁLISIS GENERAL';
+        }
+    };
+    
+    let specificPrompt = '';
+    
+    if (subject === 'Investigación en Matemáticas Aplicadas y Computación') {
+        const unidad = detectarUnidad(notes, subject);
+        specificPrompt = `
+        CONTEXTO ESPECÍFICO: Seminario de 7mo semestre de la UNAM FES Acatlán enfocado en elaborar productos de investigación original en matemáticas aplicadas y computación.
+        
+        ${getUnidadPrompt(unidad)}
+        
+        Como experto en investigación científica, analiza el contenido considerando metodología de investigación, 
+        estructura académica, y rigor científico apropiado para un estudiante de matemáticas aplicadas.
+        `;
+    } else if (subject === 'Elementos de Finanzas e Inversiones') {
+        const unidad = detectarUnidad(notes, subject);
+        specificPrompt = `
+        CONTEXTO ESPECÍFICO: Materia de 7mo semestre de la UNAM FES Acatlán enfocada en matemáticas financieras y evaluación de inversiones.
+        
+        ${getUnidadPrompt(unidad)}
+        
+        Como experto en finanzas e inversiones, analiza el contenido considerando: fórmulas de matemáticas financieras, 
+        evaluación de proyectos, análisis de mercados financieros, y métodos cuantitativos apropiados para un estudiante de matemáticas.
+        `;
+    } else if (subject === 'Administración de Bases de Datos') {
+        specificPrompt = `Eres un experto en administración de bases de datos. Analiza este contenido enfocándose en: 
+        diseño de BD, SQL, normalización, índices, optimización, transacciones, concurrencia, 
+        seguridad de datos, y administración de sistemas de gestión de bases de datos.`;
+    } else {
+        specificPrompt = `Eres un asistente experto de IA para estudiantes de la materia "${subject}".`;
+    }
+
+    const prompt = `${specificPrompt}
+    
+    Analiza los siguientes apuntes, que pueden incluir texto y fórmulas LaTeX. Tu tarea es estructurar esta información para un estudio efectivo a nivel universitario.
     
     Apuntes:
     ---
@@ -104,10 +229,12 @@ export const processNotes = async (notes: string, subject: string): Promise<Proc
     ---
     
     Por favor, procesa estos apuntes y proporciona una salida JSON estructurada que contenga:
-    1.  Un resumen conciso enfocado en la relevancia para la materia.
-    2.  Una lista de conceptos clave, teoremas y definiciones.
-    3.  Un conjunto de preguntas de cuestionario para ayudar al estudiante a probar su conocimiento sobre el tema.
+    1.  Un resumen conciso enfocado en la relevancia para la materia y nivel universitario.
+    2.  Una lista de conceptos clave, teoremas, definiciones y términos técnicos importantes.
+    3.  Un conjunto de preguntas de cuestionario variadas para evaluar comprensión del tema.
     4.  Una lista de 2-3 problemas de práctica adicionales para reforzar el aprendizaje, con sus soluciones detalladas.
+    
+    IMPORTANTE: Adapta el contenido al nivel de 7mo semestre universitario y mantén el rigor académico apropiado.
     `;
 
     try {
