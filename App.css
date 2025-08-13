@@ -17,6 +17,28 @@
   transform: rotateY(180deg);
 }
 
+/* Chat Input Fixes */
+textarea {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+textarea::placeholder {
+  color: #6B7280 !important;
+  opacity: 1 !important;
+}
+
+/* Ensure text is visible in all states */
+textarea:focus {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+textarea:disabled {
+  color: #6B7280 !important;
+  background-color: #F9FAFB !important;
+}
+
 /* Fullscreen Results Layout */
 .results-fullscreen {
   position: fixed;
