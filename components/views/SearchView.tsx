@@ -12,24 +12,14 @@ import { NotesInput } from '../search/NotesInput';
 import { ToolsGrid } from '../search/ToolsGrid';
 import { RecentActivity } from '../search/RecentActivity';
 import { ErrorDisplay } from '../common/ErrorDisplay';
-import { ProcessingOverlay } from '../ui/ProcessingOverlay';
 
 const SearchView: React.FC = React.memo(() => {
   const { 
-    state: { isLoading, error, processingProgress, processingStep },
-    setLoading,
-    setProcessingProgress,
-    setProcessingStep
+    state: { error },
   } = useApp();
   const { handleSearch } = useNoteProcessing();
   const { handleToggleRecording } = useSpeechRecognition();
   const { handleScanClick, handleImageSelected, imageInputRef } = useImageScanning();
-
-  const handleCancelProcessing = () => {
-    setLoading(false);
-    setProcessingProgress(0);
-    setProcessingStep('');
-  };
 
   return (
     <>
@@ -58,13 +48,6 @@ const SearchView: React.FC = React.memo(() => {
         <RecentActivity />
       </div>
 
-      {/* Processing Overlay */}
-      <ProcessingOverlay
-        isVisible={isLoading}
-        progress={processingProgress}
-        currentStep={processingStep}
-        onCancel={handleCancelProcessing}
-      />
     </>
   );
 });

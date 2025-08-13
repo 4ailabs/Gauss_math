@@ -656,3 +656,112 @@ input[type="text"]:disabled {
   color: #6B7280 !important;
   background-color: #F9FAFB !important;
 }
+
+/* Fullscreen Results Layout */
+.results-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  overflow: hidden;
+  z-index: 40;
+}
+
+.results-header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 50;
+  height: 140px;
+}
+
+.results-content-area {
+  display: flex;
+  height: 100vh;
+  padding-top: 140px;
+}
+
+.results-main-panel {
+  flex: 1;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.results-sidebar-panel {
+  width: 320px;
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+/* Smooth scrolling */
+.results-main-panel,
+.results-sidebar-panel {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+.results-main-panel::-webkit-scrollbar,
+.results-sidebar-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.results-main-panel::-webkit-scrollbar-track,
+.results-sidebar-panel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.results-main-panel::-webkit-scrollbar-thumb,
+.results-sidebar-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.results-main-panel::-webkit-scrollbar-thumb:hover,
+.results-sidebar-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox scrollbar */
+.results-main-panel,
+.results-sidebar-panel {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Mobile responsive scroll fixes */
+@media (max-width: 768px) {
+  .results-content-area {
+    flex-direction: column;
+  }
+  
+  .results-sidebar-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+    max-height: 40vh;
+  }
+  
+  .results-main-panel {
+    flex: 1;
+    min-height: 60vh;
+  }
+}
+
+/* Ensure scroll works on all browsers */
+.results-main-panel,
+.results-sidebar-panel {
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto; /* Enable vertical scroll */
+}
+
+/* Prevent body scroll when results are open */
+.results-fullscreen {
+  touch-action: none; /* Prevent pull-to-refresh */
+}

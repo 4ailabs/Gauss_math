@@ -5,32 +5,13 @@ import { AnalysisHistory } from '../types';
 
 export const useNoteProcessing = () => {
   const {
-    state: { notes, selectedSubject, analysisHistory },
+    state: { notes, selectedSubject },
     setLoading,
     setError,
     setProcessedData,
     setActiveView,
     addToHistory,
-    setProcessingProgress,
-    setProcessingStep,
   } = useApp();
-
-  const simulateProgress = useCallback(async () => {
-    const steps = [
-      { progress: 10, step: 'Analizando contenido...' },
-      { progress: 30, step: 'Extrayendo conceptos clave...' },
-      { progress: 60, step: 'Generando preguntas...' },
-      { progress: 85, step: 'Creando problemas relacionados...' },
-      { progress: 95, step: 'Finalizando análisis...' },
-      { progress: 100, step: 'Completado' }
-    ];
-
-    for (const { progress, step } of steps) {
-      setProcessingProgress(progress);
-      setProcessingStep(step);
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-    }
-  }, [setProcessingProgress, setProcessingStep]);
 
   const handleProcessNotes = useCallback(async () => {
     if (!notes.trim()) {
@@ -40,15 +21,10 @@ export const useNoteProcessing = () => {
     
     setLoading(true);
     setError(null);
-    setProcessingProgress(0);
-    setProcessingStep('Iniciando análisis...');
     
     try {
-      // Simular progreso mientras se procesa
-      const progressPromise = simulateProgress();
-      const processPromise = processNotes(notes, selectedSubject);
-      
-      const [data] = await Promise.all([processPromise, progressPromise]);
+      // Procesar directamente sin simulación de progreso
+      const data = await processNotes(notes, selectedSubject);
       
       setProcessedData(data);
       

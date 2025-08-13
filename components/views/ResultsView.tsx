@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -12,6 +12,17 @@ import { ResultsSidebar } from '../results/ResultsSidebar';
 
 const ResultsView: React.FC = React.memo(() => {
   const { state: { processedData, selectedSubject }, setActiveView } = useApp();
+
+  // Prevent body scroll when results view is open
+  useEffect(() => {
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+    
+    // Cleanup: restore body scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   if (!processedData) {
     setActiveView('search');
