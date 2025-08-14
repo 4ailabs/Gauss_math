@@ -183,6 +183,9 @@ const ResearchView: React.FC = React.memo(() => {
     setResearchState(ResearchState.RESEARCHING);
     
     try {
+      console.log('🚀 Iniciando investigación de subtópicos...');
+      console.log('📋 Subtópicos a investigar:', subtopics);
+      
       const initialSubtopics = subtopics.map(title => ({ 
         title, 
         content: '', 
@@ -191,15 +194,23 @@ const ResearchView: React.FC = React.memo(() => {
       }));
 
       setSubtopicObjects(initialSubtopics);
+      console.log('📝 Subtópicos inicializados:', initialSubtopics);
 
       // Usar el servicio real de Gemini para investigar subtópicos
       for (let i = 0; i < subtopics.length; i++) {
+        console.log(`🔍 Investigando subtópico ${i + 1}/${subtopics.length}: ${subtopics[i]}`);
+        
         setSubtopicObjects(prev => prev.map((st, index) => 
           index === i ? { ...st, status: 'loading' } : st
         ));
 
         try {
+          console.log(`📚 Llamando a researchSubtopic para: ${subtopics[i]}`);
           const { content, sources: subtopicSources } = await researchSubtopic(subtopics[i], topic);
+          
+          console.log(`✅ Subtópico ${subtopics[i]} investigado exitosamente`);
+          console.log(`📄 Contenido generado (primeros 100 chars):`, content.substring(0, 100) + '...');
+          console.log(`🔗 Fuentes encontradas:`, subtopicSources.length);
           
           setSubtopicObjects(prev => prev.map((st, index) => 
             index === i ? { ...st, content, sources: subtopicSources, status: 'complete' } : st
@@ -208,35 +219,50 @@ const ResearchView: React.FC = React.memo(() => {
           // Agregar fuentes únicas
           setSources(prev => {
             const newSources = [...prev, ...subtopicSources];
-            return newSources.filter((source, index, self) => 
+            const uniqueSources = newSources.filter((source, index, self) => 
               index === self.findIndex(s => s.uri === source.uri)
             );
+            console.log(`📊 Fuentes totales acumuladas: ${uniqueSources.length}`);
+            return uniqueSources;
           });
         } catch (err) {
-          console.error(`Error investigando subtópico ${subtopics[i]}:`, err);
+          console.error(`❌ Error investigando subtópico ${subtopics[i]}:`, err);
           setSubtopicObjects(prev => prev.map((st, index) => 
             index === i ? { ...st, content: `Error al investigar: ${subtopics[i]}`, sources: [], status: 'complete' } : st
           ));
         }
       }
 
+      // Esperar un momento para asegurar que el estado se actualice
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('🔄 Todos los subtópicos investigados, procediendo a síntesis...');
+      console.log('📊 Estado final de subtópicos:', subtopicObjects);
+      
       setResearchState(ResearchState.SYNTHESIZING);
       
       // Usar el servicio real de Gemini para sintetizar el reporte
       try {
         console.log('🔄 Iniciando síntesis del reporte...');
-        console.log('📊 Datos de investigación:', subtopicObjects);
         
-        const researchedContent = subtopicObjects
-          .filter(st => st.status === 'complete')
+        // Obtener el estado actual de subtópicos
+        const currentSubtopicObjects = subtopicObjects;
+        console.log('📊 Datos de investigación actuales:', currentSubtopicObjects);
+        
+        const researchedContent = currentSubtopicObjects
+          .filter(st => st.status === 'complete' && st.content && st.content.trim().length > 0)
           .map(st => ({ title: st.title, content: st.content }));
         
-        console.log('📝 Contenido a sintetizar:', researchedContent);
+        console.log('📝 Contenido filtrado para síntesis:', researchedContent);
+        console.log('📊 Número de subtópicos válidos:', researchedContent.length);
         
         if (researchedContent.length === 0) {
-          throw new Error('No hay contenido de investigación disponible para sintetizar');
+          console.error('❌ No hay contenido válido para sintetizar');
+          console.log('🔍 Estado de todos los subtópicos:', currentSubtopicObjects);
+          throw new Error('No hay contenido de investigación disponible para sintetizar. Verifica que la API esté funcionando correctamente.');
         }
         
+        console.log('📚 Llamando a synthesizeReport con:', researchedContent.length, 'subtópicos');
         const report = await synthesizeReport(topic, researchedContent);
         console.log('✅ Reporte generado exitosamente:', report);
         
@@ -262,7 +288,7 @@ const ResearchView: React.FC = React.memo(() => {
       } catch (err) {
         console.error('❌ Error al sintetizar el reporte:', err);
         
-        // Crear un reporte de fallback
+        // Crear un reporte de fallback más informativo
         const fallbackReport = {
           summary: [
             'Error en la generación del reporte',
@@ -274,23 +300,29 @@ const ResearchView: React.FC = React.memo(() => {
 ## Problema Detectado
 Ocurrió un error durante la generación del reporte final de la investigación sobre "${topic}".
 
-## Datos Disponibles
-Los siguientes subtópicos fueron investigados exitosamente:
-${subtopicObjects
-  .filter(st => st.status === 'complete')
-  .map(st => `- **${st.title}**: ${st.content.substring(0, 100)}...`)
-  .join('\n')}
+## Estado de la Investigación
+${subtopicObjects.map((st, index) => `
+### Subtópico ${index + 1}: ${st.title}
+- **Estado:** ${st.status}
+- **Contenido:** ${st.content ? `${st.content.substring(0, 100)}...` : 'Sin contenido'}
+- **Fuentes:** ${st.sources ? st.sources.length : 0} encontradas
+`).join('\n')}
 
 ## Solución Recomendada
-1. Verificar la configuración de la API de Gemini
-2. Revisar la conexión a internet
-3. Intentar generar el reporte nuevamente
+1. **Verificar la configuración de la API de Gemini** - Asegúrate de que la API_KEY esté configurada
+2. **Revisar la conexión a internet** - Verifica que puedas acceder a Google AI Studio
+3. **Intentar generar el reporte nuevamente** - El problema puede ser temporal
+4. **Revisar los logs en consola** - Busca mensajes de error específicos
 
 ## Información Técnica
-Error: ${err instanceof Error ? err.message : 'Error desconocido'}
+**Error:** ${err instanceof Error ? err.message : 'Error desconocido'}
+
+**Subtópicos investigados:** ${subtopicObjects.filter(st => st.status === 'complete').length}/${subtopics.length}
+
+**Fuentes totales:** ${sources.length}
 
 ---
-*Este es un reporte de fallback generado automáticamente.*`
+*Este es un reporte de fallback generado automáticamente debido a un error en la síntesis.*`
         };
         
         console.log('🔄 Aplicando reporte de fallback:', fallbackReport);
@@ -298,11 +330,11 @@ Error: ${err instanceof Error ? err.message : 'Error desconocido'}
         setResearchState(ResearchState.DONE);
       }
     } catch (err) {
-      console.error(err);
+      console.error('❌ Error general en la investigación:', err);
       setError(err instanceof Error ? err.message : 'Ocurrió un error desconocido.');
       setResearchState(ResearchState.ERROR);
     }
-  }, [subtopics]);
+  }, [topic, subtopics]);
 
   const renderContent = () => {
     switch (researchState) {
