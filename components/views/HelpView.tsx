@@ -22,7 +22,9 @@ import {
   NetworkIcon,
   SettingsIcon,
   FileTextIcon,
-  CalculatorIcon
+  CalculatorIcon,
+  ClockIcon,
+  CheckIcon
 } from '../ui/Icons';
 
 const HelpView: React.FC = React.memo(() => {
@@ -292,15 +294,21 @@ const HelpView: React.FC = React.memo(() => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-teal-600">🎯</div>
+                  <div className="text-2xl font-bold text-teal-600">
+                    <TargetIcon className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-sm text-gray-600">Precisión Matemática</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">🚀</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    <ZapIcon className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-sm text-gray-600">Aprendizaje Acelerado</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">💡</div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    <LightbulbIcon className="w-8 h-8 mx-auto" />
+                  </div>
                   <div className="text-sm text-gray-600">Comprensión Profunda</div>
                 </div>
               </div>
@@ -377,9 +385,15 @@ const HelpView: React.FC = React.memo(() => {
                 <div className="flex items-start justify-between mb-4">
                   <h4 className="text-lg font-semibold text-gray-900">{tutorial.title}</h4>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span>⏱️ {tutorial.duration}</span>
+                    <span className="flex items-center gap-1">
+                      <ClockIcon className="w-4 h-4" />
+                      {tutorial.duration}
+                    </span>
                     <span>•</span>
-                    <span>📊 {tutorial.difficulty}</span>
+                    <span className="flex items-center gap-1">
+                      <ChartBarIcon className="w-4 h-4" />
+                      {tutorial.difficulty}
+                    </span>
                   </div>
                 </div>
                 <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
@@ -420,7 +434,7 @@ const HelpView: React.FC = React.memo(() => {
                 <ul className="space-y-2">
                   {category.items.map((tip, tipIndex) => (
                     <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700">
-                      <span className="text-yellow-500 mt-1">💡</span>
+                      <LightbulbIcon className="w-4 h-4 text-yellow-500 mt-1 flex-shrink-0" />
                       <span>{tip}</span>
                     </li>
                   ))}
@@ -442,7 +456,7 @@ const HelpView: React.FC = React.memo(() => {
                 <div className="space-y-2">
                   {item.solutions.map((solution, solutionIndex) => (
                     <div key={solutionIndex} className="flex items-start gap-2 text-sm text-gray-700">
-                      <span className="text-green-500 mt-1">✅</span>
+                      <CheckIcon className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
                       <span>{solution}</span>
                     </div>
                   ))}
