@@ -37,7 +37,8 @@ export const useNoteProcessing = () => {
         case 'systematic':
           console.log('Generando quiz...');
           data = await generateQuiz(notes, selectedSubject);
-          console.log('Generación de quiz completada');
+          console.log('Generación de quiz completada:', data);
+          console.log('Quiz questions:', data.quizQuestions);
           break;
         
         case 'papers':

@@ -577,13 +577,34 @@ export const generateQuiz = async (notes: string, subject: string): Promise<Proc
     Instrucciones:
     1. Crea un resumen del contenido principal
     2. Identifica los conceptos clave que se evaluarán
-    3. Genera 5 preguntas de quiz variadas (opción múltiple, verdadero/falso, problemas)
+    3. Genera 5 preguntas de quiz con opciones múltiples
     4. Incluye 2-3 problemas adicionales para práctica
     5. Asegúrate de que las preguntas sean claras y apropiadas para el nivel
 
+    Para cada pregunta del quiz, incluye:
+    - question: La pregunta
+    - options: Array de 4 opciones (A, B, C, D)
+    - correctOption: La letra de la opción correcta (A, B, C, o D)
+    - answer: Explicación de por qué es correcta
+    - type: "multiple_choice"
+
     Apuntes: ${notes}
 
-    Genera una respuesta estructurada que incluya resumen, conceptos clave, preguntas de quiz y problemas de práctica.`;
+    Formato JSON requerido:
+    {
+      "summary": "Resumen del contenido",
+      "keyConcepts": [{"concept": "Nombre", "definition": "Definición"}],
+      "quizQuestions": [
+        {
+          "question": "Pregunta aquí",
+          "options": ["A) Opción 1", "B) Opción 2", "C) Opción 3", "D) Opción 4"],
+          "correctOption": "A",
+          "answer": "Explicación",
+          "type": "multiple_choice"
+        }
+      ],
+      "relatedProblems": [{"problem": "Enunciado", "solution": "Solución"}]
+    }`;
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
@@ -591,6 +612,7 @@ export const generateQuiz = async (notes: string, subject: string): Promise<Proc
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
+                responseSchema: generateQuizSchema,
                 temperature: 0.3,
             }
         });

@@ -14,6 +14,22 @@ interface InteractiveQuizSectionProps {
 }
 
 export const InteractiveQuizSection: React.FC<InteractiveQuizSectionProps> = React.memo(({ questions }) => {
+  // Debug logging
+  console.log('InteractiveQuizSection recibió questions:', questions);
+  console.log('Tipo de questions:', typeof questions);
+  console.log('Length de questions:', questions?.length);
+  
+  // Validación y fallback para preguntas
+  if (!questions || questions.length === 0) {
+    console.log('No hay preguntas disponibles, mostrando fallback');
+    return (
+      <Card className="text-center p-8 bg-blue-50 border-blue-200">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">No hay preguntas disponibles</h3>
+        <p className="text-blue-600">No se pudieron generar preguntas para este contenido.</p>
+      </Card>
+    );
+  }
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{[key: number]: string}>({});
   const [showResults, setShowResults] = useState(false);
