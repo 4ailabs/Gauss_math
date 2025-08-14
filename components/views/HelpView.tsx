@@ -1,106 +1,524 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { 
+  BookOpenIcon, 
+  LightbulbIcon, 
+  MessageCircleIcon, 
+  CameraIcon, 
+  MicIcon, 
+  DownloadIcon, 
+  SearchIcon, 
+  TargetIcon, 
+  ZapIcon, 
+  HelpCircleIcon, 
+  ChevronDownIcon, 
+  ChevronRightIcon,
+  PlayIcon,
+  StarIcon,
+  GraduationCapIcon,
+  ChartBarIcon,
+  NetworkIcon,
+  SettingsIcon,
+  FileTextIcon,
+  CalculatorIcon
+} from '../ui/Icons';
 
 const HelpView: React.FC = React.memo(() => {
-  const features = [
-    'Procesamiento de apuntes con IA',
-    'Generación de quizzes personalizados',
-    'Búsqueda de problemas relacionados',
-    'Chat interactivo con IA especializada',
-    'Escaneo de imágenes con OCR',
-    'Grabación de voz para entrada de texto',
-    'Historial de análisis y progreso',
-    'Exportación de resultados',
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['getting-started']));
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const toggleSection = (sectionId: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(sectionId)) {
+      newExpanded.delete(sectionId);
+    } else {
+      newExpanded.add(sectionId);
+    }
+    setExpandedSections(newExpanded);
+  };
+
+  const isExpanded = (sectionId: string) => expandedSections.has(sectionId);
+
+  const tabs = [
+    { id: 'overview', label: 'Vista General', icon: <BookOpenIcon className="w-4 h-4" /> },
+    { id: 'features', label: 'Funcionalidades', icon: <ZapIcon className="w-4 h-4" /> },
+    { id: 'tutorials', label: 'Tutoriales', icon: <PlayIcon className="w-4 h-4" /> },
+    { id: 'faq', label: 'Preguntas Frecuentes', icon: <HelpCircleIcon className="w-4 h-4" /> },
+    { id: 'tips', label: 'Consejos y Trucos', icon: <LightbulbIcon className="w-4 h-4" /> },
+    { id: 'troubleshooting', label: 'Solución de Problemas', icon: <SettingsIcon className="w-4 h-4" /> }
   ];
 
-  const steps = [
-    'Selecciona la materia que quieres estudiar',
-    'Pega tus apuntes o describe lo que quieres aprender',
-    'Elige el tipo de análisis: procesar, generar quiz o encontrar problemas',
-    'Haz clic en el botón correspondiente para procesar',
-    'Revisa el análisis generado con conceptos, preguntas y problemas',
-    'Usa el chat para hacer preguntas adicionales',
-    'Guarda o exporta tus resultados para estudio posterior',
+  const features = [
+    {
+      icon: <BookOpenIcon className="w-6 h-6" />,
+      title: 'Procesamiento Inteligente de Apuntes',
+      description: 'IA avanzada que extrae conceptos clave, identifica dificultades y crea mapas conceptuales',
+      category: 'core'
+    },
+    {
+      icon: <TargetIcon className="w-6 h-6" />,
+      title: 'Generación de Quizzes Adaptativos',
+      description: 'Preguntas personalizadas por dificultad y tipo, con explicaciones detalladas',
+      category: 'learning'
+    },
+    {
+      icon: <CalculatorIcon className="w-6 h-6" />,
+      title: 'Problemas de Práctica Inteligentes',
+      description: 'Ejercicios paso a paso con soluciones detalladas y conceptos aplicados',
+      category: 'learning'
+    },
+    {
+      icon: <MessageCircleIcon className="w-6 h-6" />,
+      title: 'Chat IA Especializado',
+      description: 'Asistente matemático para aclarar dudas y profundizar en conceptos',
+      category: 'interactive'
+    },
+    {
+      icon: <CameraIcon className="w-6 h-6" />,
+      title: 'Escaneo de Imágenes (OCR)',
+      description: 'Extrae texto matemático de fotos, diagramas y apuntes escritos a mano',
+      category: 'input'
+    },
+    {
+      icon: <MicIcon className="w-6 h-6" />,
+      title: 'Grabación de Voz',
+      description: 'Dicta tus apuntes y convierte automáticamente a texto',
+      category: 'input'
+    },
+    {
+      icon: <NetworkIcon className="w-6 h-6" />,
+      title: 'Mapas Conceptuales',
+      description: 'Visualiza relaciones entre conceptos y jerarquías de aprendizaje',
+      category: 'advanced'
+    },
+    {
+      icon: <ChartBarIcon className="w-6 h-6" />,
+      title: 'Análisis de Dificultad',
+      description: 'Clasificación automática de conceptos por nivel de complejidad',
+      category: 'advanced'
+    },
+    {
+      icon: <FileTextIcon className="w-6 h-6" />,
+      title: 'Historial y Progreso',
+      description: 'Seguimiento de tu aprendizaje y acceso a análisis anteriores',
+      category: 'core'
+    },
+    {
+      icon: <DownloadIcon className="w-6 h-6" />,
+      title: 'Exportación Avanzada',
+      description: 'Guarda resultados en múltiples formatos para estudio offline',
+      category: 'core'
+    }
   ];
+
+  const tutorials = [
+    {
+      id: 'first-analysis',
+      title: 'Tu Primer Análisis de Apuntes',
+      steps: [
+        'Selecciona "Investigación en Matemáticas" como materia',
+        'Pega tus apuntes en el área de texto (mínimo 100 caracteres)',
+        'Haz clic en "Procesar apuntes" y espera el análisis',
+        'Revisa los conceptos extraídos y su nivel de dificultad',
+        'Explora el mapa conceptual para ver relaciones entre temas'
+      ],
+      duration: '3-5 minutos',
+      difficulty: 'Principiante'
+    },
+    {
+      id: 'quiz-generation',
+      title: 'Generando Quizzes Personalizados',
+      steps: [
+        'Procesa tus apuntes primero para extraer conceptos',
+        'Selecciona "Generar quiz" como tipo de análisis',
+        'Revisa las preguntas generadas por dificultad',
+        'Usa el chat para solicitar preguntas específicas',
+        'Exporta el quiz para estudio offline'
+      ],
+      duration: '2-3 minutos',
+      difficulty: 'Intermedio'
+    },
+    {
+      id: 'image-scanning',
+      title: 'Escaneando Imágenes Matemáticas',
+      steps: [
+        'Haz clic en el botón de cámara en la entrada de texto',
+        'Selecciona una imagen clara de tus apuntes',
+        'Espera el procesamiento OCR (puede tomar unos segundos)',
+        'Revisa el texto extraído y edita si es necesario',
+        'Procesa el texto extraído normalmente'
+      ],
+      duration: '1-2 minutos',
+      difficulty: 'Principiante'
+    },
+    {
+      id: 'voice-input',
+      title: 'Usando Entrada de Voz',
+      steps: [
+        'Haz clic en el botón de micrófono',
+        'Habla claramente sobre el tema matemático',
+        'El sistema transcribe tu voz en tiempo real',
+        'Revisa la transcripción y edita si es necesario',
+        'Procesa el texto transcrito'
+      ],
+      duration: '1-2 minutos',
+      difficulty: 'Principiante'
+    }
+  ];
+
+  const faq = [
+    {
+      question: '¿Qué materias matemáticas soporta la aplicación?',
+      answer: 'Actualmente soporta: Investigación en Matemáticas Aplicadas y Computación, Administración de Bases de Datos, y Elementos de Finanzas e Inversiones. La IA se adapta al contenido específico de cada materia.'
+    },
+    {
+      question: '¿Puedo usar la app sin conexión a internet?',
+      answer: 'La app requiere conexión para el procesamiento inicial, pero puedes exportar y guardar resultados para estudio offline. El historial local también está disponible sin conexión.'
+    },
+    {
+      question: '¿Qué tan precisos son los análisis generados?',
+      answer: 'La precisión depende de la calidad de los apuntes. Para mejores resultados, incluye definiciones claras, fórmulas y ejemplos. La IA usa múltiples pasadas para mejorar la exactitud.'
+    },
+    {
+      question: '¿Puedo personalizar el nivel de dificultad de los quizzes?',
+      answer: 'Sí, la app genera automáticamente preguntas de diferentes niveles (básico, intermedio, avanzado) basándose en el contenido de tus apuntes. También puedes solicitar ajustes específicos en el chat.'
+    },
+    {
+      question: '¿Cómo funciona el análisis de dificultad?',
+      answer: 'La IA analiza el contenido matemático y clasifica conceptos por complejidad. Considera factores como: uso de fórmulas avanzadas, conexiones entre temas, y nivel de abstracción requerido.'
+    },
+    {
+      question: '¿Puedo importar apuntes desde otros formatos?',
+      answer: 'Actualmente soporta texto plano, imágenes (OCR) y entrada de voz. Estamos trabajando en soporte para PDF, Word y otros formatos comunes.'
+    },
+    {
+      question: '¿La app recuerda mi progreso de estudio?',
+      answer: 'Sí, guarda automáticamente tu historial de análisis, conceptos estudiados y progreso. Puedes acceder a todo tu historial desde la biblioteca.'
+    },
+    {
+      question: '¿Cómo puedo obtener mejores resultados?',
+      answer: 'Sé específico en tus apuntes, incluye fórmulas y ejemplos, usa LaTeX para notación matemática, y proporciona contexto suficiente para que la IA entienda el tema.'
+    }
+  ];
+
+  const tips = [
+    {
+      category: 'Entrada de Datos',
+      items: [
+        'Usa LaTeX para fórmulas: \\(x^2 + y^2 = r^2\\)',
+        'Incluye definiciones y ejemplos en tus apuntes',
+        'Organiza el contenido por temas o capítulos',
+        'Para imágenes, asegúrate de que el texto sea legible',
+        'Habla claramente cuando uses entrada de voz'
+      ]
+    },
+    {
+      category: 'Análisis',
+      items: [
+        'Procesa apuntes completos para mejores resultados',
+        'Revisa el mapa conceptual para entender relaciones',
+        'Usa el chat para profundizar en conceptos específicos',
+        'Exporta resultados para estudio posterior',
+        'Compara diferentes análisis del mismo tema'
+      ]
+    },
+    {
+      category: 'Estudio',
+      items: [
+        'Comienza con conceptos básicos identificados por la IA',
+        'Usa los quizzes para evaluar tu comprensión',
+        'Practica con los problemas generados',
+        'Revisa regularmente tu historial de aprendizaje',
+        'Combina el análisis de la IA con tu estudio tradicional'
+      ]
+    }
+  ];
+
+  const troubleshooting = [
+    {
+      problem: 'La app no procesa mis apuntes',
+      solutions: [
+        'Verifica que tengas conexión a internet',
+        'Asegúrate de que el texto tenga al menos 100 caracteres',
+        'Intenta con un texto más simple primero',
+        'Revisa que no haya caracteres especiales problemáticos'
+      ]
+    },
+    {
+      problem: 'Los resultados no son precisos',
+      solutions: [
+        'Revisa la calidad y claridad de tus apuntes',
+        'Incluye más contexto y definiciones',
+        'Usa el chat para solicitar aclaraciones',
+        'Procesa apuntes más completos del mismo tema'
+      ]
+    },
+    {
+      problem: 'La app es lenta',
+      solutions: [
+        'Verifica tu conexión a internet',
+        'Reduce la cantidad de texto en una sola entrada',
+        'Cierra otras aplicaciones que consuman recursos',
+        'Usa el modo de procesamiento básico si es necesario'
+      ]
+    },
+    {
+      problem: 'No puedo escanear imágenes',
+      solutions: [
+        'Verifica que la imagen sea clara y legible',
+        'Asegúrate de que el texto esté bien iluminado',
+        'Intenta con una imagen de mejor resolución',
+        'Verifica que la app tenga permisos de cámara'
+      ]
+    }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-6 border border-teal-100">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <StarIcon className="w-6 h-6 text-teal-600" />
+                ¿Qué es Gauss∑ AI?
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Gauss∑ AI es tu asistente personal de matemáticas universitarias, diseñado específicamente para estudiantes de 7mo semestre. 
+                Utiliza inteligencia artificial avanzada para transformar tus apuntes en recursos de aprendizaje estructurados y personalizados.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-teal-600">🎯</div>
+                  <div className="text-sm text-gray-600">Precisión Matemática</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">🚀</div>
+                  <div className="text-sm text-gray-600">Aprendizaje Acelerado</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">💡</div>
+                  <div className="text-sm text-gray-600">Comprensión Profunda</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <GraduationCapIcon className="w-5 h-5 text-blue-600" />
+                  Para Estudiantes
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Análisis inteligente de apuntes</li>
+                  <li>• Generación de quizzes personalizados</li>
+                  <li>• Identificación de conceptos clave</li>
+                  <li>• Seguimiento del progreso de aprendizaje</li>
+                </ul>
+              </Card>
+
+              <Card className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <TargetIcon className="w-5 h-5 text-green-600" />
+                  Para Profesores
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Creación rápida de material didáctico</li>
+                  <li>• Evaluación de comprensión estudiantil</li>
+                  <li>• Identificación de áreas de dificultad</li>
+                  <li>• Generación de problemas de práctica</li>
+                </ul>
+              </Card>
+            </div>
+          </div>
+        );
+
+      case 'features':
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {features.map((feature, index) => (
+                <Card key={index} className="p-4 hover:shadow-lg transition-shadow duration-200">
+                  <div className="flex items-start gap-3">
+                    <div className="text-teal-600 flex-shrink-0">
+                      {feature.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+                      <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
+                        feature.category === 'core' ? 'bg-blue-100 text-blue-800' :
+                        feature.category === 'learning' ? 'bg-green-100 text-green-800' :
+                        feature.category === 'interactive' ? 'bg-purple-100 text-purple-800' :
+                        feature.category === 'input' ? 'bg-orange-100 text-orange-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {feature.category === 'core' ? 'Núcleo' :
+                         feature.category === 'learning' ? 'Aprendizaje' :
+                         feature.category === 'interactive' ? 'Interactivo' :
+                         feature.category === 'input' ? 'Entrada' : 'Avanzado'}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'tutorials':
+        return (
+          <div className="space-y-6">
+            {tutorials.map((tutorial) => (
+              <Card key={tutorial.id} className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-gray-900">{tutorial.title}</h4>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span>⏱️ {tutorial.duration}</span>
+                    <span>•</span>
+                    <span>📊 {tutorial.difficulty}</span>
+                  </div>
+                </div>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                  {tutorial.steps.map((step, index) => (
+                    <li key={index} className="leading-relaxed">
+                      <span className="font-medium text-gray-900">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </Card>
+            ))}
+          </div>
+        );
+
+      case 'faq':
+        return (
+          <div className="space-y-4">
+            {faq.map((item, index) => (
+              <Card key={index} className="p-6">
+                <h4 className="font-semibold text-gray-900 mb-3 text-lg">
+                  {item.question}
+                </h4>
+                <p className="text-gray-700 leading-relaxed">{item.answer}</p>
+              </Card>
+            ))}
+          </div>
+        );
+
+      case 'tips':
+        return (
+          <div className="space-y-6">
+            {tips.map((category, index) => (
+              <Card key={index} className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <LightbulbIcon className="w-5 h-5 text-yellow-600" />
+                  {category.category}
+                </h4>
+                <ul className="space-y-2">
+                  {category.items.map((tip, tipIndex) => (
+                    <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className="text-yellow-500 mt-1">💡</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            ))}
+          </div>
+        );
+
+      case 'troubleshooting':
+        return (
+          <div className="space-y-6">
+            {troubleshooting.map((item, index) => (
+              <Card key={index} className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <SettingsIcon className="w-5 h-5 text-red-600" />
+                  {item.problem}
+                </h4>
+                <div className="space-y-2">
+                  {item.solutions.map((solution, solutionIndex) => (
+                    <div key={solutionIndex} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className="text-green-500 mt-1">✅</span>
+                      <span>{solution}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <Card padding="lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Ayuda y Guía de Uso</h2>
-        
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">¿Cómo usar Gauss∑ AI?</h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <ol className="list-decimal list-inside space-y-3 text-sm text-gray-700">
-                {steps.map((step, index) => (
-                  <li key={index} className="leading-relaxed">
-                    <span className="font-medium text-blue-900">{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="text-center py-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Centro de Ayuda y Recursos
+        </h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Descubre cómo aprovechar al máximo Gauss∑ AI para tu aprendizaje matemático
+        </p>
+      </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Funciones Disponibles</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm text-gray-700">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Tabs de Navegación */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="border-b border-gray-200">
+          <nav className="flex flex-wrap -mb-px">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-teal-500 text-teal-600 bg-teal-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Consejos para Mejores Resultados</h3>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">💡</span>
-                  <span>Sé específico en tus apuntes: incluye fórmulas, definiciones y ejemplos</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">💡</span>
-                  <span>Usa LaTeX para fórmulas matemáticas: \(x^2 + y^2 = r^2\)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">💡</span>
-                  <span>El chat puede ayudarte a clarificar conceptos específicos</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">💡</span>
-                  <span>Guarda tus análisis para revisar tu progreso de estudio</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div className="p-6">
+          {renderTabContent()}
+        </div>
+      </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Materias Soportadas</h3>
-            <div className="space-y-3">
-              {[
-                'Investigación en Matemáticas Aplicadas y Computación',
-                'Administración de Bases de Datos', 
-                'Elementos de Finanzas e Inversiones'
-              ].map((subject) => (
-                <div key={subject} className="bg-teal-50 border border-teal-200 rounded-lg p-3">
-                  <span className="text-teal-800 font-medium text-sm">
-                    {subject}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Sección de Contacto */}
+      <Card className="p-6 text-center">
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+          ¿Necesitas más ayuda?
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Si tienes preguntas específicas o necesitas asistencia adicional, 
+          no dudes en contactarnos o usar el chat integrado de la aplicación.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => window.history.back()}
+            icon={<MessageCircleIcon className="w-4 h-4" />}
+          >
+            Volver a la App
+          </Button>
         </div>
       </Card>
       
-      {/* Crédito sutil */}
+      {/* Crédito */}
       <div className="text-center py-4">
         <p className="text-xs text-gray-400">
-          Powered by <span className="font-medium text-gray-500">4ailabs</span>
+          Powered by <span className="font-medium text-gray-500">4ailabs</span> • 
+          Gauss∑ AI v2.0 con funcionalidades mejoradas
         </p>
       </div>
     </div>
