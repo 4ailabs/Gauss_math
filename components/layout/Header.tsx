@@ -50,7 +50,7 @@ export const Header: React.FC = React.memo(() => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-6 lg:space-x-8">
             {navItems.map(({ key, label }) => (
               <button
                 key={key}
@@ -67,11 +67,11 @@ export const Header: React.FC = React.memo(() => {
           </nav>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 p-2"
-              aria-label="Abrir menú"
+              className="text-gray-700 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-3 border border-gray-300 rounded-lg bg-white shadow-md transition-all duration-200 hover:shadow-lg"
+              aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             >
               {isMobileMenuOpen ? (
                 <XCloseIcon className="h-6 w-6" />
@@ -79,21 +79,25 @@ export const Header: React.FC = React.memo(() => {
                 <MenuIcon className="h-6 w-6" />
               )}
             </button>
+            {/* Debug indicator */}
+            <span className="ml-2 text-xs text-gray-400 md:hidden">
+              {isMobileMenuOpen ? 'Abierto' : 'Menú'}
+            </span>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div ref={mobileMenuRef} className="md:hidden border-t border-gray-200">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white">
+          <div ref={mobileMenuRef} className="md:hidden border-t border-gray-200 bg-white shadow-lg">
+            <div className="px-4 pt-3 pb-4 space-y-2">
               {navItems.map(({ key, label }) => (
                 <button
                   key={key}
                   onClick={() => handleNavClick(key)}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
                     activeView === key
-                      ? 'text-teal-600 bg-teal-50 border-l-4 border-teal-600'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-teal-600 bg-teal-50 border-l-4 border-teal-600 shadow-sm'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent'
                   }`}
                 >
                   {label}
