@@ -217,3 +217,192 @@
     font-size: 1.25rem !important;
   }
 }
+
+/* Optimizaciones móviles para toda la aplicación */
+@media (max-width: 768px) {
+  /* Mejoras generales de usabilidad táctil */
+  button, [role="button"] {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Ajustes de espaciado para móviles */
+  .space-y-4 > * + * {
+    margin-top: 0.75rem !important;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+  
+  /* Padding responsive para contenedores */
+  .p-6 {
+    padding: 1rem !important;
+  }
+  
+  .py-6 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Grid responsive para estadísticas */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  /* Mejoras en la navegación móvil */
+  .flex-col.sm\:flex-row {
+    flex-direction: column !important;
+  }
+  
+  .gap-3.sm\:gap-4 {
+    gap: 0.75rem !important;
+  }
+}
+
+/* Optimizaciones específicas para el agente de investigación */
+.research-agent-mobile {
+  /* Contenedor principal */
+  .max-w-6xl {
+    max-width: 100% !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  /* Header optimizado */
+  .text-center.py-4 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Títulos responsive */
+  .text-lg.md\:text-xl {
+    font-size: 1.125rem !important;
+  }
+  
+  .text-base.md\:text-lg {
+    font-size: 1rem !important;
+  }
+  
+  /* Iconos responsive */
+  .w-6.h-6 {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  
+  /* Cards optimizadas */
+  .p-6 {
+    padding: 1rem !important;
+  }
+  
+  /* Botones táctiles */
+  .min-h-\[48px\] {
+    min-height: 3rem !important;
+  }
+  
+  .min-h-\[44px\] {
+    min-height: 2.75rem !important;
+  }
+  
+  /* Grid de fuentes */
+  .grid.grid-cols-2.md\:grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  /* Espaciado de elementos */
+  .space-y-4 > * + * {
+    margin-top: 0.75rem !important;
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  /* Textarea optimizado */
+  .h-28 {
+    height: 6rem !important;
+  }
+  
+  /* Indicadores de estado */
+  .w-2.h-2 {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+  
+  /* Toast de confirmación */
+  .fixed.bottom-4.right-4 {
+    bottom: 1rem !important;
+    right: 1rem !important;
+  }
+}
+
+/* Mejoras específicas para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .research-agent-mobile {
+    /* Padding más compacto */
+    .p-3.sm\:p-4 {
+      padding: 0.75rem !important;
+    }
+    
+    /* Espaciado más compacto */
+    .space-y-2.sm\:space-y-3 > * + * {
+      margin-top: 0.5rem !important;
+    }
+    
+    /* Grid de 1 columna para estadísticas */
+    .grid.grid-cols-2.sm\:grid-cols-4 {
+      grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+    
+    /* Botones más compactos */
+    .min-h-\[48px\].sm\:min-h-\[44px\] {
+      min-height: 2.5rem !important;
+    }
+    
+    /* Texto más pequeño */
+    .text-xs.sm\text-sm {
+      font-size: 0.75rem !important;
+    }
+  }
+}
+
+/* Optimizaciones para orientación landscape en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+  .research-agent-mobile {
+    /* Ajustar altura para landscape */
+    .h-28 {
+      height: 4rem !important;
+    }
+    
+    .h-24.sm\:h-28 {
+      height: 3rem !important;
+    }
+    
+    /* Reducir padding vertical */
+    .py-3.sm\:py-4 {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+  }
+}
+
+/* Mejoras de accesibilidad táctil */
+@media (hover: none) and (pointer: coarse) {
+  .research-agent-mobile {
+    /* Aumentar área táctil */
+    button, [role="button"] {
+      min-height: 48px !important;
+      min-width: 48px !important;
+    }
+    
+    /* Mejorar contraste para toque */
+    .bg-gray-50:hover {
+      background-color: #f3f4f6 !important;
+    }
+    
+    /* Aumentar espaciado entre elementos interactivos */
+    .space-y-2 > * + * {
+      margin-top: 0.75rem !important;
+    }
+  }
+}

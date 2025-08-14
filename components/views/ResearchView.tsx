@@ -224,17 +224,78 @@ const ResearchView: React.FC = React.memo(() => {
       
       // Usar el servicio real de Gemini para sintetizar el reporte
       try {
+        console.log('🔄 Iniciando síntesis del reporte...');
+        console.log('📊 Datos de investigación:', subtopicObjects);
+        
         const researchedContent = subtopicObjects
           .filter(st => st.status === 'complete')
           .map(st => ({ title: st.title, content: st.content }));
         
+        console.log('📝 Contenido a sintetizar:', researchedContent);
+        
+        if (researchedContent.length === 0) {
+          throw new Error('No hay contenido de investigación disponible para sintetizar');
+        }
+        
         const report = await synthesizeReport(topic, researchedContent);
+        console.log('✅ Reporte generado exitosamente:', report);
+        
+        // Validar que el reporte tenga la estructura correcta
+        if (!report || !report.summary || !report.report) {
+          console.error('❌ Reporte inválido recibido:', report);
+          throw new Error('El reporte generado no tiene la estructura esperada');
+        }
+        
+        if (!Array.isArray(report.summary) || report.summary.length === 0) {
+          console.error('❌ Resumen inválido en el reporte:', report.summary);
+          throw new Error('El resumen del reporte no es válido');
+        }
+        
+        if (typeof report.report !== 'string' || report.report.trim().length === 0) {
+          console.error('❌ Contenido del reporte inválido:', report.report);
+          throw new Error('El contenido del reporte está vacío o es inválido');
+        }
+        
         setFinalReport(report);
         setResearchState(ResearchState.DONE);
+        console.log('🎉 Estado actualizado a DONE');
       } catch (err) {
-        console.error('Error al sintetizar el reporte:', err);
-        setError('Error al generar el reporte final');
-        setResearchState(ResearchState.ERROR);
+        console.error('❌ Error al sintetizar el reporte:', err);
+        
+        // Crear un reporte de fallback
+        const fallbackReport = {
+          summary: [
+            'Error en la generación del reporte',
+            'Se recomienda revisar la configuración de la API',
+            'Los datos de investigación están disponibles en las secciones individuales'
+          ],
+          report: `# Error en la Generación del Reporte
+
+## Problema Detectado
+Ocurrió un error durante la generación del reporte final de la investigación sobre "${topic}".
+
+## Datos Disponibles
+Los siguientes subtópicos fueron investigados exitosamente:
+${subtopicObjects
+  .filter(st => st.status === 'complete')
+  .map(st => `- **${st.title}**: ${st.content.substring(0, 100)}...`)
+  .join('\n')}
+
+## Solución Recomendada
+1. Verificar la configuración de la API de Gemini
+2. Revisar la conexión a internet
+3. Intentar generar el reporte nuevamente
+
+## Información Técnica
+Error: ${err instanceof Error ? err.message : 'Error desconocido'}
+
+---
+*Este es un reporte de fallback generado automáticamente.*`
+        };
+        
+        console.log('🔄 Aplicando reporte de fallback:', fallbackReport);
+        setFinalReport(fallbackReport);
+        setResearchState(ResearchState.DONE);
       }
     } catch (err) {
       console.error(err);
@@ -274,14 +335,48 @@ const ResearchView: React.FC = React.memo(() => {
         );
       
       case ResearchState.DONE:
-        return finalReport ? (
+        console.log('🎯 Estado DONE - Renderizando reporte...');
+        console.log('📊 finalReport disponible:', !!finalReport);
+        console.log('📋 finalReport contenido:', finalReport);
+        
+        if (!finalReport) {
+          console.error('❌ finalReport es null/undefined en estado DONE');
+          return (
+            <Card className="p-6 text-center">
+              <div className="text-center">
+                <h2 className="text-xl text-red-600 mb-4">Error: Reporte No Generado</h2>
+                <p className="text-gray-600 mb-6">El reporte no se generó correctamente. Esto puede deberse a un problema con la API.</p>
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleReset}
+                    variant="primary"
+                    size="md"
+                    icon={<RefreshCwIcon className="w-4 h-4" />}
+                  >
+                    Intentar de Nuevo
+                  </Button>
+                  <Button
+                    onClick={() => setResearchState(ResearchState.IDLE)}
+                    variant="secondary"
+                    size="md"
+                    icon={<TargetIcon className="w-4 h-4" />}
+                  >
+                    Volver al Inicio
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        }
+        
+        return (
           <ReportDisplay 
             report={finalReport} 
             sources={sources} 
             topic={topic} 
             onReset={handleReset}
           />
-        ) : null;
+        );
       
       case ResearchState.ERROR:
         return (
@@ -307,59 +402,61 @@ const ResearchView: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4">
-      {/* Header Optimizado - Títulos más pequeños */}
-      <div className="text-center py-4">
+    <div className="max-w-6xl mx-auto space-y-2 sm:space-y-4 px-3 sm:px-4 research-agent-mobile">
+      {/* Header Optimizado - Títulos más pequeños y responsive */}
+      <div className="text-center py-3 sm:py-4">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <TargetIcon className="w-6 h-6 text-teal-600" />
-          <h1 className="text-lg md:text-xl font-semibold text-gray-800">
+          <TargetIcon className="w-5 h-5 sm:w-6 sm:h-6 text-teal-600" />
+          <h1 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800">
             Agente de Investigación Matemática
           </h1>
         </div>
         
-        <p className="text-sm text-gray-500 max-w-lg mx-auto mb-3">
+        <p className="text-xs sm:text-sm text-gray-500 max-w-lg mx-auto mb-2 sm:mb-3 px-2">
           Genera, refina y ejecuta planes de investigación con IA avanzada
         </p>
         
-        {/* Indicador de estado de Gemini */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-sm font-medium">
+        {/* Indicador de estado de Gemini - Responsive */}
+        <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-xs sm:text-sm font-medium">
           {isGeminiAvailable() ? (
             <>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-teal-700">Gemini AI Conectado</span>
             </>
           ) : (
             <>
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full"></div>
               <span className="text-yellow-700">Modo Fallback</span>
             </>
           )}
         </div>
       </div>
 
-      {/* Contenido Principal */}
+      {/* Contenido Principal - Padding responsive */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <div className="p-6">
+        <div className="p-3 sm:p-4 md:p-6">
           {renderContent()}
         </div>
       </div>
 
-      {/* Botones de Navegación */}
-      <Card className="p-6 text-center">
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      {/* Botones de Navegación - Responsive y táctiles */}
+      <Card className="p-3 sm:p-4 md:p-6 text-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
           <Button
             variant="primary"
-            size="md"
+            size="lg"
             onClick={() => setActiveView('search')}
             icon={<BookOpenIcon className="w-4 h-4" />}
+            className="min-h-[44px] sm:min-h-[40px]"
           >
             Ir a Búsqueda
           </Button>
           <Button
             variant="secondary"
-            size="md"
+            size="lg"
             onClick={() => setActiveView('library')}
             icon={<GraduationCapIcon className="w-4 h-4" />}
+            className="min-h-[44px] sm:min-h-[40px]"
           >
             Ver Biblioteca
           </Button>
@@ -397,28 +494,28 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-3 sm:p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-4">
-          <h2 className="text-base font-medium text-gray-800 mb-1">
+        <div className="text-center mb-3 sm:mb-4">
+          <h2 className="text-sm sm:text-base font-medium text-gray-800 mb-1">
             ¿Qué quieres investigar?
           </h2>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 px-2">
             Describe tu tema de investigación matemática
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           <div className="relative">
             <textarea
               value={inputTopic}
               onChange={(e) => setInputTopic(e.target.value)}
               placeholder="Ej: Análisis de algoritmos de optimización para redes neuronales, Teoría de grafos en criptografía, Aplicaciones del cálculo tensorial..."
-              className="w-full h-28 p-4 pr-12 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-sm"
+              className="w-full h-24 sm:h-28 p-3 sm:p-4 pr-12 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-sm"
               disabled={isLoading}
             />
-            <div className="absolute top-3 right-3">
-              <LightbulbIcon className="w-5 h-5 text-gray-400" />
+            <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+              <LightbulbIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             </div>
           </div>
           
@@ -428,8 +525,8 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
             size="lg"
             disabled={!inputTopic.trim() || isLoading}
             loading={isLoading}
-            className="w-full"
-            icon={!isLoading && <TargetIcon className="w-5 h-5" />}
+            className="w-full min-h-[48px] sm:min-h-[44px]"
+            icon={!isLoading && <TargetIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
           >
             {isLoading ? 'Generando Plan...' : 'Generar Plan de Investigación'}
           </Button>
@@ -458,98 +555,108 @@ const PlanReview: React.FC<{
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header compacto - Títulos más pequeños */}
-      <div className="text-center mb-3">
-        <h2 className="text-base font-medium text-gray-800 mb-1">
+    <div className="space-y-3 sm:space-y-4">
+      {/* Header compacto - Títulos más pequeños y responsive */}
+      <div className="text-center mb-2 sm:mb-3">
+        <h2 className="text-sm sm:text-base font-medium text-gray-800 mb-1">
           Plan de Investigación
         </h2>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 px-2">
           {topic}
         </p>
       </div>
 
-      {/* Subtópicos y Chat en grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Subtópicos y Chat en grid responsive */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
         {/* Subtópicos */}
-        <Card className="p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <FileTextIcon className="w-3 h-3 text-blue-600" />
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
             Estructura
           </h3>
-          <div className="space-y-2">
+          
+          <div className="space-y-2 sm:space-y-3">
             {subtopics.map((subtopic, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                <span className="w-5 h-5 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xs font-medium">
-                  {index + 1}
-                </span>
-                <span className="text-sm text-gray-700">{subtopic}</span>
+              <div 
+                key={index} 
+                className="flex items-center gap-2 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs sm:text-sm font-medium text-blue-600">{index + 1}</span>
+                </div>
+                <span className="text-xs sm:text-sm text-gray-700 flex-1">{subtopic}</span>
               </div>
             ))}
           </div>
         </Card>
 
         {/* Chat de refinamiento */}
-        <Card className="p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <MessageCircleIcon className="w-3 h-3 text-purple-600" />
-            Refinar
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+            Refinar Plan
           </h3>
           
-          <div className="space-y-3 mb-3 max-h-48 overflow-y-auto">
-            {chatHistory.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-full px-3 py-2 rounded-lg text-sm ${
-                    message.role === 'user'
-                      ? 'bg-teal-500 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {message.content}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <input
-              type="text"
+          <div className="space-y-2 sm:space-y-3">
+            <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Sugiere mejoras..."
-              className="flex-1 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
-              disabled={isRefining}
+              placeholder="¿Qué quieres cambiar o agregar al plan?"
+              className="w-full h-20 sm:h-24 p-2 sm:p-3 text-xs sm:text-sm border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none"
             />
-            <Button
-              onClick={handleRefine}
-              variant="secondary"
-              size="sm"
-              disabled={!feedback.trim() || isRefining}
-              loading={isRefining}
-            >
-              Refinar
-            </Button>
+            
+            <div className="flex gap-2 sm:gap-3">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleRefine}
+                disabled={!feedback.trim() || isRefining}
+                loading={isRefining}
+                className="flex-1 min-h-[40px] sm:min-h-[36px]"
+              >
+                Refinar
+              </Button>
+              
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onApprove}
+                className="flex-1 min-h-[40px] sm:min-h-[36px]"
+              >
+                Aprobar
+              </Button>
+            </div>
           </div>
         </Card>
       </div>
 
-      {/* Botón de acción principal */}
-      <div className="flex justify-center pt-2">
-        <Button
-          onClick={onApprove}
-          variant="primary"
-          size="lg"
-          icon={<CheckIcon className="w-5 h-5" />}
-          disabled={isRefining}
-          className="min-w-[280px]"
-        >
-          Aprobar Plan e Iniciar Investigación
-        </Button>
-      </div>
+      {/* Historial del chat */}
+      {chatHistory.length > 0 && (
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+            Conversación
+          </h3>
+          
+          <div className="space-y-2 sm:space-y-3 max-h-40 sm:max-h-48 overflow-y-auto">
+            {chatHistory.map((message, index) => (
+              <div 
+                key={index} 
+                className={`p-2 sm:p-3 rounded-lg text-xs sm:text-sm ${
+                  message.role === 'user' 
+                    ? 'bg-blue-50 text-blue-800 ml-4' 
+                    : 'bg-gray-50 text-gray-800 mr-4'
+                }`}
+              >
+                <div className="font-medium mb-1">
+                  {message.role === 'user' ? 'Tú' : 'IA'}
+                </div>
+                <div>{message.content}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
@@ -582,15 +689,16 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <div className="mb-4">
+    <div className="space-y-3 sm:space-y-4">
+      {/* Estado principal */}
+      <div className="text-center py-3 sm:py-4">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4">
           {getStatusIcon()}
         </div>
-        <h2 className="text-xl font-semibold text-gray-700 mb-2">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
           {getStatusText()}
         </h2>
-        <p className="text-gray-500">
+        <p className="text-sm sm:text-base text-gray-500 px-2">
           {state === ResearchState.RESEARCHING 
             ? 'Analizando cada subtópico de la investigación...'
             : 'Generando el reporte final de la investigación...'
@@ -599,29 +707,29 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
       </div>
 
       {/* Progreso de subtópicos */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">
+      <Card className="p-3 sm:p-4">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">
           Progreso de la Investigación
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2 sm:space-y-3">
           {subtopics.map((subtopic, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div key={index} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
               <div className="flex-shrink-0">
                 {subtopic.status === 'pending' && (
-                  <div className="w-5 h-5 bg-gray-200 rounded-full" />
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-200 rounded-full" />
                 )}
                 {subtopic.status === 'loading' && (
-                  <RefreshCwIcon className="w-5 h-5 text-blue-500 animate-spin" />
+                  <RefreshCwIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 animate-spin" />
                 )}
                 {subtopic.status === 'complete' && (
-                  <CheckIcon className="w-5 h-5 text-green-500" />
+                  <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                 )}
               </div>
-              <div className="flex-1">
-                <div className="font-medium text-gray-700 text-sm">{subtopic.title}</div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-gray-700 text-xs sm:text-sm">{subtopic.title}</div>
                 {subtopic.status === 'complete' && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {subtopic.content.substring(0, 100)}...
+                  <div className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {subtopic.content.substring(0, 80)}...
                   </div>
                 )}
               </div>
@@ -635,42 +743,60 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
 
 // Función para convertir Markdown a HTML con estilo profesional
 const formatMarkdownToHTML = (markdown: string): string => {
-  return markdown
-    // Encabezados principales
-    .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-gray-900 mb-4 mt-6 first:mt-0">$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-gray-800 mb-3 mt-5">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-medium text-gray-700 mb-2 mt-4">$1</h3>')
+  try {
+    console.log('🔄 Procesando Markdown a HTML...');
+    console.log('📝 Markdown recibido (primeros 200 chars):', markdown.substring(0, 200) + '...');
     
-    // Negritas
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+    if (!markdown || typeof markdown !== 'string') {
+      console.error('❌ Markdown inválido recibido:', markdown);
+      return '<p class="text-red-600">Error: Contenido Markdown inválido</p>';
+    }
     
-    // Cursivas
-    .replace(/\*(.+?)\*/g, '<em class="italic text-gray-800">$1</em>')
+    const result = markdown
+      // Encabezados principales
+      .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-gray-900 mb-4 mt-6 first:mt-0">$1</h1>')
+      .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-gray-800 mb-3 mt-5">$1</h2>')
+      .replace(/^### (.+)$/gm, '<h3 class="text-base font-medium text-gray-700 mb-2 mt-4">$1</h3>')
+      
+      // Negritas
+      .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+      
+      // Cursivas
+      .replace(/\*(.+?)\*/g, '<em class="italic text-gray-800">$1</em>')
+      
+      // Código inline
+      .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-gray-800">$1</code>')
+      
+      // Citas
+      .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-teal-500 pl-4 py-2 my-3 bg-teal-50 italic text-gray-700">$1</blockquote>')
+      
+      // Separadores
+      .replace(/^---$/gm, '<hr class="my-6 border-gray-300">')
+      
+      // Listas con viñetas
+      .replace(/^\- (.+)$/gm, '<li class="ml-4 mb-1">• $1</li>')
+      .replace(/(<li.*<\/li>)/gs, '<ul class="list-none space-y-1 mb-3">$1</ul>')
+      
+      // Listas numeradas
+      .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 mb-1">$&</li>')
+      .replace(/(<li.*<\/li>)/gs, '<ol class="list-decimal ml-4 space-y-1 mb-3">$1</ol>')
+      
+      // Párrafos
+      .replace(/^(?!<[h|u|o|b|h|r])(.+)$/gm, '<p class="mb-3">$1</p>')
+      
+      // Limpiar HTML mal formado
+      .replace(/<ul>\s*<\/ul>/g, '')
+      .replace(/<ol>\s*<\/ol>/g, '')
+      .replace(/<p>\s*<\/p>/g, '');
     
-    // Código inline
-    .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-gray-800">$1</code>')
+    console.log('✅ Markdown procesado exitosamente');
+    console.log('🔍 HTML resultante (primeros 300 chars):', result.substring(0, 300) + '...');
     
-    // Citas
-    .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-teal-500 pl-4 py-2 my-3 bg-teal-50 italic text-gray-700">$1</blockquote>')
-    
-    // Separadores
-    .replace(/^---$/gm, '<hr class="my-6 border-gray-300">')
-    
-    // Listas con viñetas
-    .replace(/^\- (.+)$/gm, '<li class="ml-4 mb-1">• $1</li>')
-    .replace(/(<li.*<\/li>)/gs, '<ul class="list-none space-y-1 mb-3">$1</ul>')
-    
-    // Listas numeradas
-    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 mb-1">$&</li>')
-    .replace(/(<li.*<\/li>)/gs, '<ol class="list-decimal ml-4 space-y-1 mb-3">$1</ol>')
-    
-    // Párrafos
-    .replace(/^(?!<[h|u|o|b|h|r])(.+)$/gm, '<p class="mb-3">$1</p>')
-    
-    // Limpiar HTML mal formado
-    .replace(/<ul>\s*<\/ul>/g, '')
-    .replace(/<ol>\s*<\/ol>/g, '')
-    .replace(/<p>\s*<\/p>/g, '');
+    return result;
+  } catch (error) {
+    console.error('❌ Error al procesar Markdown:', error);
+    return `<p class="text-red-600">Error al procesar el contenido: ${error instanceof Error ? error.message : 'Error desconocido'}</p>`;
+  }
 };
 
 // Componente de visualización de reporte optimizado
@@ -682,6 +808,58 @@ const ReportDisplay: React.FC<{
 }> = ({ report, sources, topic, onReset }) => {
   const [showCopyToast, setShowCopyToast] = useState(false);
 
+  // Logging para debugging
+  console.log('🔍 ReportDisplay renderizando con:', { report, sources, topic });
+  console.log('📊 Reporte recibido:', report);
+  console.log('📋 Resumen:', report?.summary);
+  console.log('📄 Contenido del reporte:', report?.report?.substring(0, 200) + '...');
+
+  // Validación de seguridad
+  if (!report) {
+    console.error('❌ ReportDisplay: report es null/undefined');
+    return (
+      <Card className="p-6 text-center">
+        <div className="text-center">
+          <h2 className="text-xl text-red-600 mb-4">Error: Reporte No Disponible</h2>
+          <p className="text-gray-600 mb-6">El reporte no se generó correctamente.</p>
+          <Button onClick={onReset} variant="primary" size="md">
+            Intentar de Nuevo
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!report.summary || !Array.isArray(report.summary) || report.summary.length === 0) {
+    console.error('❌ ReportDisplay: summary inválido:', report.summary);
+    return (
+      <Card className="p-6 text-center">
+        <div className="text-center">
+          <h2 className="text-xl text-red-600 mb-4">Error: Resumen No Disponible</h2>
+          <p className="text-gray-600 mb-6">El resumen del reporte no se generó correctamente.</p>
+          <Button onClick={onReset} variant="primary" size="md">
+            Intentar de Nuevo
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!report.report || typeof report.report !== 'string' || report.report.trim().length === 0) {
+    console.error('❌ ReportDisplay: contenido del reporte inválido:', report.report);
+    return (
+      <Card className="p-6 text-center">
+        <div className="text-center">
+          <h2 className="text-xl text-red-600 mb-4">Error: Contenido del Reporte No Disponible</h2>
+          <p className="text-gray-600 mb-6">El contenido del reporte no se generó correctamente.</p>
+          <Button onClick={onReset} variant="primary" size="md">
+            Intentar de Nuevo
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
   const handleCopyReport = async () => {
     try {
       await navigator.clipboard.writeText(report.report);
@@ -692,28 +870,28 @@ const ReportDisplay: React.FC<{
     }
   };
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <div className="text-center">
-        <h2 className="text-base font-medium text-gray-800 mb-1">
+        <h2 className="text-sm sm:text-base font-medium text-gray-800 mb-1">
           Reporte de Investigación Completado
         </h2>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 px-2">
           Tema: {topic}
         </p>
       </div>
 
       {/* Resumen ejecutivo */}
-      <Card className="p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-          <LightbulbIcon className="w-4 h-4 text-yellow-600" />
+      <Card className="p-3 sm:p-4">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
+          <LightbulbIcon className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />
           Resumen Ejecutivo
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {report.summary.map((item, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border-l-4 border-teal-500">
-              <span className="text-teal-600 font-bold text-lg">#{index + 1}</span>
+            <div key={index} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg border-l-4 border-teal-500">
+              <span className="text-teal-600 font-bold text-base sm:text-lg flex-shrink-0">#{index + 1}</span>
               <span 
-                className="text-black text-sm leading-relaxed flex-1"
+                className="text-black text-xs sm:text-sm leading-relaxed flex-1"
                 style={{ 
                   fontFamily: 'Georgia, "Times New Roman", serif',
                   lineHeight: '1.6'
@@ -727,24 +905,25 @@ const ReportDisplay: React.FC<{
       </Card>
 
       {/* Reporte completo */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <FileTextIcon className="w-4 h-4 text-blue-600" />
+      <Card className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
+            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
             Reporte Completo
           </h3>
           <Button
             variant="secondary"
             size="sm"
             onClick={handleCopyReport}
-            icon={<CopyIcon className="w-4 h-4" />}
+            icon={<CopyIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
+            className="min-h-[40px] sm:min-h-[36px]"
           >
             Copiar Reporte
           </Button>
         </div>
         <div className="prose max-w-none">
           <div 
-            className="text-black leading-relaxed text-sm"
+            className="text-black leading-relaxed text-xs sm:text-sm"
             style={{ 
               fontFamily: 'Georgia, "Times New Roman", serif',
               lineHeight: '1.6',
@@ -773,12 +952,13 @@ const ReportDisplay: React.FC<{
       )}
 
       {/* Botones de acción */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
         <Button
           onClick={onReset}
           variant="primary"
           size="lg"
-          icon={<RefreshCwIcon className="w-5 h-5" />}
+          icon={<RefreshCwIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
+          className="min-h-[48px] sm:min-h-[44px]"
         >
           Nueva Investigación
         </Button>
@@ -786,26 +966,13 @@ const ReportDisplay: React.FC<{
 
       {/* Toast de confirmación de copia */}
       {showCopyToast && (
-        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-in slide-in-from-bottom-2">
+        <div className="fixed bottom-3 sm:bottom-4 right-3 sm:right-4 bg-green-500 text-white px-3 sm:px-4 py-2 rounded-lg shadow-lg z-50 animate-in slide-in-from-bottom-2">
           <div className="flex items-center gap-2">
-            <CheckIcon className="w-4 h-4" />
-            <span>Reporte copiado al portapapeles</span>
+            <CheckIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-sm">Reporte copiado al portapapeles</span>
           </div>
         </div>
       )}
-
-      {/* Warning de salida con investigación activa */}
-      <ResearchExitWarning
-        isVisible={showExitWarning}
-        onContinue={() => setShowExitWarning(false)}
-        onExit={() => {
-          clearSession();
-          setShowExitWarning(false);
-          handleReset();
-        }}
-        researchTopic={topic}
-        progress={getResearchProgress()}
-      />
     </div>
   );
 };

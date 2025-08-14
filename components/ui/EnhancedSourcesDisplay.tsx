@@ -187,10 +187,10 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
   }
 
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-          <BookOpenIcon className="w-4 h-4 text-blue-600" />
+    <Card className="p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
+          <BookOpenIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
           {title}
         </h3>
         
@@ -199,7 +199,8 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => setIsExpanded(!isExpanded)}
-            icon={isExpanded ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
+            icon={isExpanded ? <ChevronUpIcon className="w-3 h-3 sm:w-4 sm:h-4" /> : <ChevronDownIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
+            className="min-h-[36px] sm:min-h-[32px]"
           >
             {isExpanded ? 'Ocultar' : 'Mostrar'}
           </Button>
@@ -207,24 +208,24 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
       </div>
 
       {isExpanded && (
-        <div className="space-y-4">
-          {/* Estadísticas de fuentes */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="text-center p-2 bg-blue-50 rounded-lg">
-              <div className="font-semibold text-blue-700">{enhancedSources.filter(s => s.reliability === 'high').length}</div>
-              <div className="text-blue-600">Alta Confiabilidad</div>
+        <div className="space-y-3 sm:space-y-4">
+          {/* Estadísticas de fuentes - Grid responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-xs">
+            <div className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+              <div className="font-semibold text-blue-700 text-sm sm:text-base">{enhancedSources.filter(s => s.reliability === 'high').length}</div>
+              <div className="text-blue-600 text-xs">Alta Confiabilidad</div>
             </div>
-            <div className="text-center p-2 bg-green-50 rounded-lg">
-              <div className="font-semibold text-green-700">{enhancedSources.filter(s => s.type === 'academic').length}</div>
-              <div className="text-green-600">Académicas</div>
+            <div className="text-center p-2 sm:p-3 bg-green-50 rounded-lg">
+              <div className="font-semibold text-green-700 text-sm sm:text-base">{enhancedSources.filter(s => s.type === 'academic').length}</div>
+              <div className="text-green-600 text-xs">Académicas</div>
             </div>
-            <div className="text-center p-2 bg-purple-50 rounded-lg">
-              <div className="font-semibold text-purple-700">{enhancedSources.filter(s => s.type === 'educational').length}</div>
-              <div className="text-purple-600">Educativas</div>
+            <div className="text-center p-2 sm:p-3 bg-purple-50 rounded-lg">
+              <div className="font-semibold text-purple-700 text-sm sm:text-base">{enhancedSources.filter(s => s.type === 'educational').length}</div>
+              <div className="text-purple-600 text-xs">Educativas</div>
             </div>
-            <div className="text-center p-2 bg-gray-50 rounded-lg">
-              <div className="font-semibold text-gray-700">{sources.length}</div>
-              <div className="text-gray-600">Total</div>
+            <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+              <div className="font-semibold text-gray-700 text-sm sm:text-base">{sources.length}</div>
+              <div className="text-gray-600 text-xs">Total</div>
             </div>
           </div>
 
@@ -242,24 +243,24 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
             };
 
             return (
-              <div key={type} className="space-y-2">
+              <div key={type} className="space-y-2 sm:space-y-3">
                 <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
                   {typeLabels[type as keyof typeof typeLabels]}
                 </h4>
                 
-                <div className="space-y-2">
+                <div className="space-y-2 sm:space-y-3">
                   {typeSources.map((source, index) => (
                     <div 
                       key={index} 
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex-shrink-0">
                         {getSourceIcon(source.type)}
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-gray-900 text-sm truncate">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-medium text-gray-900 text-xs sm:text-sm truncate">
                             {source.title}
                           </span>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getReliabilityColor(source.reliability)}`}>
@@ -267,10 +268,10 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
                           </span>
                         </div>
                         
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span className="font-mono">{source.domain}</span>
-                          <span>•</span>
-                          <span>{source.lastAccessed}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs text-gray-500">
+                          <span className="font-mono text-xs truncate">{source.domain}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="text-xs">{source.lastAccessed}</span>
                         </div>
                       </div>
                       
@@ -278,10 +279,10 @@ export const EnhancedSourcesDisplay: React.FC<EnhancedSourcesDisplayProps> = ({
                         variant="ghost"
                         size="sm"
                         onClick={() => window.open(source.uri, '_blank')}
-                        icon={<ExternalLinkIcon className="w-4 h-4" />}
-                        className="flex-shrink-0"
+                        icon={<ExternalLinkIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
+                        className="flex-shrink-0 min-h-[36px] sm:min-h-[32px] px-2 sm:px-3"
                       >
-                        Abrir
+                        <span className="hidden sm:inline">Abrir</span>
                       </Button>
                     </div>
                   ))}
