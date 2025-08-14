@@ -51,32 +51,36 @@ const LibraryView: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card padding="lg">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <BookOpenIcon className="w-8 h-8 text-slate-500" />
-            <div>
-              <h2 className="text-2xl font-bold text-slate-600">Biblioteca</h2>
-              <p className="text-slate-500 text-sm">
-                Haz click en cualquier análisis para revisar los resultados
-              </p>
+        {/* Header optimizado para móvil */}
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <BookOpenIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-600">Biblioteca</h2>
+                <p className="text-slate-500 text-xs sm:text-sm">
+                  Toca cualquier análisis para revisar
+                </p>
+              </div>
             </div>
+            
+            {analysisHistory.length > 0 && (
+              <div className="flex items-center justify-end">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleClearAll}
+                  icon={<Trash2Icon className="w-4 h-4" />}
+                  className="text-slate-600 hover:text-slate-700 hover:bg-slate-50 text-sm px-3 py-2"
+                >
+                  <span className="hidden sm:inline">Limpiar Todo</span>
+                  <span className="sm:hidden">Limpiar</span>
+                </Button>
+              </div>
+            )}
           </div>
-          
-          {analysisHistory.length > 0 && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleClearAll}
-                icon={<Trash2Icon className="w-4 h-4" />}
-                className="text-slate-600 hover:text-slate-700 hover:bg-slate-50"
-              >
-                Limpiar Todo
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Confirmación para limpiar todo */}
@@ -128,46 +132,83 @@ const LibraryView: React.FC = React.memo(() => {
               <Card 
                 key={item.id} 
                 hover 
-                className="transition-all duration-200 hover:scale-[1.02]"
+                className="transition-all duration-200 hover:scale-[1.01] sm:hover:scale-[1.02]"
+                padding="md"
               >
-                <div className="flex items-start justify-between">
-                  <div 
-                    className="flex-1 cursor-pointer"
-                    onClick={() => loadFromHistory(item)}
-                  >
-                    <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-                      <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full">
-                        {item.subject}
-                      </span>
-                      <span>{new Date(item.timestamp).toLocaleDateString('es-ES')}</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span>{item.processedData.keyConcepts.length} conceptos</span>
-                      <span>{item.processedData.quizQuestions.length} preguntas</span>
-                      <span>{item.processedData.relatedProblems.length} problemas</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="text-right mr-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mb-1"></div>
-                      <span className="text-xs text-slate-500">Completado</span>
+                {/* Layout móvil optimizado */}
+                <div className="space-y-3">
+                  {/* Header de la card */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div 
+                      className="flex-1 cursor-pointer min-w-0"
+                      onClick={() => loadFromHistory(item)}
+                    >
+                      <h3 className="font-semibold text-slate-800 mb-2 text-sm sm:text-base line-clamp-2">
+                        {item.title}
+                      </h3>
                     </div>
                     
-                    {/* Botón de eliminar */}
+                    {/* Botón eliminar móvil optimizado */}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(item.id)}
-                      icon={<Trash2Icon className="w-4 h-4" />}
-                      className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2"
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1.5 min-w-0 flex-shrink-0"
                       title="Eliminar análisis"
                     >
-                      Eliminar
+                      <Trash2Icon className="w-4 h-4" />
                     </Button>
+                  </div>
+
+                  {/* Contenido clickeable */}
+                  <div 
+                    className="cursor-pointer"
+                    onClick={() => loadFromHistory(item)}
+                  >
+                    {/* Subject y fecha */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                      <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium inline-block w-fit">
+                        {item.subject}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        {new Date(item.timestamp).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    </div>
                     
-                    <ChevronRightIcon className="w-5 h-5 text-slate-400" />
+                    {/* Estadísticas en grid móvil */}
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="bg-slate-50 rounded-lg p-2">
+                        <div className="text-sm font-semibold text-slate-700">
+                          {item.processedData.keyConcepts.length}
+                        </div>
+                        <div className="text-xs text-slate-500">conceptos</div>
+                      </div>
+                      <div className="bg-slate-50 rounded-lg p-2">
+                        <div className="text-sm font-semibold text-slate-700">
+                          {item.processedData.quizQuestions.length}
+                        </div>
+                        <div className="text-xs text-slate-500">preguntas</div>
+                      </div>
+                      <div className="bg-slate-50 rounded-lg p-2">
+                        <div className="text-sm font-semibold text-slate-700">
+                          {item.processedData.relatedProblems.length}
+                        </div>
+                        <div className="text-xs text-slate-500">problemas</div>
+                      </div>
+                    </div>
+
+                    {/* Indicador de estado */}
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-xs text-slate-500">Completado</span>
+                      </div>
+                      <ChevronRightIcon className="w-4 h-4 text-slate-400" />
+                    </div>
                   </div>
                 </div>
 
@@ -207,31 +248,31 @@ const LibraryView: React.FC = React.memo(() => {
           )}
         </div>
 
-        {/* Estadísticas de la biblioteca */}
+        {/* Estadísticas de la biblioteca - móvil optimizado */}
         {analysisHistory.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-slate-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-slate-600">{analysisHistory.length}</div>
-                <div className="text-sm text-slate-500">Total Análisis</div>
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-slate-200">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-center">
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-lg sm:text-2xl font-bold text-slate-700">{analysisHistory.length}</div>
+                <div className="text-xs sm:text-sm text-slate-500">Análisis</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-600">
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-lg sm:text-2xl font-bold text-slate-700">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.keyConcepts.length, 0)}
                 </div>
-                <div className="text-sm text-slate-500">Conceptos Totales</div>
+                <div className="text-xs sm:text-sm text-slate-500">Conceptos</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-600">
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-lg sm:text-2xl font-bold text-slate-700">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.quizQuestions.length, 0)}
                 </div>
-                <div className="text-sm text-slate-500">Preguntas Generadas</div>
+                <div className="text-xs sm:text-sm text-slate-500">Preguntas</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-600">
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-lg sm:text-2xl font-bold text-slate-700">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.relatedProblems.length, 0)}
                 </div>
-                <div className="text-sm text-slate-500">Problemas Creados</div>
+                <div className="text-xs sm:text-sm text-slate-500">Problemas</div>
               </div>
             </div>
           </div>
