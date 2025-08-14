@@ -307,6 +307,17 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => window.location.href = '/'}
+            icon={<span>🏠</span>}
+            className="flex-1 sm:flex-none min-h-[44px] touch-manipulation text-gray-600 hover:text-gray-800"
+          >
+            <span className="hidden sm:inline text-sm">Ir al Inicio</span>
+            <span className="sm:hidden text-xs">Inicio</span>
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={generatePDF}
             disabled={isGeneratingPDF}
             icon={isGeneratingPDF ? <LoaderCircleIcon className="w-4 h-4" /> : <FileTextIcon className="w-4 h-4" />}
