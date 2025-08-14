@@ -298,10 +298,10 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">
         <div>
-          <p className="text-xs sm:text-sm text-gray-500 mb-1 uppercase tracking-wide font-medium">
+          <p className="text-xs sm:text-sm text-slate-500 mb-1 uppercase tracking-wide font-medium">
             {currentDate}
           </p>
-          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{subject}</h1>
+          <h1 className="text-sm sm:text-base md:text-lg font-medium text-slate-700 leading-tight">{subject}</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <Button
@@ -309,7 +309,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
             size="sm"
             onClick={() => window.location.href = '/'}
             icon={<HomeIcon className="w-4 h-4" />}
-            className="flex-1 sm:flex-none min-h-[44px] touch-manipulation text-gray-600 hover:text-gray-800"
+            className="flex-1 sm:flex-none min-h-[44px] touch-manipulation text-slate-600 hover:text-slate-800"
           >
             <span className="hidden sm:inline text-sm">Ir al Inicio</span>
             <span className="sm:hidden text-xs">Inicio</span>
@@ -335,15 +335,15 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
       
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex space-x-1">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-2 h-2 sm:w-3 sm:h-3 bg-teal-500 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}></div>
-            ))}
-          </div>
-          <span className="text-xs sm:text-sm font-semibold text-gray-700">Análisis Completado</span>
+                      <div className="flex space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-2 h-2 sm:w-3 sm:h-3 bg-slate-500 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}></div>
+              ))}
+            </div>
+            <span className="text-xs sm:text-sm font-medium text-slate-600">Análisis Completado</span>
         </div>
         <div className="flex-1"></div>
-        <div className="text-xs text-gray-500 bg-gray-100 px-2 sm:px-3 py-1 rounded-full self-start sm:self-auto">
+        <div className="text-xs text-slate-500 bg-slate-100 px-2 sm:px-3 py-1 rounded-full self-start sm:self-auto">
           Reporte Científico • {new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
