@@ -109,7 +109,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
       {/* Flashcard */}
       <div 
-        className={`relative w-full h-56 xs:h-60 sm:h-80 cursor-pointer transition-transform duration-500 preserve-3d ${
+        className={`relative w-full h-72 xs:h-80 sm:h-96 cursor-pointer transition-transform duration-500 preserve-3d ${
           isFlipped ? 'rotate-y-180' : ''
         }`}
         onClick={handleFlip}
