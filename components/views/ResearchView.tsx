@@ -246,17 +246,17 @@ const ResearchView: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header Optimizado */}
-      <div className="text-center py-6">
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <TargetIcon className="w-8 h-8 text-teal-600" />
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+    <div className="max-w-6xl mx-auto space-y-4">
+      {/* Header Optimizado - Títulos más pequeños */}
+      <div className="text-center py-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <TargetIcon className="w-6 h-6 text-teal-600" />
+          <h1 className="text-lg md:text-xl font-semibold text-gray-800">
             Agente de Investigación Matemática
           </h1>
         </div>
         
-        <p className="text-base text-gray-600 max-w-xl mx-auto mb-4">
+        <p className="text-sm text-gray-500 max-w-lg mx-auto mb-3">
           Genera, refina y ejecuta planes de investigación con IA avanzada
         </p>
         
@@ -325,11 +325,11 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
   return (
     <Card className="p-6">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="text-center mb-4">
+          <h2 className="text-base font-medium text-gray-800 mb-1">
             ¿Qué quieres investigar?
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-500">
             Describe tu tema de investigación matemática
           </p>
         </div>
@@ -385,12 +385,12 @@ const PlanReview: React.FC<{
 
   return (
     <div className="space-y-4">
-      {/* Header compacto */}
-      <div className="text-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-900 mb-1">
+      {/* Header compacto - Títulos más pequeños */}
+      <div className="text-center mb-3">
+        <h2 className="text-base font-medium text-gray-800 mb-1">
           Plan de Investigación
         </h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-xs text-gray-500">
           {topic}
         </p>
       </div>
@@ -399,8 +399,8 @@ const PlanReview: React.FC<{
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Subtópicos */}
         <Card className="p-4">
-          <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <FileTextIcon className="w-4 h-4 text-blue-600" />
+          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FileTextIcon className="w-3 h-3 text-blue-600" />
             Estructura
           </h3>
           <div className="space-y-2">
@@ -417,8 +417,8 @@ const PlanReview: React.FC<{
 
         {/* Chat de refinamiento */}
         <Card className="p-4">
-          <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <MessageCircleIcon className="w-4 h-4 text-purple-600" />
+          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <MessageCircleIcon className="w-3 h-3 text-purple-600" />
             Refinar
           </h3>
           
