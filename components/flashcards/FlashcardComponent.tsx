@@ -129,8 +129,8 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
     <div className="w-full max-w-2xl mx-auto px-4 xs:px-6 sm:px-8 safe-area-bottom">
       {/* Stats Bar */}
       {showStats && (
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm text-gray-600 gap-2 sm:gap-0">
+        <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm text-slate-600 gap-2 sm:gap-0">
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               <span className="flex items-center gap-1">
                 <TargetIcon className="w-4 h-4" />
@@ -144,7 +144,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
               <span className="text-xs sm:text-sm hidden sm:inline">Último: {formatLastReviewed(flashcard.lastReviewed)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded self-start sm:self-auto">
+                              <span className="text-xs text-slate-500 bg-slate-200 px-2 py-1 rounded self-start sm:self-auto">
                 {flashcard.subject}
               </span>
               {onDelete && (
@@ -180,21 +180,21 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`flashcard-face flashcard-front absolute inset-0 ${
             isFlipped ? 'opacity-0' : 'opacity-100'
-          } border-2 border-teal-200 overflow-hidden transition-opacity duration-300 ease-in-out`}
+          } border-2 border-slate-200 overflow-hidden transition-opacity duration-300 ease-in-out`}
           padding="md"
         >
           <div className="h-full flex flex-col">
             <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
-              <span className="text-xs sm:text-sm text-teal-600 font-medium">CONCEPTO</span>
+              <span className="text-xs sm:text-sm text-slate-600 font-medium">CONCEPTO</span>
             </div>
             
             <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-              <h2 className="text-base xs:text-lg sm:text-2xl font-bold text-gray-900 text-center leading-snug sm:leading-relaxed break-words hyphens-auto overflow-hidden flashcard-text max-w-full">
+              <h2 className="text-base xs:text-lg sm:text-xl font-semibold text-slate-700 text-center leading-snug sm:leading-relaxed break-words hyphens-auto overflow-hidden flashcard-text max-w-full">
                 {flashcard.concept}
               </h2>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4 flex-shrink-0">
+            <div className="text-center text-xs sm:text-sm text-slate-500 mt-2 sm:mt-4 flex-shrink-0">
               <span className="hidden sm:inline">Haz clic para ver la definición</span>
               <span className="sm:hidden">Toca para ver definición</span>
             </div>
@@ -205,23 +205,23 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`flashcard-face flashcard-back absolute inset-0 ${
             isFlipped ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-300 ease-in-out border-2 border-blue-200 overflow-hidden`}
+          } transition-opacity duration-300 ease-in-out border-2 border-slate-200 overflow-hidden`}
           padding="md"
         >
           <div className="h-full flex flex-col">
             <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
-              <span className="text-xs sm:text-sm text-blue-600 font-medium">DEFINICIÓN</span>
+              <span className="text-xs sm:text-sm text-slate-600 font-medium">DEFINICIÓN</span>
             </div>
             
             <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-y-auto max-h-full">
               <div className="w-full max-h-full overflow-y-auto scrollbar-thin">
-                <p className="text-xs xs:text-sm sm:text-lg text-gray-800 text-center leading-relaxed break-words hyphens-auto flashcard-text max-w-full">
+                <p className="text-xs xs:text-sm sm:text-lg text-slate-800 text-center leading-relaxed break-words hyphens-auto flashcard-text max-w-full">
                   {flashcard.definition}
                 </p>
               </div>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4 flex-shrink-0">
+            <div className="text-center text-xs sm:text-sm text-slate-500 mt-2 sm:mt-4 flex-shrink-0">
               ¿Qué tan bien conoces este concepto?
             </div>
           </div>

@@ -8,7 +8,7 @@ interface ChatMessageProps {
 }
 
 const ContentRenderer: React.FC<{ content: ParsedContent; isUser: boolean }> = ({ content, isUser }) => {
-  const baseTextColor = isUser ? 'text-white' : 'text-gray-800';
+  const baseTextColor = isUser ? 'text-white' : 'text-slate-800';
   
   switch (content.type) {
     case 'heading':
@@ -22,11 +22,11 @@ const ContentRenderer: React.FC<{ content: ParsedContent; isUser: boolean }> = (
       
     case 'list':
       return (
-        <ul className={`space-y-1 my-2 ${isUser ? 'text-white' : 'text-gray-700'}`}>
+        <ul className={`space-y-1 my-2 ${isUser ? 'text-white' : 'text-slate-700'}`}>
           {content.items?.map((item, index) => (
             <li key={index} className="flex items-start gap-2">
               <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                isUser ? 'bg-white' : 'bg-teal-500'
+                isUser ? 'bg-white' : 'bg-slate-500'
               }`} />
               <span className="text-sm leading-relaxed">{item}</span>
             </li>
@@ -38,8 +38,8 @@ const ContentRenderer: React.FC<{ content: ParsedContent; isUser: boolean }> = (
       return (
         <div className={`my-3 p-3 rounded-md font-mono text-xs ${
           isUser 
-            ? 'bg-teal-700 text-teal-100 border border-teal-500' 
-            : 'bg-gray-100 text-gray-800 border border-gray-300'
+            ? 'bg-slate-700 text-slate-100 border border-slate-500' 
+            : 'bg-slate-100 text-slate-800 border border-slate-300'
         }`}>
           <pre className="whitespace-pre-wrap">{content.content}</pre>
         </div>
@@ -48,7 +48,7 @@ const ContentRenderer: React.FC<{ content: ParsedContent; isUser: boolean }> = (
     case 'formula':
       return (
         <div className={`my-2 p-2 text-center italic ${
-          isUser ? 'text-teal-100' : 'text-teal-700'
+          isUser ? 'text-slate-100' : 'text-slate-700'
         }`}>
           {content.content}
         </div>
@@ -84,8 +84,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
         <div
           className={`relative inline-block p-4 rounded-lg shadow-sm ${
             isUser
-              ? 'bg-teal-600 text-white rounded-br-sm'
-              : 'bg-white text-gray-900 border border-gray-200 rounded-bl-sm'
+              ? 'bg-slate-600 text-white rounded-br-sm'
+              : 'bg-white text-slate-900 border border-slate-200 rounded-bl-sm'
           }`}
         >
           {/* Botón de copiar - solo para mensajes de la IA */}
@@ -97,7 +97,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
                          sm:p-1.5 ${
                 copied 
                   ? 'bg-green-100 text-green-600' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800'
               }`}
               title={copied ? 'Copiado!' : 'Copiar mensaje'}
             >

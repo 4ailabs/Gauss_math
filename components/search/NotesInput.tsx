@@ -66,7 +66,7 @@ export const NotesInput: React.FC<NotesInputProps> = React.memo(({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={getPlaceholder()}
-            className="w-full h-32 sm:h-40 md:h-48 p-3 sm:p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-base sm:text-base"
+            className="w-full h-32 sm:h-40 md:h-48 p-3 sm:p-4 border border-slate-300 rounded-xl resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 focus:outline-none text-slate-900 placeholder-slate-500 text-base sm:text-base"
             disabled={isLoading}
           />
           

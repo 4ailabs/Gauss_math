@@ -11,7 +11,7 @@ export const GatherOptions: React.FC = React.memo(() => {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm font-medium text-gray-800">Generar:</span>
+      <span className="text-sm font-medium text-slate-700">Generar:</span>
       <div className="flex space-x-1">
         {options.map(({ key, label }) => (
           <button
@@ -19,8 +19,8 @@ export const GatherOptions: React.FC = React.memo(() => {
             onClick={() => setGatherType(key)}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
               gatherType === key
-                ? 'bg-teal-100 text-teal-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-slate-100 text-slate-800'
+                : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
             }`}
           >
             {label}

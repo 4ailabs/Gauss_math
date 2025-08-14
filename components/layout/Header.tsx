@@ -39,7 +39,7 @@ export const Header: React.FC = React.memo(() => {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -69,11 +69,11 @@ export const Header: React.FC = React.memo(() => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-3 border border-gray-300 rounded-lg bg-white shadow-md transition-all duration-200 hover:shadow-lg"
-              aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-            >
+                          <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-slate-700 hover:text-slate-900 focus:outline-none focus:text-slate-900 p-3 border border-slate-300 rounded-lg bg-white shadow-md transition-all duration-200 hover:shadow-lg"
+                aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              >
               {isMobileMenuOpen ? (
                 <XCloseIcon className="h-6 w-6" />
               ) : (
@@ -81,7 +81,7 @@ export const Header: React.FC = React.memo(() => {
               )}
             </button>
             {/* Debug indicator */}
-            <span className="ml-2 text-xs text-gray-400 md:hidden">
+            <span className="ml-2 text-xs text-slate-400 md:hidden">
               {isMobileMenuOpen ? 'Abierto' : 'Menú'}
             </span>
           </div>
@@ -89,7 +89,7 @@ export const Header: React.FC = React.memo(() => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div ref={mobileMenuRef} className="md:hidden border-t border-gray-200 bg-white shadow-lg">
+          <div ref={mobileMenuRef} className="md:hidden border-t border-slate-200 bg-white shadow-lg">
             <div className="px-4 pt-3 pb-4 space-y-2">
               {navItems.map(({ key, label }) => (
                 <button

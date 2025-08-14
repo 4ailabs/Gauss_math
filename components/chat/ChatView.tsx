@@ -12,7 +12,7 @@ export const ChatView: React.FC = React.memo(() => {
     <div className="space-y-6">
       <Card padding="lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Chat con IA</h2>
+          <h2 className="text-xl font-semibold text-slate-700">Chat con IA</h2>
           <div className="flex gap-2">
             <Button
               variant="ghost"
