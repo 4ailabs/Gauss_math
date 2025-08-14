@@ -4,44 +4,32 @@ import { useApp } from '../../contexts/AppContext';
 export const QuerySuggestions: React.FC = React.memo(() => {
   const { state: { selectedSubject } } = useApp();
 
-  const getSuggestions = () => {
+  const getExamplesBySubject = () => {
     switch (selectedSubject) {
       case 'Investigación en Matemáticas Aplicadas y Computación':
-        return [
-          'Estructura IMRyD de artículos',
-          'Revisión de literatura científica',
-          'Metodología de investigación',
-          'Presentación de resultados',
-          'Discusión académica'
-        ];
+        return {
+          example: '"algoritmos + implementación" en lugar de solo "algoritmos"',
+          suggestions: ['+ implementación', '+ complejidad', '+ optimización']
+        };
       case 'Administración de Bases de Datos':
-        return [
-          'Diseño de bases de datos',
-          'Consultas SQL avanzadas',
-          'Normalización y optimización',
-          'Transacciones y concurrencia',
-          'Seguridad de datos'
-        ];
+        return {
+          example: '"normalización + ejemplos" en lugar de solo "normalización"',
+          suggestions: ['+ consultas', '+ diseño', '+ optimización']
+        };
       case 'Elementos de Finanzas e Inversiones':
-        return [
-          'Interés simple y compuesto',
-          'Valor presente y futuro',
-          'Anualidades y rentas',
-          'Tablas de amortización',
-          'VAN y TIR',
-          'Mercado de capitales',
-          'Evaluación de proyectos'
-        ];
+        return {
+          example: '"VAN + cálculo" en lugar de solo "VAN"',
+          suggestions: ['+ cálculo', '+ comparación', '+ análisis']
+        };
       default:
-        return [
-          'Conceptos clave',
-          'Ejemplos prácticos',
-          'Metodología específica'
-        ];
+        return {
+          example: '"concepto + ejemplos" en lugar de solo "concepto"',
+          suggestions: ['+ ejemplos', '+ ejercicios', '+ teoría']
+        };
     }
   };
 
-  const suggestions = getSuggestions();
+  const examples = getExamplesBySubject();
 
   return (
     <div className="bg-white rounded-lg p-4 border border-slate-200">
@@ -55,13 +43,15 @@ export const QuerySuggestions: React.FC = React.memo(() => {
       </p>
       
       <p className="text-xs text-slate-500 mb-3">
-        Ejemplo: <span className="font-medium">"derivadas + ejemplos"</span> en lugar de solo <span className="font-medium">"derivadas"</span>
+        Ejemplo: <span className="font-medium">{examples.example}</span>
       </p>
       
       <div className="flex flex-wrap gap-2">
-        <span className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">+ ejemplos</span>
-        <span className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">+ ejercicios</span>
-        <span className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">+ teoría</span>
+        {examples.suggestions.map((suggestion, index) => (
+          <span key={index} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
+            {suggestion}
+          </span>
+        ))}
       </div>
     </div>
   );
