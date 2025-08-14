@@ -3,8 +3,8 @@ import { ProcessedData, ChatMessage } from '../types';
 
 // Función para verificar la configuración de la API
 const checkApiConfiguration = () => {
-    // Prioridad: VITE_GEMINI_API_KEY (desarrollo local) -> GEMINI_API_KEY (producción Vercel)
-    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
+    // Prioridad: GEMINI_API_KEY (producción Vercel) -> VITE_GEMINI_API_KEY (desarrollo local)
+    let apiKey = import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
     
     // Fallback para debugging temporal
     if (!apiKey && typeof window !== 'undefined') {
@@ -18,11 +18,11 @@ const checkApiConfiguration = () => {
     console.log("API Key length:", apiKey ? apiKey.length : 0);
     console.log("API Key preview:", apiKey ? `${apiKey.substring(0, 10)}...` : "No disponible");
     console.log("Entorno:", import.meta.env.MODE);
-    console.log("VITE_GEMINI_API_KEY:", import.meta.env.VITE_GEMINI_API_KEY ? "Sí" : "No");
     console.log("GEMINI_API_KEY:", import.meta.env.GEMINI_API_KEY ? "Sí" : "No");
+    console.log("VITE_GEMINI_API_KEY:", import.meta.env.VITE_GEMINI_API_KEY ? "Sí" : "No");
     
     if (!apiKey) {
-        throw new Error("API Key no configurada. Verifica que VITE_GEMINI_API_KEY (desarrollo) o GEMINI_API_KEY (producción) esté definida.");
+        throw new Error("API Key no configurada. Verifica que GEMINI_API_KEY (producción) o VITE_GEMINI_API_KEY (desarrollo) esté definida.");
     }
     
     if (apiKey.length < 20) {
@@ -41,8 +41,8 @@ try {
 
 // Función para obtener la API key con fallback
 const getApiKey = () => {
-    // Prioridad: VITE_GEMINI_API_KEY (desarrollo local) -> GEMINI_API_KEY (producción Vercel)
-    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
+    // Prioridad: GEMINI_API_KEY (producción Vercel) -> VITE_GEMINI_API_KEY (desarrollo local)
+    let apiKey = import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey && typeof window !== 'undefined') {
         apiKey = window.localStorage.getItem('temp_api_key');
     }
