@@ -33,16 +33,17 @@ console.log('='.repeat(60));
 if (process.env.VERCEL) {
   console.log('🚀 Ejecutándose en Vercel');
   
-  if (!process.env.VITE_GEMINI_API_KEY) {
-    console.error('❌ CRÍTICO: VITE_GEMINI_API_KEY no está configurada');
+  // En Vercel, GEMINI_API_KEY es suficiente
+  if (!process.env.GEMINI_API_KEY) {
+    console.error('❌ CRÍTICO: GEMINI_API_KEY no está configurada en Vercel');
     console.log('📝 Para configurar en Vercel:');
     console.log('   1. Ve a tu dashboard de Vercel');
     console.log('   2. Settings → Environment Variables');
-    console.log('   3. Agrega: VITE_GEMINI_API_KEY = tu_api_key');
+    console.log('   3. Agrega: GEMINI_API_KEY = tu_api_key');
     console.log('   4. Aplica a: Production, Preview, Development');
     process.exit(1);
   } else {
-    console.log('✅ VITE_GEMINI_API_KEY configurada correctamente');
+    console.log('✅ GEMINI_API_KEY configurada correctamente en Vercel');
   }
 } else {
   console.log('💻 Ejecutándose en desarrollo local');
