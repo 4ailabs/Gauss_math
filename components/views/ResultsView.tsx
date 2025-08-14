@@ -43,8 +43,12 @@ const ResultsView: React.FC = React.memo(() => {
       {/* Mobile Sidebar Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="md:hidden fixed bottom-4 right-4 z-50 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700 transition-colors"
+        className="md:hidden fixed bottom-4 right-4 z-50 bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center touch-manipulation safe-area-bottom safe-area-right"
         aria-label={isSidebarOpen ? 'Cerrar panel' : 'Abrir panel'}
+        style={{ 
+          bottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
+          right: `calc(1rem + env(safe-area-inset-right, 0px))`
+        }}
       >
         {isSidebarOpen ? (
           <XCloseIcon className="w-6 h-6" />

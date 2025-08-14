@@ -855,8 +855,26 @@ body {
 
 /* Mobile responsive scroll fixes */
 @media (max-width: 768px) {
+  .results-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    height: -webkit-fill-available;
+    overflow: hidden;
+  }
+  
+  .results-header-fixed {
+    height: 120px; /* Reduced height for mobile */
+  }
+  
   .results-content-area {
     flex-direction: column;
+    height: calc(100vh - 120px);
+    height: calc(-webkit-fill-available - 120px);
+    padding-top: 120px;
   }
   
   .results-sidebar-panel {
@@ -864,11 +882,15 @@ body {
     border-left: none;
     border-top: 1px solid #e5e7eb;
     max-height: 40vh;
+    max-height: calc(40 * (-webkit-fill-available / 100));
   }
   
   .results-main-panel {
     flex: 1;
     min-height: 60vh;
+    min-height: calc(60 * (-webkit-fill-available / 100));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -882,5 +904,91 @@ body {
 
 /* Prevent body scroll when results are open */
 .results-fullscreen {
-  touch-action: none; /* Prevent pull-to-refresh */
+  touch-action: pan-y; /* Allow vertical scrolling but prevent pull-to-refresh */
+}
+
+/* iPhone specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iPhone specific styles */
+  .results-fullscreen {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+  
+  .results-header-fixed {
+    /* Account for iPhone notch and safe areas */
+    padding-top: env(safe-area-inset-top);
+    height: calc(120px + env(safe-area-inset-top));
+  }
+  
+  .results-content-area {
+    height: calc(100vh - 120px - env(safe-area-inset-top));
+    height: calc(-webkit-fill-available - 120px - env(safe-area-inset-top));
+    padding-top: calc(120px + env(safe-area-inset-top));
+  }
+  
+  .results-main-panel {
+    /* Add bottom padding for iPhone home indicator */
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Fix iOS scroll momentum */
+  .results-main-panel,
+  .results-sidebar-panel {
+    -webkit-overflow-scrolling: touch;
+    transform: translate3d(0, 0, 0); /* Hardware acceleration */
+  }
+}
+
+/* Additional iPhone scroll fixes */
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+  /* High DPI mobile devices (iPhone) */
+  .results-main-panel {
+    /* Prevent rubber band scrolling */
+    overscroll-behavior: contain;
+    /* Improve scroll performance */
+    will-change: scroll-position;
+  }
+  
+  /* Prevent zoom on inputs */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Better touch targets */
+  button, .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Floating action button improvements */
+  .md\:hidden.fixed.bottom-4.right-4 {
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    right: calc(1rem + env(safe-area-inset-right));
+    min-height: 56px;
+    min-width: 56px;
+    touch-action: manipulation;
+  }
+}
+
+/* Safe area utilities */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Touch manipulation */
+.touch-manipulation {
+  touch-action: manipulation;
 }

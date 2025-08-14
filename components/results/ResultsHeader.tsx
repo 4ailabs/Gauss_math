@@ -285,23 +285,23 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 p-4 sm:p-6 h-full">
+    <div className="bg-white border-b border-gray-200 p-3 sm:p-4 md:p-6 h-full safe-area-top">
       {/* Notificación de éxito */}
       {pdfGenerated && (
-        <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
-          <CheckCircleIcon className="w-5 h-5 text-green-600" />
-          <span className="text-sm text-green-800 font-medium">
-            ¡PDF generado exitosamente y descargado!
+        <div className="mb-3 bg-green-50 border border-green-200 rounded-lg p-2 sm:p-3 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
+          <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+          <span className="text-xs sm:text-sm text-green-800 font-medium">
+            ¡PDF generado exitosamente!
           </span>
         </div>
       )}
       
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 sm:gap-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">
         <div>
           <p className="text-xs sm:text-sm text-gray-500 mb-1 uppercase tracking-wide font-medium">
             {currentDate}
           </p>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{subject}</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{subject}</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <Button
@@ -310,12 +310,12 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
             onClick={generatePDF}
             disabled={isGeneratingPDF}
             icon={isGeneratingPDF ? <LoaderCircleIcon className="w-4 h-4" /> : <FileTextIcon className="w-4 h-4" />}
-            className="flex-1 sm:flex-none"
+            className="flex-1 sm:flex-none min-h-[44px] touch-manipulation"
           >
-            <span className="hidden sm:inline">
+            <span className="hidden sm:inline text-sm">
               {isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}
             </span>
-            <span className="sm:hidden">
+            <span className="sm:hidden text-xs">
               {isGeneratingPDF ? '...' : 'PDF'}
             </span>
           </Button>
