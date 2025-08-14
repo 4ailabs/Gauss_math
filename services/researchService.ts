@@ -158,11 +158,21 @@ REQUISITOS DEL CONTENIDO:
    - Referencias a conceptos matemáticos fundamentales
    - Explicaciones que permitan comprensión profunda
 
-4. INTEGRACIÓN CON GOOGLE SEARCH:
-   - Utiliza información actualizada y verificada
-   - Incluye hallazgos recientes en el campo
-   - Cita fuentes académicas cuando sea posible
+4. PRIORIZACIÓN DE FUENTES CIENTÍFICAS:
+   - PRIMERO: Busca en fuentes académicas como arXiv, ResearchGate, JSTOR, IEEE, Springer
+   - SEGUNDO: Recursos educativos de universidades (MIT, Harvard, Stanford, OpenStax)
+   - TERCERO: Plataformas educativas reconocidas (Khan Academy, CK-12, GeoGebra)
+   - CUARTO: Artículos de Wikipedia en español (verificar información)
+   - ÚLTIMO: Videos de YouTube y otros medios (solo si complementan fuentes académicas)
+
+5. INTEGRACIÓN CON GOOGLE SEARCH:
+   - Utiliza búsquedas específicas como: "site:arxiv.org ${subtopic} mathematics"
+   - Busca en sitios académicos: "site:researchgate.net ${subtopic}"
+   - Incluye términos como "research paper", "academic", "scholarly" en las búsquedas
+   - Prioriza fuentes con DOI, citas académicas o publicaciones revisadas por pares
    - Proporciona contexto histórico del desarrollo del campo
+
+IMPORTANTE: Siempre prioriza fuentes científicas y académicas sobre contenido general. Si encuentras papers académicos, artículos de investigación o recursos universitarios, úsalos como base principal de tu respuesta.
 
 Usa tu conocimiento y Google Search para proporcionar información precisa, actualizada y académicamente rigurosa. Explica los conceptos como si fuera para un investigador serio, pero mantén la claridad. No escribas un título para esta sección, solo el contenido detallado. La salida debe estar en español.`;
     

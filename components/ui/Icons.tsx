@@ -45,7 +45,10 @@ import {
   BarChart,
   Network,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Globe,
+  Video,
+  ExternalLink
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -105,3 +108,8 @@ export const NetworkIcon: React.FC<IconProps> = (props) => <Network {...props} /
 // Iconos para gestión de biblioteca
 export const Trash2Icon: React.FC<IconProps> = (props) => <Trash2 {...props} />;
 export const AlertTriangleIcon: React.FC<IconProps> = (props) => <AlertTriangle {...props} />;
+
+// Iconos para fuentes mejoradas
+export const GlobeIcon: React.FC<IconProps> = (props) => <Globe {...props} />;
+export const VideoIcon: React.FC<IconProps> = (props) => <Video {...props} />;
+export const ExternalLinkIcon: React.FC<IconProps> = (props) => <ExternalLink {...props} />;

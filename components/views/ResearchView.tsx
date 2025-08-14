@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useApp } from '../../contexts/AppContext';
@@ -22,6 +22,10 @@ import {
   type Source,
   type FinalReport
 } from '../../services/researchService';
+import { useResearchPersistence } from '../../hooks/useResearchPersistence';
+import { usePageVisibility } from '../../hooks/usePageVisibility';
+import { ResearchExitWarning } from '../ui/ResearchExitWarning';
+import { EnhancedSourcesDisplay } from '../ui/EnhancedSourcesDisplay';
 
 // Estados de investigación
 enum ResearchState {
@@ -51,6 +55,21 @@ interface ChatMessage {
 const ResearchView: React.FC = React.memo(() => {
   const { setActiveView } = useApp();
   
+  // Hooks de robustez
+  const {
+    currentSession,
+    createSession,
+    updateResearchState,
+    updateSubtopicStatus,
+    addChatMessage,
+    clearSession,
+    hasActiveResearch,
+    getResearchProgress,
+    isSessionExpired
+  } = useResearchPersistence();
+  
+  const { isVisible, isHiddenTooLong } = usePageVisibility();
+  
   // Estado local de investigación
   const [researchState, setResearchState] = useState<ResearchState>(ResearchState.IDLE);
   const [topic, setTopic] = useState('');
@@ -60,6 +79,43 @@ const ResearchView: React.FC = React.memo(() => {
   const [sources, setSources] = useState<Source[]>([]);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estado para el warning de salida
+  const [showExitWarning, setShowExitWarning] = useState(false);
+
+  // Cargar sesión existente al inicializar
+  useEffect(() => {
+    if (currentSession && !isSessionExpired()) {
+      // Restaurar estado de la investigación
+      setTopic(currentSession.topic);
+      setSubtopics(currentSession.subtopics.map(s => s.title));
+      setResearchState(currentSession.researchState);
+      setChatHistory(currentSession.chatHistory);
+      
+      // Restaurar subtópicos con su estado
+      const restoredSubtopicObjects = currentSession.subtopics.map(s => ({
+        title: s.title,
+        content: s.content || '',
+        sources: s.sources || [],
+        status: s.status
+      }));
+      setSubtopicObjects(restoredSubtopicObjects);
+      
+      console.log('Sesión de investigación restaurada:', currentSession.topic);
+    }
+  }, [currentSession, isSessionExpired]);
+
+  // Detectar cuando la página se oculta y mostrar warning
+  useEffect(() => {
+    const handlePageHidden = () => {
+      if (hasActiveResearch()) {
+        setShowExitWarning(true);
+      }
+    };
+
+    document.addEventListener('pageHidden', handlePageHidden);
+    return () => document.removeEventListener('pageHidden', handlePageHidden);
+  }, [hasActiveResearch]);
 
   const handleReset = () => {
     setResearchState(ResearchState.IDLE);
@@ -70,6 +126,10 @@ const ResearchView: React.FC = React.memo(() => {
     setSources([]);
     setChatHistory([]);
     setError(null);
+    
+    // Limpiar sesión persistente
+    clearSession();
+    setShowExitWarning(false);
   };
 
   const handleGeneratePlan = useCallback(async (newTopic: string) => {
@@ -305,6 +365,19 @@ const ResearchView: React.FC = React.memo(() => {
           </Button>
         </div>
       </Card>
+
+      {/* Warning de salida con investigación activa */}
+      <ResearchExitWarning
+        isVisible={showExitWarning}
+        onContinue={() => setShowExitWarning(false)}
+        onExit={() => {
+          clearSession();
+          setShowExitWarning(false);
+          handleReset();
+        }}
+        researchTopic={topic}
+        progress={getResearchProgress()}
+      />
     </div>
   );
 });
@@ -500,24 +573,24 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
   const getStatusIcon = () => {
     switch (state) {
       case ResearchState.RESEARCHING:
-        return <BookOpenIcon className="w-6 h-6 text-blue-600" />;
+        return <BookOpenIcon className="w-8 h-8 text-blue-500" />;
       case ResearchState.SYNTHESIZING:
-        return <FileTextIcon className="w-6 h-6 text-purple-600" />;
+        return <FileTextIcon className="w-8 h-8 text-purple-500" />;
       default:
-        return <RefreshCwIcon className="w-6 h-6 text-teal-600 animate-spin" />;
+        return <RefreshCwIcon className="w-8 h-8 text-teal-500 animate-spin" />;
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
         <div className="mb-4">
           {getStatusIcon()}
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-700 mb-2">
           {getStatusText()}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-500">
           {state === ResearchState.RESEARCHING 
             ? 'Analizando cada subtópico de la investigación...'
             : 'Generando el reporte final de la investigación...'
@@ -526,28 +599,28 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
       </div>
 
       {/* Progreso de subtópicos */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <Card className="p-4">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">
           Progreso de la Investigación
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {subtopics.map((subtopic, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
               <div className="flex-shrink-0">
                 {subtopic.status === 'pending' && (
-                  <div className="w-6 h-6 bg-gray-300 rounded-full" />
+                  <div className="w-5 h-5 bg-gray-200 rounded-full" />
                 )}
                 {subtopic.status === 'loading' && (
-                  <RefreshCwIcon className="w-6 h-6 text-blue-600 animate-spin" />
+                  <RefreshCwIcon className="w-5 h-5 text-blue-500 animate-spin" />
                 )}
                 {subtopic.status === 'complete' && (
-                  <CheckIcon className="w-6 h-6 text-green-600" />
+                  <CheckIcon className="w-5 h-5 text-green-500" />
                 )}
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900">{subtopic.title}</div>
+                <div className="font-medium text-gray-700 text-sm">{subtopic.title}</div>
                 {subtopic.status === 'complete' && (
-                  <div className="text-sm text-gray-600 mt-1">
+                  <div className="text-xs text-gray-500 mt-1">
                     {subtopic.content.substring(0, 100)}...
                   </div>
                 )}
@@ -684,29 +757,19 @@ const ReportDisplay: React.FC<{
         </div>
       </Card>
 
-      {/* Fuentes */}
+      {/* Fuentes Mejoradas */}
       {sources.length > 0 && (
-        <Card className="p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-            <BookOpenIcon className="w-4 h-4 text-green-600" />
-            Fuentes Consultadas
-          </h3>
-          <div className="space-y-2">
-            {sources.map((source, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <span className="text-teal-500 text-sm">•</span>
-                <a
-                  href={source.uri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700 underline text-sm"
-                >
-                  {source.title}
-                </a>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <EnhancedSourcesDisplay 
+          sources={sources.map(source => ({
+            uri: source.uri,
+            title: source.title,
+            domain: '', // Se calculará automáticamente
+            type: 'other' as const, // Se categorizará automáticamente
+            reliability: 'medium' as const // Se evaluará automáticamente
+          }))}
+          title="Fuentes Consultadas en la Investigación"
+          collapsible={true}
+        />
       )}
 
       {/* Botones de acción */}
@@ -730,6 +793,19 @@ const ReportDisplay: React.FC<{
           </div>
         </div>
       )}
+
+      {/* Warning de salida con investigación activa */}
+      <ResearchExitWarning
+        isVisible={showExitWarning}
+        onContinue={() => setShowExitWarning(false)}
+        onExit={() => {
+          clearSession();
+          setShowExitWarning(false);
+          handleReset();
+        }}
+        researchTopic={topic}
+        progress={getResearchProgress()}
+      />
     </div>
   );
 };
