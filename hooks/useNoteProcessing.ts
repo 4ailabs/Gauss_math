@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { processNotes } from '../services/geminiService';
+import EnhancedMathService from '../services/enhancedMathService';
 import { AnalysisHistory } from '../types';
 
 export const useNoteProcessing = () => {
@@ -23,9 +24,20 @@ export const useNoteProcessing = () => {
     setError(null);
     
     try {
-      console.log('Iniciando procesamiento de notas...');
-      // Procesar directamente sin simulación de progreso
-      const data = await processNotes(notes, selectedSubject);
+      console.log('Iniciando procesamiento mejorado de notas...');
+      
+      // Intentar usar el servicio mejorado primero
+      let data;
+      try {
+        const enhancedService = EnhancedMathService.getInstance();
+        data = await enhancedService.processNotesEnhanced(notes, selectedSubject);
+        console.log('Procesamiento mejorado completado exitosamente');
+      } catch (enhancedError) {
+        console.log('Fallback a procesamiento básico:', enhancedError);
+        // Fallback al servicio original si el mejorado falla
+        data = await processNotes(notes, selectedSubject);
+        console.log('Procesamiento básico completado');
+      }
       console.log('Notas procesadas exitosamente:', data);
       
       setProcessedData(data);

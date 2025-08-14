@@ -9,6 +9,8 @@ import { ConceptsSection } from '../results/ConceptsSection';
 import { QuestionsSection } from '../results/QuestionsSection';
 import { ProblemsSection } from '../results/ProblemsSection';
 import { ResultsSidebar } from '../results/ResultsSidebar';
+import { EnhancedConceptsSection } from '../results/EnhancedConceptsSection';
+import { ConceptMapSection } from '../results/ConceptMapSection';
 
 const ResultsView: React.FC = React.memo(() => {
   const { state: { processedData, selectedSubject }, setActiveView } = useApp();
@@ -85,7 +87,24 @@ const ResultsView: React.FC = React.memo(() => {
             <div className="space-y-6 md:space-y-8">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 border-b border-gray-200 pb-3">RESULTADOS</h2>
               
-              <ConceptsSection concepts={processedData.keyConcepts} />
+              {/* Mostrar conceptos mejorados si están disponibles */}
+              {(processedData as any).enhancedConcepts ? (
+                <>
+                  <EnhancedConceptsSection 
+                    concepts={(processedData as any).enhancedConcepts}
+                    difficultyDistribution={(processedData as any).difficultyDistribution || { basic: 0, intermediate: 0, advanced: 0 }}
+                    subjectAreas={(processedData as any).subjectAreas || []}
+                  />
+                  
+                  {/* Mapa conceptual si está disponible */}
+                  {(processedData as any).conceptMap && (processedData as any).conceptMap.length > 0 && (
+                    <ConceptMapSection conceptMap={(processedData as any).conceptMap} />
+                  )}
+                </>
+              ) : (
+                <ConceptsSection concepts={processedData.keyConcepts} />
+              )}
+              
               <QuestionsSection questions={processedData.quizQuestions} />
               <ProblemsSection problems={processedData.relatedProblems} />
             </div>

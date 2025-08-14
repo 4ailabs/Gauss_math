@@ -40,7 +40,10 @@ import {
   Menu,
   X as XClose,
   Share,
-  Home
+  Home,
+  GraduationCap,
+  BarChart,
+  Network
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -91,3 +94,8 @@ export const MenuIcon: React.FC<IconProps> = (props) => <Menu {...props} />;
 export const XCloseIcon: React.FC<IconProps> = (props) => <XClose {...props} />;
 export const ShareIcon: React.FC<IconProps> = (props) => <Share {...props} />;
 export const HomeIcon: React.FC<IconProps> = (props) => <Home {...props} />;
+
+// Iconos para funcionalidades mejoradas
+export const GraduationCapIcon: React.FC<IconProps> = (props) => <GraduationCap {...props} />;
+export const ChartBarIcon: React.FC<IconProps> = (props) => <BarChart {...props} />;
+export const NetworkIcon: React.FC<IconProps> = (props) => <Network {...props} />;
