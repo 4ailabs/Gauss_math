@@ -45,37 +45,56 @@ export const NotesInput: React.FC<NotesInputProps> = React.memo(({
     }
   };
 
+  const getMobileButtonTitle = () => {
+    switch (searchType) {
+      case 'research':
+        return 'Procesar';
+      case 'systematic':
+        return 'Generar';
+      case 'papers':
+        return 'Buscar';
+      default:
+        return 'Procesar';
+    }
+  };
+
   return (
-    <div className="notes-input-area space-y-4">
-      <div className="space-y-3">
+    <div className="notes-input-area space-y-3 sm:space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <div className="relative">
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={getPlaceholder()}
-            className="w-full h-48 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
+            className="w-full h-32 sm:h-40 md:h-48 p-3 sm:p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-base sm:text-base"
             disabled={isLoading}
           />
           
           {isRecording && (
-            <div className="absolute top-3 right-3 flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm border border-red-200">
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1 sm:gap-2 bg-red-50 text-red-600 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm border border-red-200">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              Grabando...
+              <span className="hidden sm:inline">Grabando...</span>
+              <span className="sm:hidden">Rec</span>
             </div>
           )}
         </div>
         
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+          <div className="flex justify-center sm:justify-start">
             <Button
               variant="secondary"
-              size="sm"
+              size="md"
               onClick={onToggleRecording}
               disabled={isLoading}
-              className={`${isRecording ? 'bg-red-50 text-red-600 border-red-300 hover:bg-red-100' : ''}`}
-              icon={<MicIcon className="w-4 h-4" />}
+              className={`w-full sm:w-auto ${isRecording ? 'bg-red-50 text-red-600 border-red-300 hover:bg-red-100' : ''}`}
+              icon={<MicIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
             >
-              {isRecording ? 'Detener grabación' : 'Grabar audio'}
+              <span className="hidden sm:inline">
+                {isRecording ? 'Detener grabación' : 'Grabar audio'}
+              </span>
+              <span className="sm:hidden">
+                {isRecording ? 'Detener' : 'Grabar'}
+              </span>
             </Button>
           </div>
           
@@ -84,10 +103,15 @@ export const NotesInput: React.FC<NotesInputProps> = React.memo(({
             disabled={isLoading || !notes.trim()}
             loading={isLoading}
             size="lg"
-            className="px-6"
-            icon={!isLoading && <ChevronRightIcon className="w-5 h-5" />}
+            className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-3"
+            icon={!isLoading && <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
           >
-            {getSearchButtonTitle()}
+            <span className="hidden sm:inline">
+              {getSearchButtonTitle()}
+            </span>
+            <span className="sm:hidden">
+              {getMobileButtonTitle()}
+            </span>
           </Button>
         </div>
       </div>
