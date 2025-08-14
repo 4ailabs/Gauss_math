@@ -133,9 +133,38 @@ export async function researchSubtopic(subtopic: string, mainTopic: string): Pro
       throw new Error("API Key de Gemini no configurada");
     }
 
-    const prompt = `Eres un experto en matemáticas. Proporciona una sección detallada, clara y bien explicada para un informe de investigación sobre el subtema: '${subtopic}', dentro del contexto más amplio de '${mainTopic}'.
+    const prompt = `Eres un experto investigador en matemáticas con amplia experiencia académica. Tu tarea es crear una sección COMPLETA y DETALLADA para un informe de investigación sobre el subtema: '${subtopic}', dentro del contexto más amplio de '${mainTopic}'.
 
-Usa tu conocimiento y Google Search para proporcionar información precisa y actualizada. Explica los conceptos claramente, como si fuera para un estudiante de nivel universitario. No escribas un título para esta sección, solo el contenido. La salida debe estar en español.`;
+REQUISITOS DEL CONTENIDO:
+
+1. PROFUNDIDAD ACADÉMICA: Proporciona un análisis exhaustivo que incluya:
+   - Definiciones claras y precisas de conceptos clave
+   - Explicaciones paso a paso de métodos y procedimientos
+   - Ejemplos prácticos y aplicaciones reales
+   - Conexiones con otros conceptos matemáticos relacionados
+   - Estado actual de la investigación en este campo
+
+2. ESTRUCTURA DEL CONTENIDO:
+   - Introducción al concepto o método
+   - Desarrollo teórico con fundamentos matemáticos
+   - Aplicaciones prácticas y casos de uso
+   - Limitaciones y consideraciones importantes
+   - Conexiones con el tema principal de investigación
+
+3. ESTILO Y FORMATO:
+   - Mínimo 800-1200 palabras por subtema
+   - Lenguaje técnico pero accesible
+   - Uso de ejemplos numéricos cuando sea apropiado
+   - Referencias a conceptos matemáticos fundamentales
+   - Explicaciones que permitan comprensión profunda
+
+4. INTEGRACIÓN CON GOOGLE SEARCH:
+   - Utiliza información actualizada y verificada
+   - Incluye hallazgos recientes en el campo
+   - Cita fuentes académicas cuando sea posible
+   - Proporciona contexto histórico del desarrollo del campo
+
+Usa tu conocimiento y Google Search para proporcionar información precisa, actualizada y académicamente rigurosa. Explica los conceptos como si fuera para un investigador serio, pero mantén la claridad. No escribas un título para esta sección, solo el contenido detallado. La salida debe estar en español.`;
     
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -178,13 +207,39 @@ export async function synthesizeReport(topic: string, researchData: { title: str
 
     const researchDataString = researchData.map(item => `### ${item.title}\n\n${item.content}`).join('\n\n---\n\n');
 
-    const prompt = `Eres un escritor académico experto en matemáticas. Se te han proporcionado notas de investigación sobre varios subtemas relacionados con '${topic}'.
+    const prompt = `Eres un escritor académico experto en matemáticas con amplia experiencia en investigación científica. Se te han proporcionado notas de investigación sobre varios subtemas relacionados con '${topic}'.
 
-Tu tarea es sintetizar esta información en un informe completo y coherente en ESPAÑOL.
+Tu tarea es crear un informe académico COMPLETO, DETALLADO y PROFESIONAL en ESPAÑOL, siguiendo los estándares de publicaciones científicas.
 
-Primero, identifica de 3 a 5 "puntos clave" o conclusiones principales del material. Estos deben ser concisos, perspicaces y fáciles de entender para alguien que busca un resumen rápido.
+REQUISITOS DEL INFORME:
 
-Segundo, escribe un informe completo y bien estructurado en formato Markdown. El informe debe tener un título principal (#), una breve introducción que establezca el contexto, secciones detalladas para cada subtema (##), y una conclusión final. Utiliza negritas, listas, y otros elementos de Markdown para mejorar la legibilidad y estructurar la información de forma clara.
+1. RESUMEN EJECUTIVO: Identifica de 4 a 6 "puntos clave" o conclusiones principales del material. Estos deben ser concisos, perspicaces y fáciles de entender para alguien que busca un resumen rápido.
+
+2. INFORME COMPLETO: Escribe un informe académico extenso y bien estructurado en formato Markdown que incluya:
+   - Título principal (#) descriptivo y específico
+   - Introducción detallada que establezca el contexto, relevancia e importancia del tema
+   - Secciones principales (##) para cada subtema con análisis profundo
+   - Subsecciones (###) para conceptos específicos dentro de cada tema
+   - Uso extensivo de negritas, listas numeradas y con viñetas, tablas conceptuales
+   - Ejemplos prácticos y aplicaciones cuando sea relevante
+   - Conclusión comprehensiva que sintetice los hallazgos principales
+   - Implicaciones futuras y áreas de investigación adicional
+
+3. ESTILO ACADÉMICO: El informe debe ser:
+   - Mínimo 1500-2000 palabras
+   - Escrito en tercera persona
+   - Con lenguaje técnico apropiado pero accesible
+   - Estructurado como un paper académico real
+   - Con transiciones fluidas entre secciones
+
+4. FORMATO: Utiliza Markdown completo con:
+   - Encabezados jerárquicos (#, ##, ###)
+   - Listas numeradas y con viñetas
+   - **Negritas** para conceptos clave
+   - *Cursivas* para términos técnicos
+   - Código para fórmulas o algoritmos
+   - > Citas para definiciones importantes
+   - Separadores (---) entre secciones principales
 
 Devuelve la salida como un único objeto JSON.
 

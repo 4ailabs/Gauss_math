@@ -10,7 +10,8 @@ import {
   CheckIcon,
   RefreshCwIcon,
   FileTextIcon,
-  GraduationCapIcon
+  GraduationCapIcon,
+  CopyIcon
 } from '../ui/Icons';
 import { 
   createResearchPlan, 
@@ -559,67 +560,146 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
   );
 };
 
-// Componente de visualización de reporte
+// Función para convertir Markdown a HTML con estilo profesional
+const formatMarkdownToHTML = (markdown: string): string => {
+  return markdown
+    // Encabezados principales
+    .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-gray-900 mb-4 mt-6 first:mt-0">$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-gray-800 mb-3 mt-5">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 class="text-base font-medium text-gray-700 mb-2 mt-4">$1</h3>')
+    
+    // Negritas
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+    
+    // Cursivas
+    .replace(/\*(.+?)\*/g, '<em class="italic text-gray-800">$1</em>')
+    
+    // Código inline
+    .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-gray-800">$1</code>')
+    
+    // Citas
+    .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-teal-500 pl-4 py-2 my-3 bg-teal-50 italic text-gray-700">$1</blockquote>')
+    
+    // Separadores
+    .replace(/^---$/gm, '<hr class="my-6 border-gray-300">')
+    
+    // Listas con viñetas
+    .replace(/^\- (.+)$/gm, '<li class="ml-4 mb-1">• $1</li>')
+    .replace(/(<li.*<\/li>)/gs, '<ul class="list-none space-y-1 mb-3">$1</ul>')
+    
+    // Listas numeradas
+    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 mb-1">$&</li>')
+    .replace(/(<li.*<\/li>)/gs, '<ol class="list-decimal ml-4 space-y-1 mb-3">$1</ol>')
+    
+    // Párrafos
+    .replace(/^(?!<[h|u|o|b|h|r])(.+)$/gm, '<p class="mb-3">$1</p>')
+    
+    // Limpiar HTML mal formado
+    .replace(/<ul>\s*<\/ul>/g, '')
+    .replace(/<ol>\s*<\/ol>/g, '')
+    .replace(/<p>\s*<\/p>/g, '');
+};
+
+// Componente de visualización de reporte optimizado
 const ReportDisplay: React.FC<{
   report: FinalReport;
   sources: Source[];
   topic: string;
   onReset: () => void;
 }> = ({ report, sources, topic, onReset }) => {
+  const [showCopyToast, setShowCopyToast] = useState(false);
+
+  const handleCopyReport = async () => {
+    try {
+      await navigator.clipboard.writeText(report.report);
+      setShowCopyToast(true);
+      setTimeout(() => setShowCopyToast(false), 3000);
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
+  };
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-base font-medium text-gray-800 mb-1">
           Reporte de Investigación Completado
         </h2>
-        <p className="text-gray-600">
+        <p className="text-xs text-gray-500">
           Tema: {topic}
         </p>
       </div>
 
       {/* Resumen ejecutivo */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <LightbulbIcon className="w-5 h-5 text-yellow-600" />
+      <Card className="p-4">
+        <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+          <LightbulbIcon className="w-4 h-4 text-yellow-600" />
           Resumen Ejecutivo
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {report.summary.map((item, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <span className="text-teal-500 mt-1">•</span>
-              <span className="text-gray-700">{item}</span>
+            <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border-l-4 border-teal-500">
+              <span className="text-teal-600 font-bold text-lg">#{index + 1}</span>
+              <span 
+                className="text-black text-sm leading-relaxed flex-1"
+                style={{ 
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  lineHeight: '1.6'
+                }}
+              >
+                {item}
+              </span>
             </div>
           ))}
         </div>
       </Card>
 
       {/* Reporte completo */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <FileTextIcon className="w-5 h-5 text-blue-600" />
-          Reporte Completo
-        </h3>
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+            <FileTextIcon className="w-4 h-4 text-blue-600" />
+            Reporte Completo
+          </h3>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleCopyReport}
+            icon={<CopyIcon className="w-4 h-4" />}
+          >
+            Copiar Reporte
+          </Button>
+        </div>
         <div className="prose max-w-none">
-          <p className="text-gray-700 leading-relaxed">{report.report}</p>
+          <div 
+            className="text-black leading-relaxed text-sm"
+            style={{ 
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.6',
+              textAlign: 'justify'
+            }}
+            dangerouslySetInnerHTML={{
+              __html: formatMarkdownToHTML(report.report)
+            }}
+          />
         </div>
       </Card>
 
       {/* Fuentes */}
       {sources.length > 0 && (
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <BookOpenIcon className="w-5 h-5 text-green-600" />
+        <Card className="p-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+            <BookOpenIcon className="w-4 h-4 text-green-600" />
             Fuentes Consultadas
           </h3>
           <div className="space-y-2">
             {sources.map((source, index) => (
               <div key={index} className="flex items-center gap-2">
-                <span className="text-teal-500">•</span>
+                <span className="text-teal-500 text-sm">•</span>
                 <a
                   href={source.uri}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
+                  className="text-blue-500 hover:text-blue-700 underline text-sm"
                 >
                   {source.title}
                 </a>
@@ -640,6 +720,16 @@ const ReportDisplay: React.FC<{
           Nueva Investigación
         </Button>
       </div>
+
+      {/* Toast de confirmación de copia */}
+      {showCopyToast && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-in slide-in-from-bottom-2">
+          <div className="flex items-center gap-2">
+            <CheckIcon className="w-4 h-4" />
+            <span>Reporte copiado al portapapeles</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
