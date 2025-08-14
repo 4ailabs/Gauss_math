@@ -187,7 +187,7 @@ export const InteractiveQuizSection: React.FC<InteractiveQuizSectionProps> = Rea
                       className={`w-full text-left p-3 rounded-lg border transition-colors ${
                         isSelected 
                           ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
                       }`}
                     >
                       <span className="font-medium">{optionLetter})</span> {option}
