@@ -102,7 +102,7 @@ const ResultsView: React.FC = React.memo(() => {
         </div>
 
         {/* Right Sidebar */}
-        <div className={`results-sidebar-panel ${isSidebarOpen ? 'mobile-sidebar-open' : 'mobile-sidebar-closed'}`}>
+        <div className={`results-sidebar-panel ${isSidebarOpen ? 'mobile-sidebar-open' : 'mobile-sidebar-closed'} md:block`}>
           <ResultsSidebar processedData={processedData} />
         </div>
       </div>
