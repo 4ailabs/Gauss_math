@@ -559,28 +559,28 @@ ${subtopicObjects.map((st, index) => `
       {/* Header Optimizado - Títulos más pequeños y responsive */}
       <div className="text-center py-3 sm:py-4">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <TargetIcon className="w-5 h-5 sm:w-6 sm:h-6 text-teal-600" />
-          <h1 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800">
+          <TargetIcon className="w-5 h-5 sm:w-6 sm:h-6 text-slate-500" />
+          <h1 className="text-base sm:text-lg md:text-xl font-semibold text-slate-600">
             Agente de Investigación Matemática
           </h1>
         </div>
         
-        <p className="text-xs sm:text-sm text-gray-500 max-w-lg mx-auto mb-2 sm:mb-3 px-2">
+        <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto mb-2 sm:mb-3 px-2">
           Genera, refina y ejecuta planes de investigación con IA avanzada
         </p>
         
         {/* Indicador de estado de Gemini - Responsive */}
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-xs sm:text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-slate-50 to-gray-50 border border-slate-200 rounded-full text-xs sm:text-sm font-medium">
             {isGeminiAvailable() ? (
               <>
                 <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-teal-700">Gemini AI Conectado</span>
+                <span className="text-slate-600">Gemini AI Conectado</span>
               </>
             ) : (
               <>
                 <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full"></div>
-                <span className="text-yellow-700">Modo Fallback</span>
+                <span className="text-slate-600">Modo Fallback</span>
               </>
             )}
           </div>
@@ -608,7 +608,7 @@ ${subtopicObjects.map((st, index) => `
       )}
 
       {/* Contenido Principal - Padding responsive */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="p-3 sm:p-4 md:p-6">
           {renderContent()}
         </div>
@@ -672,10 +672,10 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
     <Card className="p-3 sm:p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-3 sm:mb-4">
-          <h2 className="text-sm sm:text-base font-medium text-gray-800 mb-1">
+          <h2 className="text-sm sm:text-base font-medium text-slate-600 mb-1">
             ¿Qué quieres investigar?
           </h2>
-          <p className="text-xs text-gray-500 px-2">
+          <p className="text-xs text-slate-500 px-2">
             Describe tu tema de investigación matemática
           </p>
         </div>
@@ -686,11 +686,11 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
               value={inputTopic}
               onChange={(e) => setInputTopic(e.target.value)}
               placeholder="Ej: Análisis de algoritmos de optimización para redes neuronales, Teoría de grafos en criptografía, Aplicaciones del cálculo tensorial..."
-              className="w-full h-24 sm:h-28 p-3 sm:p-4 pr-12 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-sm"
+              className="w-full h-24 sm:h-28 p-3 sm:p-4 pr-12 border border-slate-300 rounded-xl resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 focus:outline-none text-slate-700 placeholder-slate-500 text-sm"
               disabled={isLoading}
             />
             <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
-              <LightbulbIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+              <LightbulbIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
             </div>
           </div>
           

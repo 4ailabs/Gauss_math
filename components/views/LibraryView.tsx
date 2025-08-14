@@ -55,10 +55,10 @@ const LibraryView: React.FC = React.memo(() => {
       <Card padding="lg">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <BookOpenIcon className="w-8 h-8 text-teal-600" />
+            <BookOpenIcon className="w-8 h-8 text-slate-500" />
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Biblioteca</h2>
-              <p className="text-gray-600 text-sm">
+              <h2 className="text-2xl font-bold text-slate-600">Biblioteca</h2>
+              <p className="text-slate-500 text-sm">
                 Haz click en cualquier análisis para revisar los resultados
               </p>
             </div>
@@ -142,7 +142,7 @@ const LibraryView: React.FC = React.memo(() => {
                       </span>
                       <span>{new Date(item.timestamp).toLocaleDateString('es-ES')}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-slate-500">
                       <span>{item.processedData.keyConcepts.length} conceptos</span>
                       <span>{item.processedData.quizQuestions.length} preguntas</span>
                       <span>{item.processedData.relatedProblems.length} problemas</span>
@@ -152,7 +152,7 @@ const LibraryView: React.FC = React.memo(() => {
                   <div className="flex items-center gap-2">
                     <div className="text-right mr-2">
                       <div className="w-2 h-2 bg-green-400 rounded-full mb-1"></div>
-                      <span className="text-xs text-gray-500">Completado</span>
+                      <span className="text-xs text-slate-500">Completado</span>
                     </div>
                     
                     {/* Botón de eliminar */}
@@ -163,9 +163,11 @@ const LibraryView: React.FC = React.memo(() => {
                       icon={<Trash2Icon className="w-4 h-4" />}
                       className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2"
                       title="Eliminar análisis"
-                    />
+                    >
+                      Eliminar
+                    </Button>
                     
-                    <ChevronRightIcon className="w-5 h-5 text-gray-400" />
+                    <ChevronRightIcon className="w-5 h-5 text-slate-400" />
                   </div>
                 </div>
 
@@ -207,29 +209,29 @@ const LibraryView: React.FC = React.memo(() => {
 
         {/* Estadísticas de la biblioteca */}
         {analysisHistory.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="mt-6 pt-4 border-t border-slate-200">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-teal-600">{analysisHistory.length}</div>
-                <div className="text-sm text-gray-600">Total Análisis</div>
+                <div className="text-2xl font-bold text-slate-600">{analysisHistory.length}</div>
+                <div className="text-sm text-slate-500">Total Análisis</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-slate-600">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.keyConcepts.length, 0)}
                 </div>
-                <div className="text-sm text-gray-600">Conceptos Totales</div>
+                <div className="text-sm text-slate-500">Conceptos Totales</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-slate-600">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.quizQuestions.length, 0)}
                 </div>
-                <div className="text-sm text-gray-600">Preguntas Generadas</div>
+                <div className="text-sm text-slate-500">Preguntas Generadas</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-600">
+                <div className="text-2xl font-bold text-slate-600">
                   {analysisHistory.reduce((acc, item) => acc + item.processedData.relatedProblems.length, 0)}
                 </div>
-                <div className="text-sm text-gray-600">Problemas Creados</div>
+                <div className="text-sm text-slate-500">Problemas Creados</div>
               </div>
             </div>
           </div>

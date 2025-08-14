@@ -17,8 +17,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       {/* Footer sutil */}
       <footer className="mt-auto py-6 text-center">
-        <p className="text-xs text-gray-400">
-          Powered by <span className="font-medium text-gray-500">4ailabs</span>
+        <p className="text-xs text-slate-400">
+          Powered by <span className="font-medium text-slate-500">4ailabs</span>
         </p>
       </footer>
     </div>

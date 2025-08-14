@@ -45,8 +45,8 @@ export const Header: React.FC = React.memo(() => {
           {/* Logo */}
           <div className="flex items-center">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Gauss∑ AI</h1>
-              <p className="text-[10px] text-gray-300 -mt-0.5 leading-none">Powered by 4ailabs</p>
+              <h1 className="text-xl font-semibold text-slate-600">Gauss∑ AI</h1>
+              <p className="text-[10px] text-slate-400 -mt-0.5 leading-none">Powered by 4ailabs</p>
             </div>
           </div>
 
@@ -58,8 +58,8 @@ export const Header: React.FC = React.memo(() => {
                 onClick={() => handleNavClick(key)}
                 className={`text-sm font-medium transition-colors ${
                   activeView === key 
-                    ? 'text-teal-600 border-b-2 border-teal-600' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-slate-600 border-b-2 border-slate-500' 
+                    : 'text-slate-500 hover:text-slate-600'
                 }`}
               >
                 {label}
@@ -97,8 +97,8 @@ export const Header: React.FC = React.memo(() => {
                   onClick={() => handleNavClick(key)}
                   className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
                     activeView === key
-                      ? 'text-teal-600 bg-teal-50 border-l-4 border-teal-600 shadow-sm'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent'
+                      ? 'text-slate-600 bg-slate-50 border-l-4 border-slate-500 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-700 hover:bg-slate-50 border-l-4 border-transparent'
                   }`}
                 >
                   {label}

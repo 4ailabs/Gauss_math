@@ -19,8 +19,8 @@ export const SearchTypeSelector: React.FC = React.memo(() => {
           onClick={() => setSearchType(key)}
           className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
             searchType === key
-              ? 'bg-white text-teal-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white text-slate-600 shadow-sm'
+              : 'text-slate-500 hover:text-slate-600'
           }`}
         >
           <Icon className="w-4 h-4" />

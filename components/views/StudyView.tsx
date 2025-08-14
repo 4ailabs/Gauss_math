@@ -157,8 +157,8 @@ const StudyView: React.FC = React.memo(() => {
         {/* Flashcard Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Flashcards - {selectedSubject}</h2>
-            <p className="text-gray-600 mt-1">Memoriza conceptos clave</p>
+            <h2 className="text-2xl font-bold text-slate-600">Flashcards - {selectedSubject}</h2>
+            <p className="text-slate-500 mt-1">Memoriza conceptos clave</p>
           </div>
           
           <div className="flex gap-3">
@@ -202,32 +202,32 @@ const StudyView: React.FC = React.memo(() => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card padding="sm" className="text-center">
             <BarChart3Icon className="w-5 h-5 md:w-6 md:h-6 text-teal-600 mx-auto mb-1 md:mb-2" />
-            <div className="text-lg md:text-2xl font-bold text-gray-900">{getAverageConfidence()}%</div>
-            <div className="text-xs md:text-sm text-gray-600">Confianza</div>
+            <div className="text-lg md:text-2xl font-bold text-slate-600">{getAverageConfidence()}%</div>
+            <div className="text-xs md:text-sm text-slate-500">Confianza</div>
           </Card>
           
           <Card padding="sm" className="text-center">
             <BookOpenIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-600 mx-auto mb-1 md:mb-2" />
-            <div className="text-lg md:text-2xl font-bold text-gray-900">{flashcards.length}</div>
-            <div className="text-xs md:text-sm text-gray-600">Tarjetas</div>
+            <div className="text-lg md:text-2xl font-bold text-slate-600">{flashcards.length}</div>
+            <div className="text-xs md:text-sm text-slate-500">Tarjetas</div>
           </Card>
           
           <Card padding="sm" className="text-center">
             <TrophyIcon className="w-5 h-5 md:w-6 md:h-6 text-green-600 mx-auto mb-1 md:mb-2" />
-            <div className="text-lg md:text-2xl font-bold text-gray-900">{sessionStats.reviewed}</div>
-            <div className="text-xs md:text-sm text-gray-600">Revisadas</div>
+            <div className="text-lg md:text-2xl font-bold text-slate-600">{sessionStats.reviewed}</div>
+            <div className="text-xs md:text-sm text-slate-500">Revisadas</div>
           </Card>
           
           <Card padding="sm" className="text-center">
             <ClockIcon className="w-5 h-5 md:w-6 md:h-6 text-purple-600 mx-auto mb-1 md:mb-2" />
-            <div className="text-lg md:text-2xl font-bold text-gray-900">{getStudyTime()}</div>
-            <div className="text-xs md:text-sm text-gray-600">Minutos</div>
+            <div className="text-lg md:text-2xl font-bold text-slate-600">{getStudyTime()}</div>
+            <div className="text-xs md:text-sm text-slate-500">Minutos</div>
           </Card>
         </div>
 
         {/* Progress Bar */}
         <div>
-          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
             <span>Progreso</span>
             <span>{currentIndex + 1} de {flashcards.length}</span>
           </div>
@@ -262,7 +262,7 @@ const StudyView: React.FC = React.memo(() => {
           </Button>
           
           <div className="text-center order-first sm:order-none">
-            <span className="text-xs sm:text-sm text-gray-500">
+            <span className="text-xs sm:text-sm text-slate-500">
               {currentIndex === flashcards.length - 1 
                 ? 'Última tarjeta' 
                 : `${flashcards.length - currentIndex - 1} restantes`
@@ -316,7 +316,7 @@ const StudyView: React.FC = React.memo(() => {
     <div className="space-y-6">
       <Card padding="lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Progreso de Estudio</h2>
+          <h2 className="text-2xl font-bold text-slate-600">Progreso de Estudio</h2>
           
           {flashcards.length > 0 && (
             <Button
@@ -334,38 +334,38 @@ const StudyView: React.FC = React.memo(() => {
             <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-teal-600 text-2xl font-bold">{analysisHistory.length}</span>
             </div>
-            <h3 className="font-semibold text-gray-900">Análisis Realizados</h3>
-            <p className="text-sm text-gray-600">Total de sesiones de estudio</p>
+            <h3 className="font-semibold text-slate-600">Análisis Realizados</h3>
+            <p className="text-sm text-slate-500">Total de sesiones de estudio</p>
           </div>
           
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-blue-600 text-2xl font-bold">{totalConcepts}</span>
             </div>
-            <h3 className="font-semibold text-gray-900">Conceptos Estudiados</h3>
-            <p className="text-sm text-gray-600">Conceptos identificados y revisados</p>
+            <h3 className="font-semibold text-slate-600">Conceptos Estudiados</h3>
+            <p className="text-sm text-slate-500">Conceptos identificados y revisados</p>
           </div>
           
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-green-600 text-2xl font-bold">{totalQuestions}</span>
             </div>
-            <h3 className="font-semibold text-gray-900">Preguntas Generadas</h3>
-            <p className="text-sm text-gray-600">Preguntas de práctica creadas</p>
+            <h3 className="font-semibold text-slate-600">Preguntas Generadas</h3>
+            <p className="text-sm text-slate-500">Preguntas de práctica creadas</p>
           </div>
         </div>
 
         {subjectStats.length > 0 && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Materias Estudiadas</h3>
+            <h3 className="text-lg font-semibold text-slate-600 mb-4">Materias Estudiadas</h3>
             <div className="grid gap-4">
               {subjectStats.map(({ subject, count }) => {
                 const subjectFlashcards = generateFlashcards.filter(card => card.subject === subject);
                 return (
                   <div key={subject} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <span className="font-medium text-gray-900">{subject}</span>
-                      <div className="text-sm text-gray-600 mt-1">
+                      <span className="font-medium text-slate-600">{subject}</span>
+                      <div className="text-sm text-slate-500 mt-1">
                         {count} análisis • {subjectFlashcards.length} flashcards disponibles
                       </div>
                     </div>

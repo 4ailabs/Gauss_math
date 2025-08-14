@@ -365,11 +365,11 @@ const HelpView: React.FC = React.memo(() => {
         return (
           <div className="space-y-6">
             <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-4 border border-teal-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <StarIcon className="w-5 h-5 text-teal-600" />
+              <h3 className="text-lg font-semibold text-slate-600 mb-3 flex items-center gap-2">
+                <StarIcon className="w-5 h-5 text-teal-500" />
                 ¿Qué es Gauss∑ AI?
               </h3>
-              <p className="text-sm text-gray-700 leading-relaxed mb-3">
+              <p className="text-sm text-slate-600 leading-relaxed mb-3">
                 Gauss∑ AI es tu asistente personal de matemáticas universitarias, diseñado específicamente para estudiantes de 7mo semestre. 
                 Utiliza inteligencia artificial avanzada para transformar tus apuntes en recursos de aprendizaje estructurados y personalizados.
               </p>
@@ -395,33 +395,33 @@ const HelpView: React.FC = React.memo(() => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="p-4">
-                <h4 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                  <GraduationCapIcon className="w-4 h-4 text-blue-600" />
-                  Para Estudiantes
-                </h4>
-                <ul className="space-y-1 text-xs text-gray-600">
-                  <li>• Análisis inteligente de apuntes</li>
-                  <li>• Generación de quizzes personalizados</li>
-                  <li>• Identificación de conceptos clave</li>
-                  <li>• Seguimiento del progreso de aprendizaje</li>
-                </ul>
-              </Card>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="p-4">
+                  <h4 className="text-base font-semibold text-slate-600 mb-2 flex items-center gap-2">
+                    <GraduationCapIcon className="w-4 h-4 text-blue-500" />
+                    Para Estudiantes
+                  </h4>
+                  <ul className="space-y-1 text-xs text-slate-500">
+                    <li>• Análisis inteligente de apuntes</li>
+                    <li>• Generación de quizzes personalizados</li>
+                    <li>• Identificación de conceptos clave</li>
+                    <li>• Seguimiento del progreso de aprendizaje</li>
+                  </ul>
+                </Card>
 
-              <Card className="p-4">
-                <h4 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                  <TargetIcon className="w-4 h-4 text-green-600" />
-                  Para Profesores
-                </h4>
-                <ul className="space-y-1 text-xs text-gray-600">
-                  <li>• Creación rápida de material didáctico</li>
-                  <li>• Evaluación de comprensión estudiantil</li>
-                  <li>• Identificación de áreas de dificultad</li>
-                  <li>• Generación de problemas de práctica</li>
-                </ul>
-              </Card>
-            </div>
+                <Card className="p-4">
+                  <h4 className="text-base font-semibold text-slate-600 mb-2 flex items-center gap-2">
+                    <TargetIcon className="w-4 h-4 text-green-500" />
+                    Para Profesores
+                  </h4>
+                  <ul className="space-y-1 text-xs text-slate-500">
+                    <li>• Creación rápida de material didáctico</li>
+                    <li>• Evaluación de comprensión estudiantil</li>
+                    <li>• Identificación de áreas de dificultad</li>
+                    <li>• Generación de problemas de práctica</li>
+                  </ul>
+                </Card>
+              </div>
           </div>
         );
 
@@ -436,8 +436,8 @@ const HelpView: React.FC = React.memo(() => {
                       {feature.icon}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 text-sm">{feature.title}</h4>
-                      <p className="text-xs text-gray-600 leading-relaxed">{feature.description}</p>
+                      <h4 className="font-semibold text-slate-600 mb-1 text-sm">{feature.title}</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed">{feature.description}</p>
                       <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                         feature.category === 'core' ? 'bg-blue-100 text-blue-800' :
                         feature.category === 'learning' ? 'bg-green-100 text-green-800' :
@@ -464,8 +464,8 @@ const HelpView: React.FC = React.memo(() => {
             {tutorials.map((tutorial) => (
               <Card key={tutorial.id} className="p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <h4 className="text-base font-semibold text-gray-900">{tutorial.title}</h4>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <h4 className="text-base font-semibold text-slate-600">{tutorial.title}</h4>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
                     <span className="flex items-center gap-1">
                       <ClockIcon className="w-3 h-3" />
                       {tutorial.duration}
@@ -477,10 +477,10 @@ const HelpView: React.FC = React.memo(() => {
                     </span>
                   </div>
                 </div>
-                <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700">
+                <ol className="list-decimal list-inside space-y-1 text-xs text-slate-600">
                   {tutorial.steps.map((step, index) => (
                     <li key={index} className="leading-relaxed">
-                      <span className="font-medium text-gray-900">{step}</span>
+                      <span className="font-medium text-slate-600">{step}</span>
                     </li>
                   ))}
                 </ol>
@@ -494,10 +494,10 @@ const HelpView: React.FC = React.memo(() => {
           <div className="space-y-3">
             {faq.map((item, index) => (
               <Card key={index} className="p-4">
-                <h4 className="font-semibold text-gray-900 mb-2 text-base">
+                <h4 className="font-semibold text-slate-600 mb-2 text-base">
                   {item.question}
                 </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.answer}</p>
+                <p className="text-sm text-slate-600 leading-relaxed">{item.answer}</p>
               </Card>
             ))}
           </div>
@@ -506,28 +506,28 @@ const HelpView: React.FC = React.memo(() => {
       case 'prompt-engineering':
         return (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-5 border border-purple-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <BrainCircuitIcon className="w-5 h-5 text-purple-600" />
+            <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl p-5 border border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-600 mb-3 flex items-center gap-2">
+                <BrainCircuitIcon className="w-5 h-5 text-slate-500" />
                 Prompt Engineering para Matemáticas
               </h3>
-              <p className="text-sm text-gray-700 leading-relaxed mb-3">
+              <p className="text-sm text-slate-600 leading-relaxed mb-3">
                 Aprende a formular instrucciones efectivas para obtener las mejores respuestas de la IA en matemáticas. 
                 Un buen prompt puede transformar una explicación básica en una comprensión profunda y detallada.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                 <div className="bg-white p-2 rounded-lg border border-purple-200">
-                  <div className="font-semibold text-purple-700 mb-1 text-sm">🎯 Principios Clave</div>
-                  <ul className="space-y-0.5 text-gray-600">
+                  <div className="font-semibold text-slate-600 mb-1 text-sm">🎯 Principios Clave</div>
+                  <ul className="space-y-0.5 text-slate-500">
                     <li>• Sé específico y detallado</li>
                     <li>• Solicita ejemplos y aplicaciones</li>
                     <li>• Pide explicaciones paso a paso</li>
                     <li>• Solicita conexiones con otros temas</li>
                   </ul>
                 </div>
-                <div className="bg-white p-2 rounded-lg border border-purple-200">
-                  <div className="font-semibold text-purple-700 mb-1 text-sm">💡 Beneficios</div>
-                  <ul className="space-y-0.5 text-gray-600">
+                <div className="bg-white p-2 rounded-lg border border-slate-200">
+                  <div className="font-semibold text-slate-600 mb-1 text-sm">💡 Beneficios</div>
+                  <ul className="space-y-0.5 text-slate-500">
                     <li>• Explicaciones más claras</li>
                     <li>• Comprensión conceptual profunda</li>
                     <li>• Aprendizaje más efectivo</li>
@@ -540,11 +540,11 @@ const HelpView: React.FC = React.memo(() => {
             {promptEngineering.map((category, index) => (
               <Card key={index} className="p-4">
                 <div className="mb-3">
-                  <h4 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <BrainCircuitIcon className="w-4 h-4 text-purple-600" />
+                  <h4 className="text-base font-semibold text-slate-600 mb-2 flex items-center gap-2">
+                    <BrainCircuitIcon className="w-4 h-4 text-slate-500" />
                     {category.title}
                   </h4>
-                  <p className="text-gray-600 text-xs">{category.description}</p>
+                  <p className="text-slate-500 text-xs">{category.description}</p>
                 </div>
                 
                 <div className="space-y-3">
@@ -571,14 +571,14 @@ const HelpView: React.FC = React.memo(() => {
             ))}
 
             <Card className="p-4 bg-gradient-to-r from-blue-50 to-teal-50 border border-blue-200">
-              <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <LightbulbIcon className="w-4 h-4 text-blue-600" />
+              <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
+                <LightbulbIcon className="w-4 h-4 text-blue-500" />
                 Consejos Específicos por Materia
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <h5 className="font-semibold text-gray-800 mb-2 text-sm">🔬 Investigación Matemática</h5>
-                  <ul className="space-y-1 text-xs text-gray-700">
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">🔬 Investigación Matemática</h5>
+                  <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita análisis de complejidad</li>
                     <li>• Pide pseudocódigo y algoritmos</li>
                     <li>• Solicita aplicaciones prácticas</li>
@@ -586,8 +586,8 @@ const HelpView: React.FC = React.memo(() => {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800 mb-2 text-sm">🗄️ Bases de Datos</h5>
-                  <ul className="space-y-1 text-xs text-gray-700">
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">🗄️ Bases de Datos</h5>
+                  <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita consultas SQL optimizadas</li>
                     <li>• Pide diagramas ER y normalización</li>
                     <li>• Solicita análisis de rendimiento</li>
@@ -595,8 +595,8 @@ const HelpView: React.FC = React.memo(() => {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800 mb-2 text-sm">💰 Finanzas e Inversiones</h5>
-                  <ul className="space-y-1 text-xs text-gray-700">
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">💰 Finanzas e Inversiones</h5>
+                  <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita cálculos paso a paso</li>
                     <li>• Pide interpretación de ratios</li>
                     <li>• Solicita análisis de riesgo</li>
@@ -613,13 +613,13 @@ const HelpView: React.FC = React.memo(() => {
           <div className="space-y-4">
             {tips.map((category, index) => (
               <Card key={index} className="p-4">
-                <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <LightbulbIcon className="w-4 h-4 text-yellow-600" />
+                <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
+                  <LightbulbIcon className="w-4 h-4 text-yellow-500" />
                   {category.category}
                 </h4>
                 <ul className="space-y-1">
                   {category.items.map((tip, tipIndex) => (
-                    <li key={tipIndex} className="flex items-start gap-2 text-xs text-gray-700">
+                    <li key={tipIndex} className="flex items-start gap-2 text-xs text-slate-500">
                       <LightbulbIcon className="w-3 h-3 text-yellow-500 mt-0.5 flex-shrink-0" />
                       <span>{tip}</span>
                     </li>
@@ -635,13 +635,13 @@ const HelpView: React.FC = React.memo(() => {
           <div className="space-y-4">
             {troubleshooting.map((item, index) => (
               <Card key={index} className="p-4">
-                <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <SettingsIcon className="w-4 h-4 text-red-600" />
+                <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
+                  <SettingsIcon className="w-4 h-4 text-red-500" />
                   {item.problem}
                 </h4>
                 <div className="space-y-1">
                   {item.solutions.map((solution, solutionIndex) => (
-                    <div key={solutionIndex} className="flex items-start gap-2 text-xs text-gray-700">
+                    <div key={solutionIndex} className="flex items-start gap-2 text-xs text-slate-500">
                       <CheckIcon className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
                       <span>{solution}</span>
                     </div>
@@ -661,10 +661,10 @@ const HelpView: React.FC = React.memo(() => {
     <div className="max-w-6xl mx-auto space-y-4">
       {/* Header */}
       <div className="text-center py-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-600 mb-3">
           Centro de Ayuda y Recursos
         </h1>
-        <p className="text-base text-gray-600 max-w-2xl mx-auto">
+        <p className="text-base text-slate-500 max-w-2xl mx-auto">
           Descubre cómo aprovechar al máximo Gauss∑ AI para tu aprendizaje matemático
         </p>
       </div>
@@ -697,10 +697,10 @@ const HelpView: React.FC = React.memo(() => {
 
       {/* Sección de Contacto */}
       <Card className="p-4 text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-semibold text-slate-600 mb-2">
           ¿Necesitas más ayuda?
         </h3>
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm text-slate-500 mb-3">
           Si tienes preguntas específicas o necesitas asistencia adicional, 
           no dudes en contactarnos o usar el chat integrado de la aplicación.
         </p>
