@@ -11,8 +11,7 @@ import {
   RefreshCwIcon,
   FileTextIcon,
   GraduationCapIcon,
-  CopyIcon,
-  BarChart3Icon
+  CopyIcon
 } from '../ui/Icons';
 import { 
   createResearchPlan, 
@@ -28,7 +27,7 @@ import { useResearchPersistence } from '../../hooks/useResearchPersistence';
 import { usePageVisibility } from '../../hooks/usePageVisibility';
 import { ResearchExitWarning } from '../ui/ResearchExitWarning';
 import { EnhancedSourcesDisplay } from '../ui/EnhancedSourcesDisplay';
-import { ModelMonitor } from '../ui/ModelMonitor';
+
 
 // Estados de investigación
 enum ResearchState {
@@ -86,21 +85,14 @@ const ResearchView: React.FC = React.memo(() => {
   // Estado para el warning de salida
   const [showExitWarning, setShowExitWarning] = useState(false);
   
-  // Hook avanzado de investigación
+  // Hook avanzado de investigación (solo funciones principales)
   const {
     createResearchPlan: createAdvancedPlan,
     researchSubtopic: researchAdvancedSubtopic,
-    synthesizeReport: synthesizeAdvancedReport,
-    getPerformanceStats,
-    getCacheStats,
-    getCurrentModel,
-    currentModel: advancedCurrentModel,
-    isLoading: advancedIsLoading,
-    error: advancedError
+    synthesizeReport: synthesizeAdvancedReport
   } = useAdvancedResearch();
   
-  // Estado para el monitor de modelos
-  const [showModelMonitor, setShowModelMonitor] = useState(false);
+
 
   // Cargar sesión existente al inicializar
   useEffect(() => {
@@ -544,33 +536,10 @@ ${subtopicObjects.map((st, index) => `
           )}
         </div>
         
-        {/* Botón del Monitor de Modelos */}
-        <div className="mt-2 sm:mt-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowModelMonitor(!showModelMonitor)}
-            icon={<BarChart3Icon className="w-4 h-4" />}
-            className="min-h-[32px] text-xs sm:text-sm"
-          >
-            {showModelMonitor ? 'Ocultar' : 'Mostrar'} Monitor de Modelos
-          </Button>
-        </div>
+
       </div>
 
-      {/* Monitor de Modelos */}
-      {showModelMonitor && (
-        <ModelMonitor
-          performanceStats={getPerformanceStats()}
-          cacheStats={getCacheStats()}
-          currentModel={getCurrentModel()}
-          onRefresh={() => {
-            // Forzar actualización del monitor
-            setShowModelMonitor(false);
-            setTimeout(() => setShowModelMonitor(true), 100);
-          }}
-        />
-      )}
+
 
       {/* Contenido Principal - Padding responsive */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
