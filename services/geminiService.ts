@@ -3,7 +3,7 @@ import { ProcessedData, ChatMessage } from '../types';
 
 // Función para verificar la configuración de la API
 const checkApiConfiguration = () => {
-    let apiKey = process.env.GEMINI_API_KEY;
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     
     // Fallback para debugging temporal
     if (!apiKey && typeof window !== 'undefined') {
@@ -18,7 +18,7 @@ const checkApiConfiguration = () => {
     console.log("API Key preview:", apiKey ? `${apiKey.substring(0, 10)}...` : "No disponible");
     
     if (!apiKey) {
-        throw new Error("API Key no configurada. Verifica que GEMINI_API_KEY esté definida en las variables de entorno.");
+        throw new Error("API Key no configurada. Verifica que VITE_GEMINI_API_KEY esté definida en las variables de entorno.");
     }
     
     if (apiKey.length < 20) {
@@ -37,7 +37,7 @@ try {
 
 // Función para obtener la API key con fallback
 const getApiKey = () => {
-    let apiKey = process.env.GEMINI_API_KEY;
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey && typeof window !== 'undefined') {
         apiKey = window.localStorage.getItem('temp_api_key');
     }
@@ -322,7 +322,7 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
     };
     
     try {
-        if (!process.env.GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        if (!import.meta.env.VITE_GEMINI_API_KEY) throw new Error("API Key no configurada.");
         
         // Validar que la imagen no esté vacía
         if (!base64Image || base64Image.length < 100) {
@@ -569,7 +569,7 @@ export const resetAssistantChat = (subject: string) => {
 
 export const generateQuizFromContent = async (content: string, subject: string): Promise<any> => {
     try {
-        if (!process.env.GEMINI_API_KEY) {
+        if (!import.meta.env.VITE_GEMINI_API_KEY) {
             throw new Error("API Key no configurada.");
         }
 
