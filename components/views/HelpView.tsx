@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useApp } from '../../contexts/AppContext';
 import { 
   BookOpenIcon, 
   LightbulbIcon, 
@@ -25,6 +26,7 @@ import {
 } from '../ui/Icons';
 
 const HelpView: React.FC = React.memo(() => {
+  const { setActiveView } = useApp();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['getting-started']));
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -506,10 +508,18 @@ const HelpView: React.FC = React.memo(() => {
           <Button
             variant="primary"
             size="md"
-            onClick={() => window.history.back()}
+            onClick={() => setActiveView('search')}
             icon={<MessageCircleIcon className="w-4 h-4" />}
           >
-            Volver a la App
+            Ir a Búsqueda
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setActiveView('library')}
+            icon={<BookOpenIcon className="w-4 h-4" />}
+          >
+            Ver Biblioteca
           </Button>
         </div>
       </Card>
