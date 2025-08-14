@@ -15,7 +15,7 @@ export const Card: React.FC<CardProps> = ({
   hover = false,
   onClick,
 }) => {
-  const baseClasses = 'bg-white rounded-xl border border-gray-200 shadow-sm';
+  const baseClasses = 'bg-white rounded-xl border border-slate-200 shadow-sm';
   
   const paddingClasses = {
     sm: 'p-3',
