@@ -1,6 +1,22 @@
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
 import { ProcessedData, ChatMessage, AnalysisHistory } from '../types';
 
+// Export ResearchSession type for use in other components
+export type { ResearchSession };
+
+// Types for research session data
+interface ResearchSession {
+  id: string;
+  query: string;
+  searchType: 'research' | 'systematic' | 'papers';
+  gatherType: 'papers' | 'trials';
+  results: any[];
+  progress: number;
+  step: string;
+  timestamp: number;
+  assistantHistory: ChatMessage[];
+}
+
 // Types for app state
 interface AppState {
   // Content and processing
@@ -29,6 +45,10 @@ interface AppState {
   
   // History
   analysisHistory: AnalysisHistory[];
+  
+  // Research session management
+  currentResearchSession: ResearchSession | null;
+  researchSessions: ResearchSession[];
 }
 
 // Action types
@@ -55,7 +75,13 @@ type AppAction =
   | { type: 'ADD_TO_HISTORY'; payload: AnalysisHistory }
   | { type: 'REMOVE_FROM_HISTORY'; payload: string }
   | { type: 'CLEAR_ANALYSIS_HISTORY' }
-  | { type: 'CLEAR_ASSISTANT_HISTORY' };
+  | { type: 'CLEAR_ASSISTANT_HISTORY' }
+  | { type: 'START_RESEARCH_SESSION'; payload: ResearchSession }
+  | { type: 'UPDATE_RESEARCH_SESSION'; payload: Partial<ResearchSession> }
+  | { type: 'SAVE_RESEARCH_SESSION'; payload: ResearchSession }
+  | { type: 'RESUME_RESEARCH_SESSION'; payload: ResearchSession }
+  | { type: 'CLEAR_CURRENT_RESEARCH_SESSION' }
+  | { type: 'SET_RESEARCH_SESSIONS'; payload: ResearchSession[] };
 
 // Initial state
 const initialState: AppState = {
@@ -76,6 +102,8 @@ const initialState: AppState = {
   assistantHistory: [],
   assistantInput: '',
   analysisHistory: [],
+  currentResearchSession: null,
+  researchSessions: [],
 };
 
 // Reducer
@@ -151,6 +179,36 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, analysisHistory: [] };
     case 'CLEAR_ASSISTANT_HISTORY':
       return { ...state, assistantHistory: [] };
+    case 'START_RESEARCH_SESSION':
+      return { ...state, currentResearchSession: action.payload };
+    case 'UPDATE_RESEARCH_SESSION':
+      return { 
+        ...state, 
+        currentResearchSession: state.currentResearchSession 
+          ? { ...state.currentResearchSession, ...action.payload }
+          : null
+      };
+    case 'SAVE_RESEARCH_SESSION':
+      const updatedSessions = [action.payload, ...state.researchSessions.filter(s => s.id !== action.payload.id)];
+      return { 
+        ...state, 
+        researchSessions: updatedSessions,
+        currentResearchSession: action.payload
+      };
+    case 'RESUME_RESEARCH_SESSION':
+      return {
+        ...state,
+        currentResearchSession: action.payload,
+        assistantHistory: action.payload.assistantHistory,
+        searchType: action.payload.searchType,
+        gatherType: action.payload.gatherType,
+        processingProgress: action.payload.progress,
+        processingStep: action.payload.step
+      };
+    case 'CLEAR_CURRENT_RESEARCH_SESSION':
+      return { ...state, currentResearchSession: null };
+    case 'SET_RESEARCH_SESSIONS':
+      return { ...state, researchSessions: action.payload };
     default:
       return state;
   }
@@ -185,6 +243,13 @@ interface AppContextType {
   removeFromHistory: (id: string) => void;
   clearAnalysisHistory: () => void;
   clearAssistantHistory: () => void;
+  // Research session management
+  startResearchSession: (query: string) => void;
+  updateResearchSession: (updates: Partial<ResearchSession>) => void;
+  saveResearchSession: () => void;
+  resumeResearchSession: (session: ResearchSession) => void;
+  clearCurrentResearchSession: () => void;
+  getAvailableResearchSessions: () => ResearchSession[];
 }
 
 // Create context
@@ -197,6 +262,30 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
+
+  // Load persisted research sessions on mount
+  React.useEffect(() => {
+    const savedSessions = localStorage.getItem('gaussmathmind_research_sessions');
+    if (savedSessions) {
+      try {
+        const sessions = JSON.parse(savedSessions);
+        dispatch({ type: 'SET_RESEARCH_SESSIONS', payload: sessions });
+      } catch (error) {
+        console.error('Error loading research sessions:', error);
+      }
+    }
+
+    // Check for active session
+    const activeSession = localStorage.getItem('gaussmathmind_active_research');
+    if (activeSession) {
+      try {
+        const session = JSON.parse(activeSession);
+        dispatch({ type: 'RESUME_RESEARCH_SESSION', payload: session });
+      } catch (error) {
+        console.error('Error loading active research session:', error);
+      }
+    }
+  }, []);
 
   // Action creators
   const setNotes = useCallback((notes: string) => {
@@ -307,6 +396,76 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     localStorage.removeItem('gaussmathmind_history');
   }, []);
 
+  // Research session management functions
+  const startResearchSession = useCallback((query: string) => {
+    const newSession: ResearchSession = {
+      id: `research_${Date.now()}`,
+      query,
+      searchType: state.searchType,
+      gatherType: state.gatherType,
+      results: [],
+      progress: 0,
+      step: 'Starting research...',
+      timestamp: Date.now(),
+      assistantHistory: [...state.assistantHistory]
+    };
+    
+    dispatch({ type: 'START_RESEARCH_SESSION', payload: newSession });
+    localStorage.setItem('gaussmathmind_active_research', JSON.stringify(newSession));
+  }, [state.searchType, state.gatherType, state.assistantHistory]);
+
+  const updateResearchSession = useCallback((updates: Partial<ResearchSession>) => {
+    if (state.currentResearchSession) {
+      const updatedSession = { ...state.currentResearchSession, ...updates, timestamp: Date.now() };
+      dispatch({ type: 'UPDATE_RESEARCH_SESSION', payload: updates });
+      localStorage.setItem('gaussmathmind_active_research', JSON.stringify(updatedSession));
+    }
+  }, [state.currentResearchSession]);
+
+  const saveResearchSession = useCallback(() => {
+    if (state.currentResearchSession) {
+      const sessionToSave = {
+        ...state.currentResearchSession,
+        assistantHistory: state.assistantHistory,
+        progress: state.processingProgress,
+        step: state.processingStep,
+        timestamp: Date.now()
+      };
+      
+      dispatch({ type: 'SAVE_RESEARCH_SESSION', payload: sessionToSave });
+      
+      // Persist to localStorage
+      const updatedSessions = [sessionToSave, ...state.researchSessions.filter(s => s.id !== sessionToSave.id)];
+      localStorage.setItem('gaussmathmind_research_sessions', JSON.stringify(updatedSessions));
+      localStorage.setItem('gaussmathmind_active_research', JSON.stringify(sessionToSave));
+    }
+  }, [state.currentResearchSession, state.assistantHistory, state.processingProgress, state.processingStep, state.researchSessions]);
+
+  const resumeResearchSession = useCallback((session: ResearchSession) => {
+    dispatch({ type: 'RESUME_RESEARCH_SESSION', payload: session });
+    localStorage.setItem('gaussmathmind_active_research', JSON.stringify(session));
+  }, []);
+
+  const clearCurrentResearchSession = useCallback(() => {
+    dispatch({ type: 'CLEAR_CURRENT_RESEARCH_SESSION' });
+    localStorage.removeItem('gaussmathmind_active_research');
+  }, []);
+
+  const getAvailableResearchSessions = useCallback(() => {
+    return state.researchSessions.slice(0, 10); // Limit to last 10 sessions
+  }, [state.researchSessions]);
+
+  // Auto-save research session when important updates happen
+  React.useEffect(() => {
+    if (state.currentResearchSession && (state.assistantHistory.length > 0 || state.processingProgress > 0)) {
+      const timeoutId = setTimeout(() => {
+        saveResearchSession();
+      }, 2000); // Auto-save after 2 seconds of inactivity
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [state.assistantHistory, state.processingProgress, state.currentResearchSession, saveResearchSession]);
+
   const value: AppContextType = {
     state,
     dispatch,
@@ -334,6 +493,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     removeFromHistory,
     clearAnalysisHistory,
     clearAssistantHistory,
+    // Research session management
+    startResearchSession,
+    updateResearchSession,
+    saveResearchSession,
+    resumeResearchSession,
+    clearCurrentResearchSession,
+    getAvailableResearchSessions,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
