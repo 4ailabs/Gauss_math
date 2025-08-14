@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node vercel-env-check.js && vite build",
+    "preview": "vite preview",
+    "env-check": "node vercel-env-check.js"
   },
   "dependencies": {
     "@google/genai": "^1.14.0",

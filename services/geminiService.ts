@@ -3,8 +3,10 @@ import { ProcessedData, ChatMessage } from '../types';
 
 // Función para verificar la configuración de la API
 const checkApiConfiguration = () => {
-    // Prioridad: GEMINI_API_KEY (producción Vercel) -> VITE_GEMINI_API_KEY (desarrollo local)
-    let apiKey = import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    // Prioridad: VITE_GEMINI_API_KEY (siempre funciona) -> fallbacks para compatibilidad
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || 
+                 import.meta.env.GEMINI_API_KEY ||
+                 process.env.GEMINI_API_KEY;
     
     // Fallback para debugging temporal
     if (!apiKey && typeof window !== 'undefined') {
@@ -22,7 +24,7 @@ const checkApiConfiguration = () => {
     console.log("VITE_GEMINI_API_KEY:", import.meta.env.VITE_GEMINI_API_KEY ? "Sí" : "No");
     
     if (!apiKey) {
-        throw new Error("API Key no configurada. Verifica que GEMINI_API_KEY (producción) o VITE_GEMINI_API_KEY (desarrollo) esté definida.");
+        throw new Error("API Key no configurada. Verifica que VITE_GEMINI_API_KEY esté definida en las variables de entorno.");
     }
     
     if (apiKey.length < 20) {
@@ -41,8 +43,10 @@ try {
 
 // Función para obtener la API key con fallback
 const getApiKey = () => {
-    // Prioridad: GEMINI_API_KEY (producción Vercel) -> VITE_GEMINI_API_KEY (desarrollo local)
-    let apiKey = import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    // Prioridad: VITE_GEMINI_API_KEY (siempre funciona) -> fallbacks para compatibilidad
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || 
+                 import.meta.env.GEMINI_API_KEY ||
+                 process.env.GEMINI_API_KEY;
     if (!apiKey && typeof window !== 'undefined') {
         apiKey = window.localStorage.getItem('temp_api_key');
     }
@@ -198,7 +202,7 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
     };
     
     try {
-        if (!import.meta.env.VITE_GEMINI_API_KEY) throw new Error("API Key no configurada.");
+        if (!getApiKey()) throw new Error("API Key no configurada.");
         
         // Validar que la imagen no esté vacía
         if (!base64Image || base64Image.length < 100) {
@@ -445,7 +449,7 @@ export const resetAssistantChat = (subject: string) => {
 
 export const generateQuizFromContent = async (content: string, subject: string): Promise<any> => {
     try {
-        if (!import.meta.env.VITE_GEMINI_API_KEY) {
+        if (!getApiKey()) {
             throw new Error("API Key no configurada.");
         }
 
