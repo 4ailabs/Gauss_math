@@ -218,7 +218,9 @@ const ResearchView: React.FC = React.memo(() => {
       }));
 
       setSubtopicObjects(initialSubtopics);
+      researchDataRef.current = [...initialSubtopics]; // Inicializar ref
       console.log('📝 Subtópicos inicializados:', initialSubtopics);
+      console.log('📝 Ref inicializado con:', researchDataRef.current.length, 'elementos');
 
       // Usar el servicio real de Gemini para investigar subtópicos
       for (let i = 0; i < subtopics.length; i++) {
@@ -249,15 +251,18 @@ const ResearchView: React.FC = React.memo(() => {
             status: 'complete' as const
           };
           
-          // Actualizar el estado y el ref de forma sincronizada
+          // Actualizar el estado
           setSubtopicObjects(prev => {
             const updated = prev.map((st, index) => 
               index === i ? updatedSubtopic : st
             );
-            researchDataRef.current = updated; // Mantener ref sincronizado
-            console.log(`🔄 Ref actualizado - Subtópicos total: ${researchDataRef.current.length}`);
             return updated;
           });
+          
+          // Actualizar el ref directamente después
+          researchDataRef.current[i] = updatedSubtopic;
+          console.log(`🔄 Ref actualizado directamente - Subtópico ${i + 1}: ${updatedSubtopic.title}`);
+          console.log(`🔄 Ref total: ${researchDataRef.current.length} elementos`);
           
           // Agregar fuentes únicas
           setSources(prev => {
@@ -277,13 +282,17 @@ const ResearchView: React.FC = React.memo(() => {
             status: 'complete' as const
           };
           
+          // Actualizar el estado
           setSubtopicObjects(prev => {
             const updated = prev.map((st, index) => 
               index === i ? errorSubtopic : st
             );
-            researchDataRef.current = updated; // Mantener ref sincronizado
             return updated;
           });
+          
+          // Actualizar el ref directamente
+          researchDataRef.current[i] = errorSubtopic;
+          console.log(`❌ Ref actualizado con error - Subtópico ${i + 1}: ${errorSubtopic.title}`);
         }
       }
 
