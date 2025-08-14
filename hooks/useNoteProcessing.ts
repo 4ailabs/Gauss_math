@@ -26,18 +26,10 @@ export const useNoteProcessing = () => {
     try {
       console.log('Iniciando procesamiento mejorado de notas...');
       
-      // Intentar usar el servicio mejorado primero
-      let data;
-      try {
-        const enhancedService = EnhancedMathService.getInstance();
-        data = await enhancedService.processNotesEnhanced(notes, selectedSubject);
-        console.log('Procesamiento mejorado completado exitosamente');
-      } catch (enhancedError) {
-        console.log('Fallback a procesamiento básico:', enhancedError);
-        // Fallback al servicio original si el mejorado falla
-        data = await processNotes(notes, selectedSubject);
-        console.log('Procesamiento básico completado');
-      }
+      // Usar directamente el servicio básico por ahora
+      console.log('Usando procesamiento básico...');
+      const data = await processNotes(notes, selectedSubject);
+      console.log('Procesamiento básico completado');
       console.log('Notas procesadas exitosamente:', data);
       
       setProcessedData(data);
