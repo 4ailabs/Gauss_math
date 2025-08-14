@@ -992,3 +992,77 @@ body {
 .touch-manipulation {
   touch-action: manipulation;
 }
+
+/* Flashcard optimizations for mobile */
+@media (max-width: 640px) {
+  /* Ensure text breaks properly in flashcards */
+  .flashcard-text {
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  
+  /* Custom scrollbar for flashcard content */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 2px;
+  }
+  
+  /* Fix text overflow in small screens */
+  .break-words {
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Better line height for mobile readability */
+  .leading-snug {
+    line-height: 1.375;
+  }
+}
+
+/* iPhone specific flashcard fixes */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 640px) {
+    /* Prevent text selection issues on iPhone */
+    .flashcard-text {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    /* Improve touch response */
+    .preserve-3d {
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+    }
+    
+    /* Fix backface visibility on iOS */
+    .backface-hidden {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    
+    /* Smooth transitions on iOS */
+    .transition-transform {
+      -webkit-transition: -webkit-transform 0.5s;
+      transition: transform 0.5s;
+    }
+  }
+}

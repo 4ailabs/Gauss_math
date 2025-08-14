@@ -83,7 +83,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 sm:px-0">
+    <div className="w-full max-w-2xl mx-auto px-3 xs:px-4 sm:px-0 safe-area-bottom">
       {/* Stats Bar */}
       {showStats && (
         <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -109,7 +109,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
       {/* Flashcard */}
       <div 
-        className={`relative w-full h-64 sm:h-80 cursor-pointer transition-transform duration-500 preserve-3d ${
+        className={`relative w-full h-56 xs:h-60 sm:h-80 cursor-pointer transition-transform duration-500 preserve-3d ${
           isFlipped ? 'rotate-y-180' : ''
         }`}
         onClick={handleFlip}
@@ -121,23 +121,23 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`absolute inset-0 backface-hidden ${
             isFlipped ? 'opacity-0' : 'opacity-100'
-          } transition-opacity duration-300 border-2 border-teal-200 hover:border-teal-300`}
-          padding="lg"
+          } transition-opacity duration-300 border-2 border-teal-200 hover:border-teal-300 overflow-hidden`}
+          padding="md"
         >
           <div className="h-full flex flex-col">
-            <div className="text-center mb-4">
-              <span className="text-sm text-teal-600 font-medium">CONCEPTO</span>
+            <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-teal-600 font-medium">CONCEPTO</span>
             </div>
             
-            <div className="flex-1 flex items-center justify-center px-2">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-center leading-relaxed">
+            <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-hidden">
+              <h2 className="text-base xs:text-lg sm:text-2xl font-bold text-gray-900 text-center leading-snug sm:leading-relaxed break-words hyphens-auto overflow-hidden flashcard-text max-w-full">
                 {flashcard.concept}
               </h2>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-gray-500 mt-4">
+            <div className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4 flex-shrink-0">
               <span className="hidden sm:inline">Haz clic para ver la definición</span>
-              <span className="sm:hidden">Toca o desliza para ver definición</span>
+              <span className="sm:hidden">Toca para ver definición</span>
             </div>
           </div>
         </Card>
@@ -146,21 +146,23 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`absolute inset-0 backface-hidden rotate-y-180 ${
             isFlipped ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-300 border-2 border-blue-200 hover:border-blue-300`}
-          padding="lg"
+          } transition-opacity duration-300 border-2 border-blue-200 hover:border-blue-300 overflow-hidden`}
+          padding="md"
         >
           <div className="h-full flex flex-col">
-            <div className="text-center mb-4">
-              <span className="text-sm text-blue-600 font-medium">DEFINICIÓN</span>
+            <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-blue-600 font-medium">DEFINICIÓN</span>
             </div>
             
-            <div className="flex-1 flex items-center justify-center px-2">
-              <p className="text-sm sm:text-lg text-gray-800 text-center leading-relaxed">
-                {flashcard.definition}
-              </p>
+            <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-y-auto max-h-full">
+              <div className="w-full max-h-full overflow-y-auto scrollbar-thin">
+                <p className="text-xs xs:text-sm sm:text-lg text-gray-800 text-center leading-relaxed break-words hyphens-auto flashcard-text max-w-full">
+                  {flashcard.definition}
+                </p>
+              </div>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-gray-500 mt-4">
+            <div className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4 flex-shrink-0">
               ¿Qué tan bien conoces este concepto?
             </div>
           </div>
@@ -169,50 +171,50 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
       {/* Action Buttons */}
       {hasAnswered && isFlipped && (
-        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
           <Button
             variant="secondary"
             size="md"
             onClick={() => handleConfidence(0.2)}
-            icon={<XIcon className="w-5 h-5 sm:w-4 sm:h-4" />}
-            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 w-full sm:w-auto py-3 sm:py-2"
+            icon={<XIcon className="w-4 h-4" />}
+            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
           >
-            Difícil
+            <span className="text-sm sm:text-base">Difícil</span>
           </Button>
           
           <Button
             variant="secondary"
             size="md"
             onClick={() => handleConfidence(0.5)}
-            icon={<RefreshCwIcon className="w-5 h-5 sm:w-4 sm:h-4" />}
-            className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100 w-full sm:w-auto py-3 sm:py-2"
+            icon={<RefreshCwIcon className="w-4 h-4" />}
+            className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
           >
-            Normal
+            <span className="text-sm sm:text-base">Normal</span>
           </Button>
           
           <Button
             variant="primary"
             size="md"
             onClick={() => handleConfidence(0.8)}
-            icon={<CheckIcon className="w-5 h-5 sm:w-4 sm:h-4" />}
-            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto py-3 sm:py-2"
+            icon={<CheckIcon className="w-4 h-4" />}
+            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
           >
-            Fácil
+            <span className="text-sm sm:text-base">Fácil</span>
           </Button>
         </div>
       )}
 
       {/* Flip Button */}
       {!hasAnswered && (
-        <div className="mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center">
           <Button
             variant="secondary"
             size="md"
             onClick={handleFlip}
-            icon={<RefreshCwIcon className="w-5 h-5 sm:w-4 sm:h-4" />}
-            className="w-full sm:w-auto py-3 sm:py-2"
+            icon={<RefreshCwIcon className="w-4 h-4" />}
+            className="w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
           >
-            Voltear Tarjeta
+            <span className="text-sm sm:text-base">Voltear Tarjeta</span>
           </Button>
         </div>
       )}
