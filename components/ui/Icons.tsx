@@ -37,7 +37,8 @@ import {
   BarChart3,
   ArrowRight,
   Menu,
-  X as XClose
+  X as XClose,
+  Share
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -85,3 +86,4 @@ export const BarChart3Icon: React.FC<IconProps> = (props) => <BarChart3 {...prop
 export const ArrowRightIcon: React.FC<IconProps> = (props) => <ArrowRight {...props} />;
 export const MenuIcon: React.FC<IconProps> = (props) => <Menu {...props} />;
 export const XCloseIcon: React.FC<IconProps> = (props) => <XClose {...props} />;
+export const ShareIcon: React.FC<IconProps> = (props) => <Share {...props} />;

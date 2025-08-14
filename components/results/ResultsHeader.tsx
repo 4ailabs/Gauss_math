@@ -1,15 +1,18 @@
 import React from 'react';
 import { Button } from '../ui/Button';
-import { DownloadIcon } from '../ui/Icons';
+import { DownloadIcon, ShareIcon } from '../ui/Icons';
+import { ProcessedData } from '../../types';
 
 interface ResultsHeaderProps {
   subject: string;
   onExport: () => void;
+  processedData?: ProcessedData;
 }
 
 export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({ 
   subject, 
-  onExport 
+  onExport,
+  processedData
 }) => {
   const currentDate = new Date().toLocaleDateString('es-ES', { 
     year: 'numeric', 
@@ -17,15 +20,47 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
     day: 'numeric' 
   });
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `Análisis de ${subject}`,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Enlace copiado al portapapeles');
+  const handleShare = async () => {
+    if (!processedData) return;
+
+    // Crear un resumen del análisis para compartir
+    const summary = `📊 Análisis de ${subject}
+
+🔑 Conceptos Clave:
+${processedData.keyConcepts.slice(0, 3).map(concept => `• ${concept.concept}`).join('\n')}
+
+❓ Preguntas Generadas:
+${processedData.quizQuestions.slice(0, 2).map(q => `• ${q.question}`).join('\n')}
+
+📝 Problemas Relacionados:
+${processedData.relatedProblems.slice(0, 2).map(p => `• ${p.problem}`).join('\n')}
+
+📅 Fecha: ${currentDate}
+🔗 Generado con Gauss∑ AI - Powered by 4ailabs`;
+
+    try {
+      if (navigator.share) {
+        // Usar Web Share API si está disponible
+        await navigator.share({
+          title: `Análisis de ${subject} - Gauss∑ AI`,
+          text: summary,
+          url: window.location.href
+        });
+      } else {
+        // Fallback: copiar al portapapeles
+        await navigator.clipboard.writeText(summary);
+        alert('Resumen del análisis copiado al portapapeles');
+      }
+    } catch (error) {
+      console.error('Error al compartir:', error);
+      // Fallback adicional: copiar solo el resumen
+      try {
+        await navigator.clipboard.writeText(summary);
+        alert('Resumen del análisis copiado al portapapeles');
+      } catch (clipboardError) {
+        console.error('Error al copiar al portapapeles:', clipboardError);
+        alert('Error al compartir. Intenta copiar manualmente el contenido.');
+      }
     }
   };
 
@@ -43,9 +78,11 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
             variant="ghost"
             size="sm"
             onClick={handleShare}
+            icon={<ShareIcon className="w-4 h-4" />}
             className="flex-1 sm:flex-none"
           >
-            Compartir
+            <span className="hidden sm:inline">Compartir</span>
+            <span className="sm:hidden">Compartir</span>
           </Button>
           <Button
             variant="secondary"

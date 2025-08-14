@@ -63,6 +63,7 @@ ${processedData.relatedProblems.map((p, i) => `${i+1}. ${p.problem}`).join('\n')
         <ResultsHeader 
           subject={selectedSubject}
           onExport={handleExport}
+          processedData={processedData}
         />
       </div>
       
