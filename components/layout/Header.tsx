@@ -43,7 +43,10 @@ export const Header: React.FC = React.memo(() => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-xl font-semibold text-gray-900">Gauss∑ AI</h1>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">Gauss∑ AI</h1>
+              <p className="text-xs text-gray-400 -mt-1">Powered by 4ailabs</p>
+            </div>
           </div>
 
           {/* Desktop Navigation */}

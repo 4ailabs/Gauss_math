@@ -96,6 +96,13 @@ const HelpView: React.FC = React.memo(() => {
           </div>
         </div>
       </Card>
+      
+      {/* Crédito sutil */}
+      <div className="text-center py-4">
+        <p className="text-xs text-gray-400">
+          Powered by <span className="font-medium text-gray-500">4ailabs</span>
+        </p>
+      </div>
     </div>
   );
 });
