@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { useApp } from '../contexts/AppContext';
-import { processNotes } from '../services/geminiService';
+import { processNotes, generateQuiz, findProblems } from '../services/geminiService';
 import EnhancedMathService from '../services/enhancedMathService';
 import { AnalysisHistory } from '../types';
 
 export const useNoteProcessing = () => {
   const {
-    state: { notes, selectedSubject },
+    state: { notes, selectedSubject, searchType },
     setLoading,
     setError,
     setProcessedData,
@@ -24,25 +24,58 @@ export const useNoteProcessing = () => {
     setError(null);
     
     try {
-      console.log('Iniciando procesamiento mejorado de notas...');
+      console.log('Iniciando procesamiento según tipo:', searchType);
       
-      // Usar directamente el servicio básico por ahora
-      console.log('Usando procesamiento básico...');
-      const data = await processNotes(notes, selectedSubject);
-      console.log('Procesamiento básico completado');
-      console.log('Notas procesadas exitosamente:', data);
+      let data;
+      switch (searchType) {
+        case 'research':
+          console.log('Procesando apuntes...');
+          data = await processNotes(notes, selectedSubject);
+          console.log('Procesamiento de apuntes completado');
+          break;
+        
+        case 'systematic':
+          console.log('Generando quiz...');
+          data = await generateQuiz(notes, selectedSubject);
+          console.log('Generación de quiz completada');
+          break;
+        
+        case 'papers':
+          console.log('Encontrando problemas...');
+          data = await findProblems(notes, selectedSubject);
+          console.log('Búsqueda de problemas completada');
+          break;
+        
+        default:
+          console.log('Tipo de búsqueda no reconocido, usando procesamiento básico...');
+          data = await processNotes(notes, selectedSubject);
+      }
+      
+      console.log('Datos procesados exitosamente:', data);
       
       setProcessedData(data);
       
       // Save to history
+      const getHistoryTitle = () => {
+        const baseTitle = notes.substring(0, 50) + (notes.length > 50 ? '...' : '');
+        switch (searchType) {
+          case 'systematic':
+            return `Quiz: ${baseTitle}`;
+          case 'papers':
+            return `Problemas: ${baseTitle}`;
+          default:
+            return baseTitle;
+        }
+      };
+
       const newHistoryItem: AnalysisHistory = {
         id: Date.now().toString(),
-        title: notes.substring(0, 50) + (notes.length > 50 ? '...' : ''),
+        title: getHistoryTitle(),
         subject: selectedSubject,
         notes: notes,
         processedData: data,
         timestamp: Date.now(),
-        tags: [selectedSubject],
+        tags: [selectedSubject, searchType],
         topics: data.keyConcepts.map(c => c.concept.split(' ')[0]),
         confidence: 0.5,
         lastReviewed: Date.now(),
@@ -62,7 +95,7 @@ export const useNoteProcessing = () => {
       setProcessedData(null);
       setLoading(false);
     }
-  }, [notes, selectedSubject, setLoading, setError, setProcessedData, setActiveView, addToHistory]);
+  }, [notes, selectedSubject, searchType, setLoading, setError, setProcessedData, setActiveView, addToHistory]);
 
   const handleSearch = useCallback(() => {
     if (!notes.trim()) {
