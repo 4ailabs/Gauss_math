@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { DownloadIcon, ChevronRightIcon, MenuIcon, XCloseIcon } from '../ui/Icons';
+import { DownloadIcon, ChevronRightIcon, MenuIcon, XCloseIcon, HomeIcon, BookOpenIcon } from '../ui/Icons';
 import { ResultsHeader } from '../results/ResultsHeader';
 import { ResultsSummary } from '../results/ResultsSummary';
 import { ConceptsSection } from '../results/ConceptsSection';
@@ -111,7 +111,7 @@ const ResultsView: React.FC = React.memo(() => {
                     variant="primary"
                     size="md"
                     onClick={() => setActiveView('search')}
-                    icon={<span>🏠</span>}
+                    icon={<HomeIcon className="w-5 h-5" />}
                     className="w-full sm:w-auto"
                   >
                     Ir al Inicio
@@ -121,7 +121,7 @@ const ResultsView: React.FC = React.memo(() => {
                     variant="ghost"
                     size="md"
                     onClick={() => setActiveView('library')}
-                    icon={<span>📚</span>}
+                    icon={<BookOpenIcon className="w-5 h-5" />}
                     className="w-full sm:w-auto text-gray-600 hover:text-gray-800"
                   >
                     Ver Biblioteca
