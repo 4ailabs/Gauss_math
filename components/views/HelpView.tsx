@@ -24,7 +24,8 @@ import {
   FileTextIcon,
   CalculatorIcon,
   ClockIcon,
-  CheckIcon
+  CheckIcon,
+  BrainCircuitIcon
 } from '../ui/Icons';
 
 const HelpView: React.FC = React.memo(() => {
@@ -48,6 +49,7 @@ const HelpView: React.FC = React.memo(() => {
     { id: 'overview', label: 'Vista General', icon: <BookOpenIcon className="w-4 h-4" /> },
     { id: 'features', label: 'Funcionalidades', icon: <ZapIcon className="w-4 h-4" /> },
     { id: 'tutorials', label: 'Tutoriales', icon: <PlayIcon className="w-4 h-4" /> },
+    { id: 'prompt-engineering', label: 'Prompt Engineering', icon: <BrainCircuitIcon className="w-4 h-4" /> },
     { id: 'faq', label: 'Preguntas Frecuentes', icon: <HelpCircleIcon className="w-4 h-4" /> },
     { id: 'tips', label: 'Consejos y Trucos', icon: <LightbulbIcon className="w-4 h-4" /> },
     { id: 'troubleshooting', label: 'Solución de Problemas', icon: <SettingsIcon className="w-4 h-4" /> }
@@ -239,6 +241,69 @@ const HelpView: React.FC = React.memo(() => {
     }
   ];
 
+  const promptEngineering = [
+    {
+      category: 'Conceptos Básicos',
+      title: '¿Qué es Prompt Engineering?',
+      description: 'El arte de formular instrucciones claras y efectivas para obtener las mejores respuestas de la IA',
+      examples: [
+        {
+          prompt: 'Explica el concepto de derivada',
+          improvement: 'Explica el concepto de derivada usando ejemplos visuales y aplicaciones prácticas en física'
+        },
+        {
+          prompt: 'Resuelve esta ecuación',
+          improvement: 'Resuelve paso a paso la ecuación 2x² + 5x - 3 = 0, explicando cada método utilizado'
+        }
+      ]
+    },
+    {
+      category: 'Matemáticas Específicas',
+      title: 'Prompts para Conceptos Matemáticos',
+      description: 'Técnicas especializadas para obtener explicaciones matemáticas claras y detalladas',
+      examples: [
+        {
+          prompt: '¿Qué es la integral?',
+          improvement: 'Define la integral definida e indefinida, proporciona ejemplos geométricos y aplicaciones en cálculo de áreas'
+        },
+        {
+          prompt: 'Explica las matrices',
+          improvement: 'Explica las matrices 2x2 y 3x3, incluye operaciones básicas, determinantes y aplicaciones en sistemas de ecuaciones'
+        }
+      ]
+    },
+    {
+      category: 'Resolución de Problemas',
+      title: 'Prompts para Ejercicios',
+      description: 'Cómo solicitar soluciones paso a paso y explicaciones detalladas',
+      examples: [
+        {
+          prompt: 'Resuelve este problema',
+          improvement: 'Resuelve paso a paso este problema de optimización, explicando la lógica detrás de cada paso y verificando la solución'
+        },
+        {
+          prompt: '¿Cómo se hace?',
+          improvement: 'Muéstrame el proceso completo para resolver este tipo de problema, incluyendo estrategias y verificaciones'
+        }
+      ]
+    },
+    {
+      category: 'Comprensión Profunda',
+      title: 'Prompts para Aprendizaje',
+      description: 'Técnicas para obtener explicaciones que fomenten la comprensión conceptual',
+      examples: [
+        {
+          prompt: '¿Por qué funciona?',
+          improvement: 'Explica la intuición matemática detrás de este concepto, usando analogías y ejemplos del mundo real'
+        },
+        {
+          prompt: '¿Cuál es la conexión?',
+          improvement: 'Muéstrame cómo este concepto se relaciona con otros temas matemáticos y por qué es importante'
+        }
+      ]
+    }
+  ];
+
   const troubleshooting = [
     {
       problem: 'La app no procesa mis apuntes',
@@ -419,6 +484,102 @@ const HelpView: React.FC = React.memo(() => {
                 <p className="text-gray-700 leading-relaxed">{item.answer}</p>
               </Card>
             ))}
+          </div>
+        );
+
+      case 'prompt-engineering':
+        return (
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <BrainCircuitIcon className="w-6 h-6 text-purple-600" />
+                Prompt Engineering para Matemáticas
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Aprende a formular instrucciones efectivas para obtener las mejores respuestas de la IA en matemáticas. 
+                Un buen prompt puede transformar una explicación básica en una comprensión profunda y detallada.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="bg-white p-3 rounded-lg border border-purple-200">
+                  <div className="font-semibold text-purple-700 mb-2">🎯 Principios Clave</div>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Sé específico y detallado</li>
+                    <li>• Solicita ejemplos y aplicaciones</li>
+                    <li>• Pide explicaciones paso a paso</li>
+                    <li>• Solicita conexiones con otros temas</li>
+                  </ul>
+                </div>
+                <div className="bg-white p-3 rounded-lg border border-purple-200">
+                  <div className="font-semibold text-purple-700 mb-2">💡 Beneficios</div>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Explicaciones más claras</li>
+                    <li>• Comprensión conceptual profunda</li>
+                    <li>• Aprendizaje más efectivo</li>
+                    <li>• Mejor retención de conceptos</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {promptEngineering.map((category, index) => (
+              <Card key={index} className="p-6">
+                <div className="mb-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <BrainCircuitIcon className="w-5 h-5 text-purple-600" />
+                    {category.title}
+                  </h4>
+                  <p className="text-gray-600 text-sm">{category.description}</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {category.examples.map((example, exampleIndex) => (
+                    <div key={exampleIndex} className="bg-gray-50 rounded-lg p-4 border-l-4 border-purple-300">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="font-medium text-red-600 mb-2 text-sm">❌ Prompt Básico</div>
+                          <div className="bg-white p-3 rounded border border-red-200 text-sm text-gray-700">
+                            "{example.prompt}"
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-medium text-green-600 mb-2 text-sm">✅ Prompt Mejorado</div>
+                          <div className="bg-white p-3 rounded border border-green-200 text-sm text-gray-700">
+                            "{example.improvement}"
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+
+            <Card className="p-6 bg-gradient-to-r from-blue-50 to-teal-50 border border-blue-200">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <LightbulbIcon className="w-5 h-5 text-blue-600" />
+                Consejos Adicionales para Prompts Matemáticos
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 className="font-semibold text-gray-800 mb-3">📐 Para Geometría y Visualización</h5>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>• Solicita diagramas y representaciones visuales</li>
+                    <li>• Pide ejemplos del mundo real</li>
+                    <li>• Solicita diferentes métodos de resolución</li>
+                    <li>• Pide verificación de resultados</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-gray-800 mb-3">🧮 Para Álgebra y Cálculo</h5>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>• Solicita pasos intermedios detallados</li>
+                    <li>• Pide explicación de cada transformación</li>
+                    <li>• Solicita verificación de cada paso</li>
+                    <li>• Pide conexiones con conceptos previos</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
           </div>
         );
 
