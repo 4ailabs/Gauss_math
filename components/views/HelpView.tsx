@@ -243,62 +243,78 @@ const HelpView: React.FC = React.memo(() => {
 
   const promptEngineering = [
     {
-      category: 'Conceptos Básicos',
-      title: '¿Qué es Prompt Engineering?',
-      description: 'El arte de formular instrucciones claras y efectivas para obtener las mejores respuestas de la IA',
+      category: 'Investigación en Matemáticas Aplicadas y Computación',
+      title: 'Prompts para Investigación Matemática',
+      description: 'Técnicas especializadas para investigación en matemáticas aplicadas, algoritmos y computación',
       examples: [
         {
-          prompt: 'Explica el concepto de derivada',
-          improvement: 'Explica el concepto de derivada usando ejemplos visuales y aplicaciones prácticas en física'
+          prompt: 'Explica este algoritmo',
+          improvement: 'Explica paso a paso este algoritmo de optimización, incluye análisis de complejidad temporal y espacial, y proporciona ejemplos de implementación'
         },
         {
-          prompt: 'Resuelve esta ecuación',
-          improvement: 'Resuelve paso a paso la ecuación 2x² + 5x - 3 = 0, explicando cada método utilizado'
+          prompt: '¿Qué es la teoría de grafos?',
+          improvement: 'Define la teoría de grafos, explica conceptos fundamentales como nodos, aristas y caminos, incluye aplicaciones en redes sociales y algoritmos de búsqueda'
+        },
+        {
+          prompt: 'Resuelve este problema de programación',
+          improvement: 'Resuelve este problema de programación dinámica paso a paso, explica la estrategia de memoización, y proporciona el código en pseudocódigo'
         }
       ]
     },
     {
-      category: 'Matemáticas Específicas',
-      title: 'Prompts para Conceptos Matemáticos',
-      description: 'Técnicas especializadas para obtener explicaciones matemáticas claras y detalladas',
+      category: 'Administración de Bases de Datos',
+      title: 'Prompts para Bases de Datos',
+      description: 'Técnicas para consultas SQL, diseño de bases de datos y administración de sistemas',
       examples: [
         {
-          prompt: '¿Qué es la integral?',
-          improvement: 'Define la integral definida e indefinida, proporciona ejemplos geométricos y aplicaciones en cálculo de áreas'
+          prompt: '¿Cómo optimizo esta consulta SQL?',
+          improvement: 'Analiza esta consulta SQL, identifica cuellos de botella, sugiere índices apropiados, y proporciona una versión optimizada con explicación de cada mejora'
         },
         {
-          prompt: 'Explica las matrices',
-          improvement: 'Explica las matrices 2x2 y 3x3, incluye operaciones básicas, determinantes y aplicaciones en sistemas de ecuaciones'
+          prompt: 'Explica la normalización',
+          improvement: 'Explica los conceptos de normalización de bases de datos (1NF, 2NF, 3NF), proporciona ejemplos prácticos de tablas antes y después, y explica cuándo aplicar cada nivel'
+        },
+        {
+          prompt: '¿Qué es ACID?',
+          improvement: 'Define las propiedades ACID en bases de datos, explica cada propiedad con ejemplos prácticos, y muestra cómo se implementan en diferentes sistemas de gestión'
         }
       ]
     },
     {
-      category: 'Resolución de Problemas',
-      title: 'Prompts para Ejercicios',
-      description: 'Cómo solicitar soluciones paso a paso y explicaciones detalladas',
+      category: 'Elementos de Finanzas e Inversiones',
+      title: 'Prompts para Finanzas',
+      description: 'Técnicas para análisis financiero, valoración de inversiones y gestión de portafolios',
       examples: [
         {
-          prompt: 'Resuelve este problema',
-          improvement: 'Resuelve paso a paso este problema de optimización, explicando la lógica detrás de cada paso y verificando la solución'
+          prompt: '¿Cómo calculo el VAN?',
+          improvement: 'Explica el concepto de Valor Actual Neto (VAN), muestra la fórmula paso a paso, incluye un ejemplo numérico completo, y explica la interpretación de los resultados'
         },
         {
-          prompt: '¿Cómo se hace?',
-          improvement: 'Muéstrame el proceso completo para resolver este tipo de problema, incluyendo estrategias y verificaciones'
+          prompt: '¿Qué es la diversificación?',
+          improvement: 'Define la diversificación de portafolios, explica la teoría de Markowitz, incluye ejemplos de diferentes clases de activos, y muestra cómo calcular la correlación entre inversiones'
+        },
+        {
+          prompt: 'Analiza este balance',
+          improvement: 'Analiza este balance general, calcula los ratios financieros clave (liquidez, solvencia, rentabilidad), interpreta los resultados, y sugiere áreas de mejora'
         }
       ]
     },
     {
-      category: 'Comprensión Profunda',
-      title: 'Prompts para Aprendizaje',
-      description: 'Técnicas para obtener explicaciones que fomenten la comprensión conceptual',
+      category: 'Técnicas Generales de Prompt Engineering',
+      title: 'Estrategias Universales',
+      description: 'Técnicas que funcionan para todas las materias y tipos de consultas',
       examples: [
         {
-          prompt: '¿Por qué funciona?',
-          improvement: 'Explica la intuición matemática detrás de este concepto, usando analogías y ejemplos del mundo real'
+          prompt: 'Explica este concepto',
+          improvement: 'Explica este concepto matemático usando analogías del mundo real, proporciona ejemplos visuales, incluye aplicaciones prácticas, y conecta con conceptos previos'
         },
         {
-          prompt: '¿Cuál es la conexión?',
-          improvement: 'Muéstrame cómo este concepto se relaciona con otros temas matemáticos y por qué es importante'
+          prompt: 'Resuelve este ejercicio',
+          improvement: 'Resuelve paso a paso este ejercicio, explica la lógica detrás de cada paso, verifica la solución, y sugiere ejercicios similares para práctica'
+        },
+        {
+          prompt: '¿Cuál es la diferencia?',
+          improvement: 'Compara y contrasta estos conceptos matemáticos, identifica similitudes y diferencias clave, proporciona ejemplos de cada uno, y explica cuándo usar cada concepto'
         }
       ]
     }
@@ -557,25 +573,34 @@ const HelpView: React.FC = React.memo(() => {
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-teal-50 border border-blue-200">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <LightbulbIcon className="w-5 h-5 text-blue-600" />
-                Consejos Adicionales para Prompts Matemáticos
+                Consejos Específicos por Materia
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <h5 className="font-semibold text-gray-800 mb-3">📐 Para Geometría y Visualización</h5>
+                  <h5 className="font-semibold text-gray-800 mb-3">🔬 Investigación Matemática</h5>
                   <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• Solicita diagramas y representaciones visuales</li>
-                    <li>• Pide ejemplos del mundo real</li>
-                    <li>• Solicita diferentes métodos de resolución</li>
-                    <li>• Pide verificación de resultados</li>
+                    <li>• Solicita análisis de complejidad</li>
+                    <li>• Pide pseudocódigo y algoritmos</li>
+                    <li>• Solicita aplicaciones prácticas</li>
+                    <li>• Pide comparación de métodos</li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800 mb-3">🧮 Para Álgebra y Cálculo</h5>
+                  <h5 className="font-semibold text-gray-800 mb-3">🗄️ Bases de Datos</h5>
                   <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• Solicita pasos intermedios detallados</li>
-                    <li>• Pide explicación de cada transformación</li>
-                    <li>• Solicita verificación de cada paso</li>
-                    <li>• Pide conexiones con conceptos previos</li>
+                    <li>• Solicita consultas SQL optimizadas</li>
+                    <li>• Pide diagramas ER y normalización</li>
+                    <li>• Solicita análisis de rendimiento</li>
+                    <li>• Pide casos de uso reales</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-gray-800 mb-3">💰 Finanzas e Inversiones</h5>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>• Solicita cálculos paso a paso</li>
+                    <li>• Pide interpretación de ratios</li>
+                    <li>• Solicita análisis de riesgo</li>
+                    <li>• Pide ejemplos de mercado real</li>
                   </ul>
                 </div>
               </div>
