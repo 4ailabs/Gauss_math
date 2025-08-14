@@ -19,11 +19,15 @@ const ResultsView: React.FC = React.memo(() => {
     // Disable body scroll
     document.body.style.overflow = 'hidden';
     
+    // Debug: Log sidebar visibility
+    console.log('ResultsView mounted, processedData:', processedData);
+    console.log('Sidebar should be visible on desktop');
+
     // Cleanup: restore body scroll when component unmounts
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, []);
+  }, [processedData]);
 
   if (!processedData) {
     setActiveView('search');

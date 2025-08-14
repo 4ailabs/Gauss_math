@@ -691,6 +691,43 @@ input[type="text"]:disabled {
   transform: translateX(0);
 }
 
+/* Desktop sidebar - no transformations */
+@media (min-width: 769px) {
+  .mobile-sidebar-closed,
+  .mobile-sidebar-open {
+    transform: none !important;
+  }
+  
+  /* Ensure sidebar is visible on desktop */
+  .results-sidebar-panel {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 320px !important;
+    min-width: 320px !important;
+    max-width: 320px !important;
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+  }
+  
+  /* Ensure content area has proper flex layout */
+  .results-content-area {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+  }
+  
+  /* Ensure main panel doesn't take all space */
+  .results-main-panel {
+    flex: 1 !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 320px) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .results-sidebar-panel {
     position: fixed !important;
