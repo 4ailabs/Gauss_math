@@ -126,27 +126,20 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 xs:px-6 sm:px-8 safe-area-bottom">
-      {/* Stats Bar */}
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 md:px-8 safe-area-bottom">
+      {/* Stats Bar - móvil optimizado */}
       {showStats && (
-        <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm text-slate-600 gap-2 sm:gap-0">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-              <span className="flex items-center gap-1">
+        <div className="mb-3 sm:mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between text-slate-600">
+            {/* Primera fila móvil */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <TargetIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">Confianza:</span>
-                <span className="sm:hidden">Conf:</span>
-                <span className={`px-2 py-1 rounded text-white text-xs ${getConfidenceColor(flashcard.confidence)}`}>
+                <span className="text-xs sm:text-sm">Confianza:</span>
+                <span className={`px-2 py-1 rounded text-white text-xs font-medium ${getConfidenceColor(flashcard.confidence)}`}>
                   {Math.round(flashcard.confidence * 100)}%
                 </span>
-              </span>
-              <span className="text-xs sm:text-sm">Rev: {flashcard.reviewCount}</span>
-              <span className="text-xs sm:text-sm hidden sm:inline">Último: {formatLastReviewed(flashcard.lastReviewed)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-500 bg-slate-200 px-2 py-1 rounded self-start sm:self-auto">
-                {flashcard.subject}
-              </span>
+              </div>
               {onDelete && (
                 <button
                   onClick={(e) => {
@@ -155,20 +148,31 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
                       onDelete(flashcard.id);
                     }
                   }}
-                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors ios-touch-optimize"
                   title="Eliminar flashcard"
                 >
-                  <Trash2Icon className="w-3.5 h-3.5" />
+                  <Trash2Icon className="w-4 h-4" />
                 </button>
               )}
+            </div>
+            
+            {/* Segunda fila móvil */}
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <span>Revisiones: {flashcard.reviewCount}</span>
+                <span className="hidden sm:inline">Último: {formatLastReviewed(flashcard.lastReviewed)}</span>
+              </div>
+              <span className="bg-slate-200 text-slate-600 px-2 py-1 rounded-full text-xs">
+                {flashcard.subject}
+              </span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Flashcard */}
+      {/* Flashcard - altura optimizada para móvil */}
       <div 
-        className={`flashcard-container relative w-full h-72 xs:h-80 sm:h-96 cursor-pointer ${
+        className={`flashcard-container relative w-full h-64 sm:h-80 md:h-96 cursor-pointer ios-touch-optimize ${
           isFlipped ? 'flashcard-flipped' : ''
         }`}
         onClick={handleFlip}
@@ -180,23 +184,25 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`flashcard-face flashcard-front absolute inset-0 ${
             isFlipped ? 'opacity-0' : 'opacity-100'
-          } border-2 border-slate-200 overflow-hidden transition-opacity duration-300 ease-in-out`}
-          padding="md"
+          } border-2 border-slate-300 shadow-lg overflow-hidden transition-opacity duration-300 ease-in-out`}
+          padding="sm"
         >
-          <div className="h-full flex flex-col">
-            <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
-              <span className="text-xs sm:text-sm text-slate-600 font-medium">CONCEPTO</span>
+          <div className="h-full flex flex-col p-2 sm:p-4">
+            <div className="text-center mb-2 sm:mb-3 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full">
+                CONCEPTO
+              </span>
             </div>
             
-            <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-              <h2 className="text-base xs:text-lg sm:text-xl font-semibold text-slate-700 text-center leading-snug sm:leading-relaxed break-words hyphens-auto overflow-hidden flashcard-text max-w-full">
+            <div className="flex-1 flex items-center justify-center px-2 overflow-hidden">
+              <h2 className="text-sm sm:text-lg md:text-xl font-semibold text-slate-800 text-center leading-tight sm:leading-relaxed break-words hyphens-auto line-clamp-3 sm:line-clamp-none">
                 {flashcard.concept}
               </h2>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-slate-500 mt-2 sm:mt-4 flex-shrink-0">
-              <span className="hidden sm:inline">Haz clic para ver la definición</span>
-              <span className="sm:hidden">Toca para ver definición</span>
+            <div className="text-center text-xs text-slate-500 mt-2 flex-shrink-0 bg-slate-50 py-2 rounded-lg">
+              <span className="hidden sm:inline">🔄 Haz clic para ver la definición</span>
+              <span className="sm:hidden">🔄 Toca para definición</span>
             </div>
           </div>
         </Card>
@@ -205,75 +211,77 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
         <Card 
           className={`flashcard-face flashcard-back absolute inset-0 ${
             isFlipped ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-300 ease-in-out border-2 border-slate-200 overflow-hidden`}
-          padding="md"
+          } transition-opacity duration-300 ease-in-out border-2 border-slate-300 shadow-lg overflow-hidden`}
+          padding="sm"
         >
-          <div className="h-full flex flex-col">
-            <div className="text-center mb-2 sm:mb-4 flex-shrink-0">
-              <span className="text-xs sm:text-sm text-slate-600 font-medium">DEFINICIÓN</span>
+          <div className="h-full flex flex-col p-2 sm:p-4">
+            <div className="text-center mb-2 sm:mb-3 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-slate-600 font-medium bg-blue-100 px-3 py-1 rounded-full">
+                DEFINICIÓN
+              </span>
             </div>
             
-            <div className="flex-1 flex items-center justify-center px-1 sm:px-2 overflow-y-auto max-h-full">
-              <div className="w-full max-h-full overflow-y-auto scrollbar-thin">
-                <p className="text-xs xs:text-sm sm:text-lg text-slate-800 text-center leading-relaxed break-words hyphens-auto flashcard-text max-w-full">
+            <div className="flex-1 flex items-center justify-center px-2 overflow-y-auto">
+              <div className="w-full max-h-full overflow-y-auto">
+                <p className="text-xs sm:text-base text-slate-800 text-center leading-relaxed break-words hyphens-auto">
                   {flashcard.definition}
                 </p>
               </div>
             </div>
             
-            <div className="text-center text-xs sm:text-sm text-slate-500 mt-2 sm:mt-4 flex-shrink-0">
-              ¿Qué tan bien conoces este concepto?
+            <div className="text-center text-xs text-slate-500 mt-2 flex-shrink-0 bg-slate-50 py-2 rounded-lg">
+              💭 ¿Qué tan bien conoces este concepto?
             </div>
           </div>
         </Card>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons - optimizados para móvil */}
       {hasAnswered && isFlipped && (
-        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2">
+        <div className="mt-3 sm:mt-6 space-y-2 sm:space-y-0 sm:flex sm:justify-center sm:gap-4 px-1">
           <Button
             variant="secondary"
-            size="md"
+            size="lg"
             onClick={() => handleConfidence(0.2)}
-            icon={<XIcon className="w-4 h-4" />}
-            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
+            icon={<XIcon className="w-5 h-5" />}
+            className="bg-red-50 border-red-300 text-red-800 hover:bg-red-100 active:bg-red-200 w-full sm:w-auto py-4 min-h-[48px] ios-touch-optimize font-medium"
           >
-            <span className="text-sm sm:text-base">Difícil</span>
+            <span className="text-sm sm:text-base">😰 Difícil</span>
           </Button>
           
           <Button
             variant="secondary"
-            size="md"
+            size="lg"
             onClick={() => handleConfidence(0.5)}
-            icon={<RefreshCwIcon className="w-4 h-4" />}
-            className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
+            icon={<RefreshCwIcon className="w-5 h-5" />}
+            className="bg-yellow-50 border-yellow-300 text-yellow-800 hover:bg-yellow-100 active:bg-yellow-200 w-full sm:w-auto py-4 min-h-[48px] ios-touch-optimize font-medium"
           >
-            <span className="text-sm sm:text-base">Normal</span>
+            <span className="text-sm sm:text-base">🤔 Normal</span>
           </Button>
           
           <Button
-            variant="primary"
-            size="md"
+            variant="secondary"
+            size="lg"
             onClick={() => handleConfidence(0.8)}
-            icon={<CheckIcon className="w-4 h-4" />}
-            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
+            icon={<CheckIcon className="w-5 h-5" />}
+            className="bg-green-50 border-green-300 text-green-800 hover:bg-green-100 active:bg-green-200 w-full sm:w-auto py-4 min-h-[48px] ios-touch-optimize font-medium"
           >
-            <span className="text-sm sm:text-base">Fácil</span>
+            <span className="text-sm sm:text-base">😊 Fácil</span>
           </Button>
         </div>
       )}
 
-      {/* Flip Button */}
+      {/* Flip Button - optimizado para móvil */}
       {!hasAnswered && (
-        <div className="mt-4 sm:mt-6 text-center px-2">
+        <div className="mt-3 sm:mt-6 text-center px-1">
           <Button
-            variant="secondary"
-            size="md"
+            variant="primary"
+            size="lg"
             onClick={handleFlip}
-            icon={<RefreshCwIcon className="w-4 h-4" />}
-            className="w-full sm:w-auto py-3 sm:py-2 min-h-[44px] touch-manipulation"
+            icon={<RefreshCwIcon className="w-5 h-5" />}
+            className="w-full sm:w-auto py-4 min-h-[48px] ios-touch-optimize font-medium bg-teal-700 hover:bg-teal-800"
           >
-            <span className="text-sm sm:text-base">Voltear Tarjeta</span>
+            <span className="text-sm sm:text-base">🔄 Voltear Tarjeta</span>
           </Button>
         </div>
       )}

@@ -131,6 +131,13 @@
       overflow: hidden;
     }
 
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
     /* Optimizaciones específicas para iOS */
     @supports (-webkit-touch-callout: none) {
       /* iOS specific styles */
@@ -139,6 +146,18 @@
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
+      }
+    }
+
+    /* Mejoras para flashcards en iOS */
+    @media screen and (max-width: 640px) {
+      .flashcard-container {
+        margin-bottom: 1rem;
+      }
+      
+      /* Mejorar scroll en definiciones largas */
+      .flashcard-face {
+        -webkit-overflow-scrolling: touch;
       }
     }
   </style>
