@@ -83,7 +83,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-3 xs:px-4 sm:px-0 safe-area-bottom">
+    <div className="w-full max-w-2xl mx-auto px-4 xs:px-6 sm:px-8 safe-area-bottom">
       {/* Stats Bar */}
       {showStats && (
         <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -171,7 +171,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
       {/* Action Buttons */}
       {hasAnswered && isFlipped && (
-        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2">
           <Button
             variant="secondary"
             size="md"
@@ -206,7 +206,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
       {/* Flip Button */}
       {!hasAnswered && (
-        <div className="mt-4 sm:mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center px-2">
           <Button
             variant="secondary"
             size="md"
