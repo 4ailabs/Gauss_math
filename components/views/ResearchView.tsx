@@ -264,7 +264,10 @@ const ResearchView: React.FC = React.memo(() => {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       console.log('🔄 Todos los subtópicos investigados, procediendo a síntesis...');
-      console.log('📊 Estado final de subtópicos:', subtopicObjects);
+      
+      // Crear una copia local del estado actual para evitar problemas de sincronización
+      const localSubtopicObjects = [...subtopicObjects];
+      console.log('📊 Estado final de subtópicos (copia local):', localSubtopicObjects);
       
       setResearchState(ResearchState.SYNTHESIZING);
       
@@ -272,27 +275,25 @@ const ResearchView: React.FC = React.memo(() => {
       try {
         console.log('🔄 Iniciando síntesis del reporte...');
         
-        // Obtener el estado actual de subtópicos con un pequeño delay para asegurar que se actualice
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Verificar que tenemos los datos localmente
+        if (localSubtopicObjects.length === 0) {
+          console.error('❌ No hay subtópicos en la copia local');
+          throw new Error('Los datos de investigación se perdieron durante el proceso');
+        }
         
-        // Acceder al estado actualizado usando una función que obtiene el estado actual
-        const getCurrentSubtopics = (): Subtopic[] => {
-          const currentSubtopics = subtopicObjects;
-          console.log('📊 Estado actual de subtópicos obtenido:', currentSubtopics.length, 'elementos');
-          console.log('🔍 Detalles de subtópicos:', currentSubtopics.map(st => ({ 
-            title: st.title, 
-            status: st.status, 
-            hasContent: !!st.content && st.content.trim().length > 0,
-            contentLength: st.content ? st.content.length : 0
-          })));
-          return currentSubtopics;
-        };
+        console.log('📊 Subtópicos disponibles para síntesis:', localSubtopicObjects.length);
+        console.log('🔍 Detalles de subtópicos:', localSubtopicObjects.map(st => ({ 
+          title: st.title, 
+          status: st.status, 
+          hasContent: !!st.content && st.content.trim().length > 0,
+          contentLength: st.content ? st.content.length : 0
+        })));
         
-        const currentSubtopicObjects = getCurrentSubtopics();
+        const currentSubtopicObjects = localSubtopicObjects;
         
         const researchedContent = currentSubtopicObjects
           .filter(st => {
-            const isValid = st.status === 'complete' && st.content && st.content.trim().length > 50; // Mínimo 50 caracteres
+            const isValid = st.status === 'complete' && st.content && st.content.trim().length > 50;
             console.log(`📋 Validando subtópico "${st.title}": status=${st.status}, hasContent=${!!st.content}, contentLength=${st.content?.length || 0}, isValid=${isValid}`);
             return isValid;
           })
@@ -320,9 +321,8 @@ const ResearchView: React.FC = React.memo(() => {
           
           if (partialContent.length > 0) {
             console.log('🔄 Usando contenido parcial para síntesis:', partialContent.length, 'subtópicos');
-            const researchedContentToUse = partialContent;
             console.log('📚 Llamando a synthesizeReport con contenido parcial');
-            const report = await synthesizeReport(topic, researchedContentToUse);
+            const report = await synthesizeReport(topic, partialContent);
             console.log('✅ Reporte generado exitosamente con contenido parcial:', report);
             
             // Validar y guardar el reporte
