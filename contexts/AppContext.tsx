@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
-import { ProcessedData, ChatMessage, AnalysisHistory } from '../types';
+import { ProcessedData, ChatMessage, AnalysisHistory, Flashcard } from '../types';
 
 // Export ResearchSession type for use in other components
 export type { ResearchSession };
@@ -49,6 +49,9 @@ interface AppState {
   // Research session management
   currentResearchSession: ResearchSession | null;
   researchSessions: ResearchSession[];
+  
+  // Flashcards management
+  flashcards: Flashcard[];
 }
 
 // Action types
@@ -81,7 +84,8 @@ type AppAction =
   | { type: 'SAVE_RESEARCH_SESSION'; payload: ResearchSession }
   | { type: 'RESUME_RESEARCH_SESSION'; payload: ResearchSession }
   | { type: 'CLEAR_CURRENT_RESEARCH_SESSION' }
-  | { type: 'SET_RESEARCH_SESSIONS'; payload: ResearchSession[] };
+  | { type: 'SET_RESEARCH_SESSIONS'; payload: ResearchSession[] }
+  | { type: 'REMOVE_FLASHCARD'; payload: string };
 
 // Initial state
 const initialState: AppState = {
@@ -104,6 +108,7 @@ const initialState: AppState = {
   analysisHistory: [],
   currentResearchSession: null,
   researchSessions: [],
+  flashcards: [],
 };
 
 // Reducer
@@ -207,10 +212,15 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       };
     case 'CLEAR_CURRENT_RESEARCH_SESSION':
       return { ...state, currentResearchSession: null };
-    case 'SET_RESEARCH_SESSIONS':
-      return { ...state, researchSessions: action.payload };
-    default:
-      return state;
+          case 'SET_RESEARCH_SESSIONS':
+        return { ...state, researchSessions: action.payload };
+      case 'REMOVE_FLASHCARD':
+        return { 
+          ...state, 
+          flashcards: state.flashcards.filter(card => card.id !== action.payload) 
+        };
+      default:
+        return state;
   }
 };
 
@@ -243,6 +253,7 @@ interface AppContextType {
   removeFromHistory: (id: string) => void;
   clearAnalysisHistory: () => void;
   clearAssistantHistory: () => void;
+  removeFlashcard: (id: string) => void;
   // Research session management
   startResearchSession: (query: string) => void;
   updateResearchSession: (updates: Partial<ResearchSession>) => void;
@@ -451,6 +462,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     localStorage.removeItem('gaussmathmind_active_research');
   }, []);
 
+  const removeFlashcard = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_FLASHCARD', payload: id });
+  }, []);
+
   const getAvailableResearchSessions = useCallback(() => {
     return state.researchSessions.slice(0, 10); // Limit to last 10 sessions
   }, [state.researchSessions]);
@@ -493,6 +508,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     removeFromHistory,
     clearAnalysisHistory,
     clearAssistantHistory,
+    removeFlashcard,
     // Research session management
     startResearchSession,
     updateResearchSession,

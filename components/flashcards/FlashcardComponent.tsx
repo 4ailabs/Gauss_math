@@ -1,13 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flashcard } from '../../types';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { RefreshCwIcon, CheckIcon, XIcon, TargetIcon } from '../ui/Icons';
+import { RefreshCwIcon, CheckIcon, XIcon, TargetIcon, Trash2Icon } from '../ui/Icons';
+
+// Estilos CSS personalizados para evitar el temblor
+const flashcardStyles = `
+  .flashcard-container {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+  
+  .flashcard-face {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform, opacity;
+  }
+  
+  .flashcard-front {
+    transform: rotateY(0deg);
+  }
+  
+  .flashcard-back {
+    transform: rotateY(180deg);
+  }
+  
+  .flashcard-flipped .flashcard-front {
+    transform: rotateY(180deg);
+  }
+  
+  .flashcard-flipped .flashcard-back {
+    transform: rotateY(0deg);
+  }
+`;
 
 interface FlashcardComponentProps {
   flashcard: Flashcard;
   onConfidenceUpdate: (id: string, confidence: number) => void;
   onNext: () => void;
+  onDelete?: (id: string) => void;
   showStats?: boolean;
 }
 
@@ -15,12 +46,24 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
   flashcard,
   onConfidenceUpdate,
   onNext,
+  onDelete,
   showStats = true
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Inyectar estilos CSS personalizados para evitar el temblor
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = flashcardStyles;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -100,17 +143,33 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
               <span className="text-xs sm:text-sm">Rev: {flashcard.reviewCount}</span>
               <span className="text-xs sm:text-sm hidden sm:inline">Último: {formatLastReviewed(flashcard.lastReviewed)}</span>
             </div>
-            <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded self-start sm:self-auto">
-              {flashcard.subject}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded self-start sm:self-auto">
+                {flashcard.subject}
+              </span>
+              {onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm('¿Estás seguro de que quieres eliminar esta flashcard?')) {
+                      onDelete(flashcard.id);
+                    }
+                  }}
+                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                  title="Eliminar flashcard"
+                >
+                  <Trash2Icon className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* Flashcard */}
       <div 
-        className={`relative w-full h-72 xs:h-80 sm:h-96 cursor-pointer transition-transform duration-500 preserve-3d ${
-          isFlipped ? 'rotate-y-180' : ''
+        className={`flashcard-container relative w-full h-72 xs:h-80 sm:h-96 cursor-pointer ${
+          isFlipped ? 'flashcard-flipped' : ''
         }`}
         onClick={handleFlip}
         onTouchStart={onTouchStart}
@@ -119,9 +178,9 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
       >
         {/* Front side */}
         <Card 
-          className={`absolute inset-0 backface-hidden ${
+          className={`flashcard-face flashcard-front absolute inset-0 ${
             isFlipped ? 'opacity-0' : 'opacity-100'
-          } transition-opacity duration-300 border-2 border-teal-200 hover:border-teal-300 overflow-hidden`}
+          } border-2 border-teal-200 overflow-hidden transition-opacity duration-300 ease-in-out`}
           padding="md"
         >
           <div className="h-full flex flex-col">
@@ -144,9 +203,9 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = React.memo(
 
         {/* Back side */}
         <Card 
-          className={`absolute inset-0 backface-hidden rotate-y-180 ${
+          className={`flashcard-face flashcard-back absolute inset-0 ${
             isFlipped ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-300 border-2 border-blue-200 hover:border-blue-300 overflow-hidden`}
+          } transition-opacity duration-300 ease-in-out border-2 border-blue-200 overflow-hidden`}
           padding="md"
         >
           <div className="h-full flex flex-col">

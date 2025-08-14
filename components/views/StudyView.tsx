@@ -20,7 +20,8 @@ import {
 const StudyView: React.FC = React.memo(() => {
   const { 
     state: { selectedSubject, analysisHistory }, 
-    setActiveView 
+    setActiveView,
+    removeFlashcard
   } = useApp();
 
   const [showFlashcards, setShowFlashcards] = useState(false);
@@ -103,6 +104,22 @@ const StudyView: React.FC = React.memo(() => {
       reviewed: prev.reviewed + 1,
       correct: confidence > 0.6 ? prev.correct + 1 : prev.correct
     }));
+  };
+
+  const handleDeleteFlashcard = (id: string) => {
+    // Remover de las flashcards locales
+    setFlashcards(prev => prev.filter(card => card.id !== id));
+    
+    // Remover del contexto global
+    removeFlashcard(id);
+    
+    // Ajustar el índice actual si es necesario
+    if (currentIndex >= flashcards.length - 1) {
+      setCurrentIndex(Math.max(0, flashcards.length - 2));
+    }
+    
+    // Actualizar estadísticas
+    setSessionStats(prev => ({ ...prev, total: prev.total - 1 }));
   };
 
   const handleNext = () => {
@@ -245,6 +262,7 @@ const StudyView: React.FC = React.memo(() => {
             flashcard={currentCard}
             onConfidenceUpdate={handleConfidenceUpdate}
             onNext={handleNext}
+            onDelete={handleDeleteFlashcard}
             showStats={true}
           />
         )}
