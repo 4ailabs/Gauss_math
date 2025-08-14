@@ -203,7 +203,13 @@ const ResearchView: React.FC = React.memo(() => {
     
     try {
       console.log('🚀 Iniciando investigación de subtópicos...');
+      console.log('🔑 Verificando API de Gemini disponible:', isGeminiAvailable());
       console.log('📋 Subtópicos a investigar:', subtopics);
+      
+      if (!isGeminiAvailable()) {
+        console.error('❌ API de Gemini no está disponible');
+        throw new Error('La API de Gemini no está configurada. Verifica tu API_KEY.');
+      }
       
       const initialSubtopics = subtopics.map(title => ({ 
         title, 
@@ -225,11 +231,17 @@ const ResearchView: React.FC = React.memo(() => {
 
         try {
           console.log(`📚 Llamando a researchSubtopic para: ${subtopics[i]}`);
+          const startTime = Date.now();
           const { content, sources: subtopicSources } = await researchSubtopic(subtopics[i], topic);
+          const endTime = Date.now();
           
-          console.log(`✅ Subtópico ${subtopics[i]} investigado exitosamente`);
-          console.log(`📄 Contenido generado (primeros 100 chars):`, content.substring(0, 100) + '...');
+          console.log(`✅ Subtópico ${subtopics[i]} investigado exitosamente en ${endTime - startTime}ms`);
+          console.log(`📄 Contenido generado (${content.length} chars):`, content.substring(0, 100) + '...');
           console.log(`🔗 Fuentes encontradas:`, subtopicSources.length);
+          
+          if (!content || content.trim().length < 100) {
+            console.warn(`⚠️ Contenido de subtópico "${subtopics[i]}" es muy corto o vacío:`, content);
+          }
           
           setSubtopicObjects(prev => prev.map((st, index) => 
             index === i ? { ...st, content, sources: subtopicSources, status: 'complete' } : st
@@ -264,46 +276,96 @@ const ResearchView: React.FC = React.memo(() => {
       try {
         console.log('🔄 Iniciando síntesis del reporte...');
         
-        // Obtener el estado actual de subtópicos
-        const currentSubtopicObjects = subtopicObjects;
-        console.log('📊 Datos de investigación actuales:', currentSubtopicObjects);
+        // Obtener el estado actual de subtópicos con un pequeño delay para asegurar que se actualice
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Acceder al estado actualizado usando una función que obtiene el estado actual
+        const getCurrentSubtopics = (): Subtopic[] => {
+          const currentSubtopics = subtopicObjects;
+          console.log('📊 Estado actual de subtópicos obtenido:', currentSubtopics.length, 'elementos');
+          console.log('🔍 Detalles de subtópicos:', currentSubtopics.map(st => ({ 
+            title: st.title, 
+            status: st.status, 
+            hasContent: !!st.content && st.content.trim().length > 0,
+            contentLength: st.content ? st.content.length : 0
+          })));
+          return currentSubtopics;
+        };
+        
+        const currentSubtopicObjects = getCurrentSubtopics();
         
         const researchedContent = currentSubtopicObjects
-          .filter(st => st.status === 'complete' && st.content && st.content.trim().length > 0)
+          .filter(st => {
+            const isValid = st.status === 'complete' && st.content && st.content.trim().length > 50; // Mínimo 50 caracteres
+            console.log(`📋 Validando subtópico "${st.title}": status=${st.status}, hasContent=${!!st.content}, contentLength=${st.content?.length || 0}, isValid=${isValid}`);
+            return isValid;
+          })
           .map(st => ({ title: st.title, content: st.content }));
         
-        console.log('📝 Contenido filtrado para síntesis:', researchedContent);
-        console.log('📊 Número de subtópicos válidos:', researchedContent.length);
+        console.log('📝 Contenido filtrado para síntesis:', researchedContent.length, 'subtópicos válidos');
+        console.log('📊 Títulos de subtópicos válidos:', researchedContent.map(r => r.title));
         
         if (researchedContent.length === 0) {
           console.error('❌ No hay contenido válido para sintetizar');
-          console.log('🔍 Estado de todos los subtópicos:', currentSubtopicObjects);
-          throw new Error('No hay contenido de investigación disponible para sintetizar. Verifica que la API esté funcionando correctamente.');
+          console.log('🔍 Estado detallado de subtópicos:');
+          currentSubtopicObjects.forEach((st, index) => {
+            console.log(`   ${index + 1}. "${st.title}":`, {
+              status: st.status,
+              hasContent: !!st.content,
+              contentLength: st.content?.length || 0,
+              contentPreview: st.content?.substring(0, 100) + '...' || 'Sin contenido'
+            });
+          });
+          
+          // Intentar usar contenido parcial si existe algo
+          const partialContent = currentSubtopicObjects
+            .filter(st => st.content && st.content.trim().length > 10)
+            .map(st => ({ title: st.title, content: st.content }));
+          
+          if (partialContent.length > 0) {
+            console.log('🔄 Usando contenido parcial para síntesis:', partialContent.length, 'subtópicos');
+            const researchedContentToUse = partialContent;
+            console.log('📚 Llamando a synthesizeReport con contenido parcial');
+            const report = await synthesizeReport(topic, researchedContentToUse);
+            console.log('✅ Reporte generado exitosamente con contenido parcial:', report);
+            
+            // Validar y guardar el reporte
+            if (report && report.summary && report.report) {
+              setFinalReport(report);
+              setResearchState(ResearchState.DONE);
+              console.log('🎉 Estado actualizado a DONE con contenido parcial');
+              return; // Salir de la función aquí
+            } else {
+              throw new Error('El reporte generado con contenido parcial no tiene la estructura esperada');
+            }
+          } else {
+            throw new Error('No hay contenido de investigación disponible para sintetizar. Verifica que la API esté funcionando correctamente.');
+          }
+        } else {
+          console.log('📚 Llamando a synthesizeReport con:', researchedContent.length, 'subtópicos');
+          const report = await synthesizeReport(topic, researchedContent);
+          console.log('✅ Reporte generado exitosamente:', report);
+          
+          // Validar que el reporte tenga la estructura correcta
+          if (!report || !report.summary || !report.report) {
+            console.error('❌ Reporte inválido recibido:', report);
+            throw new Error('El reporte generado no tiene la estructura esperada');
+          }
+          
+          if (!Array.isArray(report.summary) || report.summary.length === 0) {
+            console.error('❌ Resumen inválido en el reporte:', report.summary);
+            throw new Error('El resumen del reporte no es válido');
+          }
+          
+          if (typeof report.report !== 'string' || report.report.trim().length === 0) {
+            console.error('❌ Contenido del reporte inválido:', report.report);
+            throw new Error('El contenido del reporte está vacío o es inválido');
+          }
+          
+          setFinalReport(report);
+          setResearchState(ResearchState.DONE);
+          console.log('🎉 Estado actualizado a DONE');
         }
-        
-        console.log('📚 Llamando a synthesizeReport con:', researchedContent.length, 'subtópicos');
-        const report = await synthesizeReport(topic, researchedContent);
-        console.log('✅ Reporte generado exitosamente:', report);
-        
-        // Validar que el reporte tenga la estructura correcta
-        if (!report || !report.summary || !report.report) {
-          console.error('❌ Reporte inválido recibido:', report);
-          throw new Error('El reporte generado no tiene la estructura esperada');
-        }
-        
-        if (!Array.isArray(report.summary) || report.summary.length === 0) {
-          console.error('❌ Resumen inválido en el reporte:', report.summary);
-          throw new Error('El resumen del reporte no es válido');
-        }
-        
-        if (typeof report.report !== 'string' || report.report.trim().length === 0) {
-          console.error('❌ Contenido del reporte inválido:', report.report);
-          throw new Error('El contenido del reporte está vacío o es inválido');
-        }
-        
-        setFinalReport(report);
-        setResearchState(ResearchState.DONE);
-        console.log('🎉 Estado actualizado a DONE');
       } catch (err) {
         console.error('❌ Error al sintetizar el reporte:', err);
         
