@@ -89,6 +89,9 @@ const ResearchView: React.FC = React.memo(() => {
   // Estado para el diagnóstico de API
   const [showDiagnostic, setShowDiagnostic] = useState(false);
   
+  // Ref para mantener los datos de investigación de forma síncrona
+  const researchDataRef = React.useRef<Subtopic[]>([]);
+  
   // Hook avanzado de investigación (solo funciones principales)
   const {
     createResearchPlan: createAdvancedPlan,
@@ -239,9 +242,22 @@ const ResearchView: React.FC = React.memo(() => {
             console.warn(`⚠️ Contenido de subtópico "${subtopics[i]}" es muy corto o vacío:`, content);
           }
           
-          setSubtopicObjects(prev => prev.map((st, index) => 
-            index === i ? { ...st, content, sources: subtopicSources, status: 'complete' } : st
-          ));
+          const updatedSubtopic = {
+            title: subtopics[i],
+            content,
+            sources: subtopicSources,
+            status: 'complete' as const
+          };
+          
+          // Actualizar el estado y el ref de forma sincronizada
+          setSubtopicObjects(prev => {
+            const updated = prev.map((st, index) => 
+              index === i ? updatedSubtopic : st
+            );
+            researchDataRef.current = updated; // Mantener ref sincronizado
+            console.log(`🔄 Ref actualizado - Subtópicos total: ${researchDataRef.current.length}`);
+            return updated;
+          });
           
           // Agregar fuentes únicas
           setSources(prev => {
@@ -254,9 +270,20 @@ const ResearchView: React.FC = React.memo(() => {
           });
         } catch (err) {
           console.error(`❌ Error investigando subtópico ${subtopics[i]}:`, err);
-          setSubtopicObjects(prev => prev.map((st, index) => 
-            index === i ? { ...st, content: `Error al investigar: ${subtopics[i]}`, sources: [], status: 'complete' } : st
-          ));
+          const errorSubtopic = {
+            title: subtopics[i],
+            content: `Error al investigar: ${subtopics[i]}`,
+            sources: [],
+            status: 'complete' as const
+          };
+          
+          setSubtopicObjects(prev => {
+            const updated = prev.map((st, index) => 
+              index === i ? errorSubtopic : st
+            );
+            researchDataRef.current = updated; // Mantener ref sincronizado
+            return updated;
+          });
         }
       }
 
@@ -265,9 +292,15 @@ const ResearchView: React.FC = React.memo(() => {
       
       console.log('🔄 Todos los subtópicos investigados, procediendo a síntesis...');
       
-      // Crear una copia local del estado actual para evitar problemas de sincronización
-      const localSubtopicObjects = [...subtopicObjects];
-      console.log('📊 Estado final de subtópicos (copia local):', localSubtopicObjects);
+      // Usar el ref para acceso síncrono a los datos actualizados
+      const localSubtopicObjects = [...researchDataRef.current];
+      console.log('📊 Estado final de subtópicos obtenido:', localSubtopicObjects.length, 'elementos');
+      console.log('📊 Estado actual de subtópicos obtenido:', localSubtopicObjects.length, 'elementos');
+      console.log('📊 Detalles del ref:', localSubtopicObjects.map(st => ({ 
+        title: st.title, 
+        status: st.status, 
+        contentLength: st.content?.length || 0 
+      })));
       
       setResearchState(ResearchState.SYNTHESIZING);
       
