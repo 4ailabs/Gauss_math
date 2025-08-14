@@ -102,6 +102,38 @@ const ResultsView: React.FC = React.memo(() => {
                 Volver a Búsqueda
               </Button>
             </div>
+            
+            {/* Footer del Reporte */}
+            <div className="border-t border-gray-200 pt-8 md:pt-12">
+              <div className="text-center space-y-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => setActiveView('search')}
+                    icon={<span>🏠</span>}
+                    className="w-full sm:w-auto"
+                  >
+                    Ir al Inicio
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    onClick={() => setActiveView('library')}
+                    icon={<span>📚</span>}
+                    className="w-full sm:w-auto text-gray-600 hover:text-gray-800"
+                  >
+                    Ver Biblioteca
+                  </Button>
+                </div>
+                
+                <div className="text-xs text-gray-400 pt-4">
+                  <p>Reporte generado con Gauss∑ AI</p>
+                  <p className="mt-1">Powered by 4ailabs</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
