@@ -174,6 +174,7 @@ interface AppContextType {
   setAssistantInput: (input: string) => void;
   setAnalysisHistory: (history: AnalysisHistory[]) => void;
   addToHistory: (item: AnalysisHistory) => void;
+  loadFromHistory: (item: AnalysisHistory) => void;
   clearAssistantHistory: () => void;
 }
 
@@ -272,6 +273,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     localStorage.setItem('gaussmathmind_history', JSON.stringify(newHistory));
   }, [state.analysisHistory]);
 
+  const loadFromHistory = useCallback((item: AnalysisHistory) => {
+    // Cargar los datos del historial al estado actual
+    dispatch({ type: 'SET_NOTES', payload: item.notes });
+    dispatch({ type: 'SET_PROCESSED_DATA', payload: item.processedData });
+    dispatch({ type: 'SET_SELECTED_SUBJECT', payload: item.subject });
+    dispatch({ type: 'SET_ACTIVE_VIEW', payload: 'results' });
+  }, []);
+
   const clearAssistantHistory = useCallback(() => {
     dispatch({ type: 'CLEAR_ASSISTANT_HISTORY' });
   }, []);
@@ -299,6 +308,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setAssistantInput,
     setAnalysisHistory,
     addToHistory,
+    loadFromHistory,
     clearAssistantHistory,
   };
 

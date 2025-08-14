@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChatMessage as ChatMessageType } from '../../types';
 import { parseMarkdown, ParsedContent } from '../../utils/markdownParser';
+import { CopyIcon, CheckIcon } from '../ui/Icons';
 
 interface ChatMessageProps {
   message: ChatMessageType;

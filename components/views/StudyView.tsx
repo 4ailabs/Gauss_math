@@ -12,7 +12,9 @@ import {
   RefreshCwIcon,
   PlayIcon,
   PauseIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  BarChart3Icon,
+  ArrowRightIcon
 } from '../ui/Icons';
 
 const StudyView: React.FC = React.memo(() => {

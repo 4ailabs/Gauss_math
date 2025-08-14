@@ -1,14 +1,21 @@
 import React from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
+import { ChevronRightIcon, BookOpenIcon } from '../ui/Icons';
 
 const LibraryView: React.FC = React.memo(() => {
-  const { state: { analysisHistory } } = useApp();
+  const { state: { analysisHistory }, loadFromHistory } = useApp();
 
   return (
     <div className="space-y-6">
       <Card padding="lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Biblioteca</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <BookOpenIcon className="w-8 h-8 text-teal-600" />
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Biblioteca</h2>
+            <p className="text-gray-600 text-sm">Haz click en cualquier análisis para revisar los resultados</p>
+          </div>
+        </div>
         <div className="space-y-4">
           {analysisHistory.length === 0 ? (
             <div className="text-center py-12">
@@ -20,7 +27,12 @@ const LibraryView: React.FC = React.memo(() => {
             </div>
           ) : (
             analysisHistory.map((item) => (
-              <Card key={item.id} hover className="cursor-pointer transition-all duration-200 hover:scale-[1.02]">
+              <Card 
+                key={item.id} 
+                hover 
+                className="cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => loadFromHistory(item)}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
@@ -36,9 +48,12 @@ const LibraryView: React.FC = React.memo(() => {
                       <span>{item.processedData.relatedProblems.length} problemas</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mb-1"></div>
-                    <span className="text-xs text-gray-500">Completado</span>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right mr-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mb-1"></div>
+                      <span className="text-xs text-gray-500">Completado</span>
+                    </div>
+                    <ChevronRightIcon className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
               </Card>

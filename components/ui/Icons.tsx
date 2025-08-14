@@ -33,7 +33,9 @@ import {
   Play,
   Pause,
   Clock,
-  Trophy
+  Trophy,
+  BarChart3,
+  ArrowRight
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -77,3 +79,5 @@ export const PlayIcon: React.FC<IconProps> = (props) => <Play {...props} />;
 export const PauseIcon: React.FC<IconProps> = (props) => <Pause {...props} />;
 export const ClockIcon: React.FC<IconProps> = (props) => <Clock {...props} />;
 export const TrophyIcon: React.FC<IconProps> = (props) => <Trophy {...props} />;
+export const BarChart3Icon: React.FC<IconProps> = (props) => <BarChart3 {...props} />;
+export const ArrowRightIcon: React.FC<IconProps> = (props) => <ArrowRight {...props} />;
