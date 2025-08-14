@@ -47,39 +47,45 @@ export const NotesInput: React.FC<NotesInputProps> = React.memo(({
 
   return (
     <div className="notes-input-area space-y-4">
-      <div className="relative">
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder={getPlaceholder()}
-          className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
-          disabled={isLoading}
-        />
-        
-        {isRecording && (
-          <div className="absolute top-2 right-2 flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            Grabando...
-          </div>
-        )}
-        
-        <div className="absolute bottom-2 right-2 flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleRecording}
+      <div className="space-y-3">
+        <div className="relative">
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder={getPlaceholder()}
+            className="w-full h-48 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
             disabled={isLoading}
-            className={isRecording ? 'bg-red-500 text-white hover:bg-red-600' : ''}
-            icon={<MicIcon className="w-4 h-4" />}
-          >
-            {isRecording ? 'Detener' : 'Grabar'}
-          </Button>
+          />
+          
+          {isRecording && (
+            <div className="absolute top-3 right-3 flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm border border-red-200">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              Grabando...
+            </div>
+          )}
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onToggleRecording}
+              disabled={isLoading}
+              className={`${isRecording ? 'bg-red-50 text-red-600 border-red-300 hover:bg-red-100' : ''}`}
+              icon={<MicIcon className="w-4 h-4" />}
+            >
+              {isRecording ? 'Detener grabación' : 'Grabar audio'}
+            </Button>
+          </div>
           
           <Button
             onClick={onSearch}
             disabled={isLoading || !notes.trim()}
             loading={isLoading}
-            icon={!isLoading && <ChevronRightIcon className="w-4 h-4" />}
+            size="lg"
+            className="px-6"
+            icon={!isLoading && <ChevronRightIcon className="w-5 h-5" />}
           >
             {getSearchButtonTitle()}
           </Button>
