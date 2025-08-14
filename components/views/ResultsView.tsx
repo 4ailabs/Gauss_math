@@ -30,39 +30,12 @@ const ResultsView: React.FC = React.memo(() => {
     return null;
   }
 
-  const handleExport = () => {
-    const content = `
-Análisis de ${selectedSubject}
-${new Date().toLocaleDateString('es-ES')}
-
-RESUMEN:
-${processedData.summary}
-
-CONCEPTOS CLAVE:
-${processedData.keyConcepts.map((c, i) => `${i+1}. ${c.concept}: ${c.definition}`).join('\n')}
-
-PREGUNTAS DE PRÁCTICA:
-${processedData.quizQuestions.map((q, i) => `${i+1}. ${q.question}`).join('\n')}
-
-PROBLEMAS RELACIONADOS:
-${processedData.relatedProblems.map((p, i) => `${i+1}. ${p.problem}`).join('\n')}
-    `;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `analisis-${selectedSubject}-${new Date().toISOString().split('T')[0]}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="results-fullscreen">
       {/* Fixed Header */}
       <div className="results-header-fixed">
         <ResultsHeader 
           subject={selectedSubject}
-          onExport={handleExport}
           processedData={processedData}
         />
       </div>

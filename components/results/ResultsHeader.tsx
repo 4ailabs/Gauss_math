@@ -6,13 +6,11 @@ import jsPDF from 'jspdf';
 
 interface ResultsHeaderProps {
   subject: string;
-  onExport: () => void;
   processedData?: ProcessedData;
 }
 
 export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({ 
   subject, 
-  onExport,
   processedData
 }) => {
   const [isGeneratingPDF, setIsGeneratingPDF] = React.useState(false);
@@ -320,16 +318,6 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
             <span className="sm:hidden">
               {isGeneratingPDF ? '...' : 'PDF'}
             </span>
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onExport}
-            icon={<DownloadIcon className="w-4 h-4" />}
-            className="flex-1 sm:flex-none"
-          >
-            <span className="hidden sm:inline">Descargar</span>
-            <span className="sm:hidden">PDF</span>
           </Button>
         </div>
       </div>
