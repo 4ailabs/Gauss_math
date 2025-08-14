@@ -11,9 +11,11 @@ import { ProblemsSection } from '../results/ProblemsSection';
 import { ResultsSidebar } from '../results/ResultsSidebar';
 import { EnhancedConceptsSection } from '../results/EnhancedConceptsSection';
 import { ConceptMapSection } from '../results/ConceptMapSection';
+import { InteractiveQuizSection } from '../results/InteractiveQuizSection';
+import { ProgressiveProblemsSection } from '../results/ProgressiveProblemsSection';
 
 const ResultsView: React.FC = React.memo(() => {
-  const { state: { processedData, selectedSubject }, setActiveView } = useApp();
+  const { state: { processedData, selectedSubject, searchType }, setActiveView } = useApp();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Prevent body scroll when results view is open
@@ -85,28 +87,118 @@ const ResultsView: React.FC = React.memo(() => {
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              <h2 className="text-base sm:text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">RESULTADOS</h2>
-              
-              {/* Mostrar conceptos mejorados si están disponibles */}
-              {(processedData as any).enhancedConcepts ? (
+              {/* Renderizado diferenciado según el tipo de búsqueda */}
+              {searchType === 'systematic' ? (
+                // Vista especializada para Quiz
                 <>
-                  <EnhancedConceptsSection 
-                    concepts={(processedData as any).enhancedConcepts}
-                    difficultyDistribution={(processedData as any).difficultyDistribution || { basic: 0, intermediate: 0, advanced: 0 }}
-                    subjectAreas={(processedData as any).subjectAreas || []}
-                  />
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-bold text-lg">Q</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-700">Quiz Generado</h2>
+                      <p className="text-sm text-slate-500">Evaluación interactiva sobre {selectedSubject}</p>
+                    </div>
+                  </div>
                   
-                  {/* Mapa conceptual si está disponible */}
-                  {(processedData as any).conceptMap && (processedData as any).conceptMap.length > 0 && (
-                    <ConceptMapSection conceptMap={(processedData as any).conceptMap} />
+                  {processedData.summary && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
+                      <h3 className="text-sm font-medium text-blue-800 mb-2">RESUMEN DEL CONTENIDO</h3>
+                      <p className="text-blue-700 leading-relaxed">{processedData.summary}</p>
+                    </div>
+                  )}
+                  
+                  <InteractiveQuizSection questions={processedData.quizQuestions} />
+                  
+                  {processedData.keyConcepts.length > 0 && (
+                    <div className="bg-slate-50 rounded-xl p-4 sm:p-6">
+                      <h3 className="text-sm font-medium text-slate-700 mb-4">CONCEPTOS CLAVE EVALUADOS</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {processedData.keyConcepts.map((concept, index) => (
+                          <div key={index} className="bg-white p-3 rounded-lg border border-slate-200">
+                            <h4 className="font-medium text-slate-700 text-sm">{concept.concept}</h4>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : searchType === 'papers' ? (
+                // Vista especializada para Problemas
+                <>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-green-600 font-bold text-lg">P</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-700">Problemas de Práctica</h2>
+                      <p className="text-sm text-slate-500">Ejercicios específicos de {selectedSubject}</p>
+                    </div>
+                  </div>
+                  
+                  {processedData.summary && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 sm:p-6">
+                      <h3 className="text-sm font-medium text-green-800 mb-2">ANÁLISIS DEL TEMA</h3>
+                      <p className="text-green-700 leading-relaxed">{processedData.summary}</p>
+                    </div>
+                  )}
+                  
+                  <ProgressiveProblemsSection problems={processedData.relatedProblems} />
+                  
+                  {processedData.quizQuestions.length > 0 && (
+                    <div className="bg-slate-50 rounded-xl p-4 sm:p-6">
+                      <h3 className="text-sm font-medium text-slate-700 mb-4">PREGUNTAS ADICIONALES</h3>
+                      <div className="space-y-3">
+                        {processedData.quizQuestions.map((question, index) => (
+                          <div key={index} className="bg-white p-3 rounded-lg border border-slate-200">
+                            <h4 className="font-medium text-slate-700 text-sm mb-1">{question.question}</h4>
+                            <p className="text-xs text-slate-500">{question.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {processedData.keyConcepts.length > 0 && (
+                    <div className="bg-slate-50 rounded-xl p-4 sm:p-6">
+                      <h3 className="text-sm font-medium text-slate-700 mb-4">CONCEPTOS RELACIONADOS</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {processedData.keyConcepts.map((concept, index) => (
+                          <div key={index} className="bg-white p-3 rounded-lg border border-slate-200">
+                            <h4 className="font-medium text-slate-700 text-sm">{concept.concept}</h4>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </>
               ) : (
-                <ConceptsSection concepts={processedData.keyConcepts} />
+                // Vista completa para Procesamiento de Apuntes (modo research)
+                <>
+                  <h2 className="text-base sm:text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">RESULTADOS</h2>
+                  
+                  {/* Mostrar conceptos mejorados si están disponibles */}
+                  {(processedData as any).enhancedConcepts ? (
+                    <>
+                      <EnhancedConceptsSection 
+                        concepts={(processedData as any).enhancedConcepts}
+                        difficultyDistribution={(processedData as any).difficultyDistribution || { basic: 0, intermediate: 0, advanced: 0 }}
+                        subjectAreas={(processedData as any).subjectAreas || []}
+                      />
+                      
+                      {/* Mapa conceptual si está disponible */}
+                      {(processedData as any).conceptMap && (processedData as any).conceptMap.length > 0 && (
+                        <ConceptMapSection conceptMap={(processedData as any).conceptMap} />
+                      )}
+                    </>
+                  ) : (
+                    <ConceptsSection concepts={processedData.keyConcepts} />
+                  )}
+                  
+                  <QuestionsSection questions={processedData.quizQuestions} />
+                  <ProblemsSection problems={processedData.relatedProblems} />
+                </>
               )}
-              
-              <QuestionsSection questions={processedData.quizQuestions} />
-              <ProblemsSection problems={processedData.relatedProblems} />
             </div>
             
             {/* Back Button */}
