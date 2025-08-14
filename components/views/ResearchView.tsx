@@ -203,7 +203,7 @@ const ResearchView: React.FC = React.memo(() => {
     setResearchState(ResearchState.RESEARCHING);
     
     try {
-      console.log('🚀 Iniciando investigación de subtópicos...');
+      console.log('Iniciando investigación de subtópicos...');
       console.log('🔑 Verificando API de Gemini disponible:', isGeminiAvailable());
       console.log('📋 Subtópicos a investigar:', subtopics);
       
@@ -497,7 +497,7 @@ ${subtopicObjects.map((st, index) => `
           return (
             <Card className="p-6 text-center">
               <div className="text-center">
-                <h2 className="text-xl text-red-600 mb-4">Error: Reporte No Generado</h2>
+                <h2 className="text-xl text-slate-600 mb-4">Error: Reporte No Generado</h2>
                 <p className="text-gray-600 mb-6">El reporte no se generó correctamente. Esto puede deberse a un problema con la API.</p>
                 <div className="space-y-3">
                   <Button
@@ -535,7 +535,7 @@ ${subtopicObjects.map((st, index) => `
         return (
           <Card className="p-6 text-center">
             <div className="text-center animate-fade-in">
-              <h2 className="text-2xl text-red-600 mb-4">Ocurrió un Error</h2>
+                              <h2 className="text-2xl text-slate-600 mb-4">Ocurrió un Error</h2>
               <p className="text-gray-600 mb-6">{error}</p>
               <Button
                 onClick={handleReset}
@@ -746,7 +746,7 @@ const PlanReview: React.FC<{
         {/* Subtópicos */}
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
             Estructura
           </h3>
           
@@ -754,10 +754,10 @@ const PlanReview: React.FC<{
             {subtopics.map((subtopic, index) => (
               <div 
                 key={index} 
-                className="flex items-center gap-2 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100"
+                className="flex items-center gap-2 p-2 sm:p-3 bg-slate-50 rounded-lg border border-slate-100"
               >
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs sm:text-sm font-medium text-blue-600">{index + 1}</span>
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs sm:text-sm font-medium text-slate-600">{index + 1}</span>
                 </div>
                 <span className="text-xs sm:text-sm text-gray-700 flex-1">{subtopic}</span>
               </div>
@@ -768,7 +768,7 @@ const PlanReview: React.FC<{
         {/* Chat de refinamiento */}
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
             Refinar Plan
           </h3>
           
@@ -777,7 +777,7 @@ const PlanReview: React.FC<{
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="¿Qué quieres cambiar o agregar al plan?"
-              className="w-full h-20 sm:h-24 p-2 sm:p-3 text-xs sm:text-sm border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none"
+              className="w-full h-20 sm:h-24 p-2 sm:p-3 text-xs sm:text-sm border border-slate-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 focus:outline-none"
             />
             
             <div className="flex gap-2 sm:gap-3">
@@ -809,7 +809,7 @@ const PlanReview: React.FC<{
       {chatHistory.length > 0 && (
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+            <MessageCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
             Conversación
           </h3>
           
@@ -819,8 +819,8 @@ const PlanReview: React.FC<{
                 key={index} 
                 className={`p-2 sm:p-3 rounded-lg text-xs sm:text-sm ${
                   message.role === 'user' 
-                    ? 'bg-blue-50 text-blue-800 ml-4' 
-                    : 'bg-gray-50 text-gray-800 mr-4'
+                    ? 'bg-slate-50 text-slate-700 ml-4' 
+                    : 'bg-slate-50 text-slate-700 mr-4'
                 }`}
               >
                 <div className="font-medium mb-1">
@@ -855,11 +855,11 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
   const getStatusIcon = () => {
     switch (state) {
       case ResearchState.RESEARCHING:
-        return <BookOpenIcon className="w-8 h-8 text-blue-500" />;
+        return <BookOpenIcon className="w-8 h-8 text-slate-500" />;
       case ResearchState.SYNTHESIZING:
-        return <FileTextIcon className="w-8 h-8 text-purple-500" />;
+        return <FileTextIcon className="w-8 h-8 text-slate-500" />;
       default:
-        return <RefreshCwIcon className="w-8 h-8 text-teal-500 animate-spin" />;
+        return <RefreshCwIcon className="w-8 h-8 text-slate-500 animate-spin" />;
     }
   };
 
@@ -894,10 +894,10 @@ const ResearchStatus: React.FC<{ state: ResearchState; subtopics: Subtopic[] }> 
                   <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-200 rounded-full" />
                 )}
                 {subtopic.status === 'loading' && (
-                  <RefreshCwIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 animate-spin" />
+                  <RefreshCwIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 animate-spin" />
                 )}
                 {subtopic.status === 'complete' && (
-                  <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                  <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -943,7 +943,7 @@ const formatMarkdownToHTML = (markdown: string): string => {
       .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-gray-800">$1</code>')
       
       // Citas
-      .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-teal-500 pl-4 py-2 my-3 bg-teal-50 italic text-gray-700">$1</blockquote>')
+      .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-slate-500 pl-4 py-2 my-3 bg-slate-50 italic text-slate-700">$1</blockquote>')
       
       // Separadores
       .replace(/^---$/gm, '<hr class="my-6 border-gray-300">')
@@ -1083,13 +1083,13 @@ const ReportDisplay: React.FC<{
       {/* Resumen ejecutivo */}
       <Card className="p-3 sm:p-4">
         <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
-          <LightbulbIcon className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />
+          <LightbulbIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
           Resumen Ejecutivo
         </h3>
         <div className="space-y-2 sm:space-y-3">
           {report.summary.map((item, index) => (
-            <div key={index} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg border-l-4 border-teal-500">
-              <span className="text-teal-600 font-bold text-base sm:text-lg flex-shrink-0">#{index + 1}</span>
+            <div key={index} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-slate-50 rounded-lg border-l-4 border-slate-500">
+              <span className="text-slate-600 font-bold text-base sm:text-lg flex-shrink-0">#{index + 1}</span>
               <span 
                 className="text-black text-xs sm:text-sm leading-relaxed flex-1"
                 style={{ 
@@ -1108,7 +1108,7 @@ const ReportDisplay: React.FC<{
       <Card className="p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
           <h3 className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
-            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+            <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
             Reporte Completo
           </h3>
           <div className="flex gap-2 sm:gap-3">

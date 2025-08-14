@@ -201,25 +201,25 @@ const StudyView: React.FC = React.memo(() => {
         {/* Study Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card padding="sm" className="text-center">
-            <BarChart3Icon className="w-5 h-5 md:w-6 md:h-6 text-teal-600 mx-auto mb-1 md:mb-2" />
+            <BarChart3Icon className="w-5 h-5 md:w-6 md:h-6 text-slate-500 mx-auto mb-1 md:mb-2" />
             <div className="text-lg md:text-2xl font-bold text-slate-600">{getAverageConfidence()}%</div>
             <div className="text-xs md:text-sm text-slate-500">Confianza</div>
           </Card>
           
           <Card padding="sm" className="text-center">
-            <BookOpenIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-600 mx-auto mb-1 md:mb-2" />
+            <BookOpenIcon className="w-5 h-5 md:w-6 md:h-6 text-slate-500 mx-auto mb-1 md:mb-2" />
             <div className="text-lg md:text-2xl font-bold text-slate-600">{flashcards.length}</div>
             <div className="text-xs md:text-sm text-slate-500">Tarjetas</div>
           </Card>
           
           <Card padding="sm" className="text-center">
-            <TrophyIcon className="w-5 h-5 md:w-6 md:h-6 text-green-600 mx-auto mb-1 md:mb-2" />
+            <TrophyIcon className="w-5 h-5 md:w-6 md:h-6 text-slate-500 mx-auto mb-1 md:mb-2" />
             <div className="text-lg md:text-2xl font-bold text-slate-600">{sessionStats.reviewed}</div>
             <div className="text-xs md:text-sm text-slate-500">Revisadas</div>
           </Card>
           
           <Card padding="sm" className="text-center">
-            <ClockIcon className="w-5 h-5 md:w-6 md:h-6 text-purple-600 mx-auto mb-1 md:mb-2" />
+            <ClockIcon className="w-5 h-5 md:w-6 md:h-6 text-slate-500 mx-auto mb-1 md:mb-2" />
             <div className="text-lg md:text-2xl font-bold text-slate-600">{getStudyTime()}</div>
             <div className="text-xs md:text-sm text-slate-500">Minutos</div>
           </Card>
@@ -231,9 +231,9 @@ const StudyView: React.FC = React.memo(() => {
             <span>Progreso</span>
             <span>{currentIndex + 1} de {flashcards.length}</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div 
-              className="bg-teal-600 h-2 rounded-full transition-all duration-300"
+              className="bg-slate-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentIndex + 1) / flashcards.length) * 100}%` }}
             ></div>
           </div>
@@ -283,10 +283,10 @@ const StudyView: React.FC = React.memo(() => {
 
         {/* Session Complete */}
         {isStudying && currentIndex === flashcards.length - 1 && (
-          <Card padding="lg" className="text-center border-green-200 bg-green-50">
-            <TrophyIcon className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-green-900 mb-2">¡Sesión Completada!</h3>
-            <p className="text-green-700 mb-4">
+          <Card padding="lg" className="text-center border-slate-200 bg-slate-50">
+            <TrophyIcon className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-slate-600 mb-2">¡Sesión Completada!</h3>
+            <p className="text-slate-600 mb-4">
               Revisaste {sessionStats.reviewed} flashcards en {getStudyTime()} minutos
             </p>
             <div className="flex justify-center gap-3">
@@ -331,24 +331,24 @@ const StudyView: React.FC = React.memo(() => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="text-center">
-            <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-teal-600 text-2xl font-bold">{analysisHistory.length}</span>
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-slate-600 text-2xl font-bold">{analysisHistory.length}</span>
             </div>
             <h3 className="font-semibold text-slate-600">Análisis Realizados</h3>
             <p className="text-sm text-slate-500">Total de sesiones de estudio</p>
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-blue-600 text-2xl font-bold">{totalConcepts}</span>
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-slate-600 text-2xl font-bold">{totalConcepts}</span>
             </div>
             <h3 className="font-semibold text-slate-600">Conceptos Estudiados</h3>
             <p className="text-sm text-slate-500">Conceptos identificados y revisados</p>
           </div>
           
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-green-600 text-2xl font-bold">{totalQuestions}</span>
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-slate-600 text-2xl font-bold">{totalQuestions}</span>
             </div>
             <h3 className="font-semibold text-slate-600">Preguntas Generadas</h3>
             <p className="text-sm text-slate-500">Preguntas de práctica creadas</p>
@@ -362,7 +362,7 @@ const StudyView: React.FC = React.memo(() => {
               {subjectStats.map(({ subject, count }) => {
                 const subjectFlashcards = generateFlashcards.filter(card => card.subject === subject);
                 return (
-                  <div key={subject} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={subject} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                     <div>
                       <span className="font-medium text-slate-600">{subject}</span>
                       <div className="text-sm text-slate-500 mt-1">
@@ -370,9 +370,9 @@ const StudyView: React.FC = React.memo(() => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                      <div className="w-16 bg-slate-200 rounded-full h-2">
                         <div 
-                          className="bg-teal-600 h-2 rounded-full" 
+                          className="bg-slate-500 h-2 rounded-full" 
                           style={{ width: `${(count / Math.max(...subjectStats.map(s => s.count))) * 100}%` }}
                         ></div>
                       </div>

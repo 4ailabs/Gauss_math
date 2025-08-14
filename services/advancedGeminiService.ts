@@ -70,7 +70,7 @@ export class ModelResponseCache {
   async getCachedResponse(key: string, model: string): Promise<any | null> {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.TTL) {
-      console.log(`🔄 Respuesta cacheada encontrada para: ${key}`);
+      console.log(`Respuesta cacheada encontrada para: ${key}`);
       return cached.response;
     }
     return null;
@@ -78,7 +78,7 @@ export class ModelResponseCache {
 
   setCachedResponse(key: string, response: any, model: string): void {
     this.cache.set(key, { response, timestamp: Date.now(), model });
-    console.log(`💾 Respuesta cacheada para: ${key} con modelo ${model}`);
+          console.log(`Respuesta cacheada para: ${key} con modelo ${model}`);
   }
 
   clearExpiredCache(): void {
@@ -202,10 +202,10 @@ export const getOptimalModel = async (task: ResearchTask, performanceMonitor: Mo
   try {
     // Obtener el mejor modelo basado en métricas de rendimiento
     const bestModel = performanceMonitor.getBestModelForTask(task);
-    console.log(`🎯 Modelo óptimo seleccionado para ${task}: ${bestModel}`);
+          console.log(`Modelo óptimo seleccionado para ${task}: ${bestModel}`);
     return bestModel;
   } catch (error) {
-    console.error(`❌ Error al seleccionar modelo óptimo, usando fallback:`, error);
+          console.error(`Error al seleccionar modelo óptimo, usando fallback:`, error);
     return strategy.fallback;
   }
 };
@@ -224,12 +224,12 @@ export const executeWithRetry = async <T>(
       const result = await operation();
       const responseTime = Date.now() - startTime;
       
-      console.log(`✅ Operación exitosa en intento ${attempt} (${responseTime}ms)`);
+              console.log(`Operación exitosa en intento ${attempt} (${responseTime}ms)`);
       return result;
       
     } catch (error) {
       lastError = error as Error;
-      console.log(`❌ Intento ${attempt} falló:`, error.message);
+              console.log(`Intento ${attempt} falló:`, error.message);
       
       if (attempt < maxRetries) {
         const delay = baseDelay * Math.pow(2, attempt - 1);
@@ -406,13 +406,13 @@ export class AdvancedResearchService {
       // Registrar métricas de éxito
       this.performanceMonitor.recordRequest(model, true, responseTime);
       
-      console.log(`✅ API call exitoso con modelo ${model} en ${responseTime}ms`);
+              console.log(`API call exitoso con modelo ${model} en ${responseTime}ms`);
       
       // Parsear respuesta JSON
       try {
         return JSON.parse(text);
       } catch (parseError) {
-        console.warn(`⚠️ Error al parsear JSON, devolviendo texto plano:`, parseError);
+        console.warn(`Error al parsear JSON, devolviendo texto plano:`, parseError);
         return { content: text, sources: [] };
       }
       
@@ -420,7 +420,7 @@ export class AdvancedResearchService {
       const responseTime = Date.now() - startTime;
       this.performanceMonitor.recordRequest(model, false, responseTime);
       
-      console.error(`❌ Error en API call con modelo ${model}:`, error);
+              console.error(`Error en API call con modelo ${model}:`, error);
       throw error;
     }
   }

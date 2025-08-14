@@ -1,6 +1,6 @@
 # Configuración de Vercel para Gauss∑ AI
 
-## 🔑 Configuración de la API Key de Gemini
+## Configuración de la API Key de Gemini
 
 ### Paso 1: Obtener API Key de Google AI Studio
 
@@ -35,7 +35,7 @@
 4. Intenta procesar algunos apuntes
 5. Verifica que aparezcan los logs de debugging
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Si ves "API Key no configurada":
 - Verifica que la variable se llame exactamente `GEMINI_API_KEY`
@@ -52,7 +52,7 @@
 - Espera un tiempo y vuelve a intentar
 - Considera actualizar tu plan si es necesario
 
-## 📝 Logs de Debugging
+## Logs de Debugging
 
 La aplicación ahora incluye logs detallados en la consola del navegador:
 
@@ -66,7 +66,7 @@ La aplicación ahora incluye logs detallados en la consola del navegador:
 - `Parseando respuesta JSON...`
 - `Procesamiento completado exitosamente`
 
-## 🚀 Comandos Útiles
+## Comandos Útiles
 
 ```bash
 # Verificar variables de entorno localmente

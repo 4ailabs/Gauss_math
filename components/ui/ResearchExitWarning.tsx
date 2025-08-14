@@ -81,7 +81,7 @@ export const ResearchExitWarning: React.FC<ResearchExitWarningProps> = ({
         {/* Información adicional */}
         <div className="mt-3 sm:mt-4 text-center">
           <p className="text-xs text-gray-500">
-            💡 Consejo: Puedes guardar tu progreso actual antes de salir
+            Consejo: Puedes guardar tu progreso actual antes de salir
           </p>
         </div>
       </Card>

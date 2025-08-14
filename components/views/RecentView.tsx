@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
+import { ClockIcon } from '../ui/Icons';
 
 const RecentView: React.FC = React.memo(() => {
   const { state: { analysisHistory } } = useApp();
@@ -13,8 +14,8 @@ const RecentView: React.FC = React.memo(() => {
         <div className="space-y-4">
           {recentItems.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-gray-400 text-2xl">⏰</span>
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ClockIcon className="w-8 h-8 text-slate-400" />
               </div>
               <p className="text-slate-500 text-lg mb-2">No hay análisis recientes</p>
               <p className="text-slate-500 text-sm">Comienza procesando algunos apuntes</p>

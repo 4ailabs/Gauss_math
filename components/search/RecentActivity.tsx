@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
-import { CheckIcon, MoreHorizontalIcon } from '../ui/Icons';
+import { CheckIcon, MoreHorizontalIcon, FileTextIcon } from '../ui/Icons';
 
 export const RecentActivity: React.FC = React.memo(() => {
   const { state: { analysisHistory } } = useApp();
@@ -43,7 +43,7 @@ export const RecentActivity: React.FC = React.memo(() => {
         <Card>
           <div className="text-center py-6">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-gray-400 text-xl">📝</span>
+              <FileTextIcon className="w-5 h-5 text-slate-400" />
             </div>
             <p className="text-gray-600 text-sm">No hay análisis recientes</p>
             <p className="text-gray-500 text-xs">Procesa algunos apuntes para comenzar</p>

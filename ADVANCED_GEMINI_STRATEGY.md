@@ -1,10 +1,10 @@
-# 🚀 **ESTRATEGIA AVANZADA DE MODELOS GEMINI**
+# **ESTRATEGIA AVANZADA DE MODELOS GEMINI**
 
-## 🎯 **VISIÓN GENERAL**
+## **VISIÓN GENERAL**
 
 Esta implementación representa una **estrategia sofisticada y avanzada** para el uso inteligente de modelos Gemini en la aplicación Gauss-MathMind-IA. El sistema implementa **selección automática de modelos**, **cache inteligente**, **monitoreo de rendimiento** y **fallback automático** para maximizar la calidad y eficiencia de las respuestas.
 
-## 🏗️ **ARQUITECTURA DEL SISTEMA**
+## **ARQUITECTURA DEL SISTEMA**
 
 ### **Componentes Principales:**
 
@@ -14,7 +14,7 @@ Esta implementación representa una **estrategia sofisticada y avanzada** para e
 4. **`ModelMonitor`** - Interfaz de usuario para monitoreo
 5. **`useAdvancedResearch`** - Hook personalizado para React
 
-## 🎯 **ESTRATEGIA DE MODELOS POR TAREA**
+## **ESTRATEGIA DE MODELOS POR TAREA**
 
 ### **PLANNING (Planificación)**
 - **Modelo Principal:** `gemini-2.0-flash-exp`
@@ -72,7 +72,7 @@ Esta implementación representa una **estrategia sofisticada y avanzada** para e
 - **Mejora de velocidad** para respuestas conocidas
 - **Optimización de recursos** de API
 
-## 📊 **MONITOREO DE RENDIMIENTO**
+## **MONITOREO DE RENDIMIENTO**
 
 ### **Métricas Capturadas:**
 - **Tasa de éxito** por modelo
@@ -95,7 +95,7 @@ El sistema selecciona automáticamente el mejor modelo basado en:
 3. **Tasa de éxito**
 4. **Disponibilidad del modelo**
 
-## 🔄 **SISTEMA DE RETRY INTELIGENTE**
+## **SISTEMA DE RETRY INTELIGENTE**
 
 ### **Características:**
 - **Backoff exponencial:** 1s, 2s, 4s
@@ -111,7 +111,7 @@ El sistema selecciona automáticamente el mejor modelo basado en:
 4. Si falla → Último intento con modelo de emergencia
 ```
 
-## 🎨 **PROMPTS ADAPTATIVOS**
+## **PROMPTS ADAPTATIVOS**
 
 ### **Optimización por Modelo:**
 
@@ -139,7 +139,7 @@ El sistema selecciona automáticamente el mejor modelo basado en:
 - Enfócate en información esencial
 - Mantén coherencia lógica
 
-## 🚀 **IMPLEMENTACIÓN EN REACT**
+## **IMPLEMENTACIÓN EN REACT**
 
 ### **Hook Personalizado:**
 ```typescript
@@ -166,7 +166,7 @@ const {
 />
 ```
 
-## 📈 **BENEFICIOS DE LA IMPLEMENTACIÓN**
+## **BENEFICIOS DE LA IMPLEMENTACIÓN**
 
 ### **Rendimiento:**
 - **Selección automática** del mejor modelo para cada tarea
@@ -192,7 +192,7 @@ const {
 - **Estadísticas visuales** del rendimiento
 - **Control manual** sobre el monitor
 
-## 🔧 **CONFIGURACIÓN Y PERSONALIZACIÓN**
+## **CONFIGURACIÓN Y PERSONALIZACIÓN**
 
 ### **Variables de Entorno:**
 ```bash
@@ -221,7 +221,7 @@ const baseDelay = 1000;
 const delay = baseDelay * Math.pow(2, attempt - 1);
 ```
 
-## 📊 **MÉTRICAS Y MONITOREO**
+## **MÉTRICAS Y MONITOREO**
 
 ### **Dashboard de Rendimiento:**
 - **Total de requests** por modelo
@@ -235,7 +235,7 @@ const delay = baseDelay * Math.pow(2, attempt - 1);
 - **Rendimiento degradado** del modelo
 - **Problemas de cache**
 
-## 🚀 **ROADMAP FUTURO**
+## **ROADMAP FUTURO**
 
 ### **Fase 1 (Implementada):**
 - ✅ Sistema de modelos adaptativos
@@ -255,7 +255,7 @@ const delay = baseDelay * Math.pow(2, attempt - 1);
 - 🔮 **Optimización de costos** automática
 - 🔮 **Integración multi-proveedor** (OpenAI, Claude, etc.)
 
-## 🎯 **CASOS DE USO**
+## **CASOS DE USO**
 
 ### **Investigación Matemática:**
 1. **PLANNING:** Flash para generar subtópicos rápidamente
@@ -273,7 +273,7 @@ const delay = baseDelay * Math.pow(2, attempt - 1);
 2. **CONTENT:** Pro para contenido detallado
 3. **REVIEW:** 2.0 Pro para revisión y mejora
 
-## 🔍 **DEBUGGING Y TROUBLESHOOTING**
+## **DEBUGGING Y TROUBLESHOOTING**
 
 ### **Logs del Sistema:**
 ```typescript
@@ -304,7 +304,7 @@ const currentModel = advancedService.getCurrentModel();
 console.log('🎯 Modelo actual:', currentModel);
 ```
 
-## 🎉 **CONCLUSIÓN**
+## **CONCLUSIÓN**
 
 Esta implementación representa un **sistema de IA de nivel empresarial** que:
 
@@ -318,6 +318,6 @@ El sistema está diseñado para ser **robusto**, **eficiente** y **fácil de usa
 
 ---
 
-**Desarrollado para Gauss-MathMind-IA** 🧮✨
+**Desarrollado para Gauss-MathMind-IA**
 **Versión:** 1.0.0
 **Última actualización:** Diciembre 2024

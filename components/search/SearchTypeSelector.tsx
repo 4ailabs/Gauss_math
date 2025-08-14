@@ -12,7 +12,7 @@ export const SearchTypeSelector: React.FC = React.memo(() => {
   ] as const;
 
   return (
-    <div className="search-type-selector flex rounded-lg bg-gray-100 p-1">
+    <div className="search-type-selector flex rounded-lg bg-slate-100 p-1">
       {searchTypes.map(({ key, icon: Icon, label }) => (
         <button
           key={key}

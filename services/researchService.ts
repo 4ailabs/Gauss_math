@@ -26,7 +26,7 @@ if (!apiKey) {
     MODE: import.meta.env.MODE
   });
 } else {
-  console.log("✅ API Key de Gemini configurada correctamente:", apiKey.substring(0, 10) + '...');
+      console.log("API Key de Gemini configurada correctamente:", apiKey.substring(0, 10) + '...');
 }
 
 const ai = new GoogleGenAI({ apiKey });

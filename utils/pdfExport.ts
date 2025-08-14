@@ -23,7 +23,7 @@ export const exportReportToPDF = async (
   } = options;
 
   try {
-    console.log('🔄 Iniciando exportación a PDF...');
+    console.log('Iniciando exportación a PDF...');
     
     // Crear el PDF
     const pdf = new jsPDF('p', 'mm', format);
@@ -192,10 +192,10 @@ export const exportReportToPDF = async (
     // Guardar el PDF
     pdf.save(`${filename}.pdf`);
     
-    console.log('✅ PDF exportado exitosamente:', `${filename}.pdf`);
+          console.log('PDF exportado exitosamente:', `${filename}.pdf`);
     
   } catch (error) {
-    console.error('❌ Error al exportar PDF:', error);
+          console.error('Error al exportar PDF:', error);
     throw new Error(`Error al exportar PDF: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 };
@@ -229,7 +229,7 @@ export const exportReportToPDFAdvanced = async (
   filename?: string
 ): Promise<void> => {
   try {
-    console.log('🔄 Iniciando exportación avanzada a PDF...');
+    console.log('Iniciando exportación avanzada a PDF...');
     
     const element = document.getElementById(elementId);
     if (!element) {
@@ -265,10 +265,10 @@ export const exportReportToPDFAdvanced = async (
     const finalFilename = filename || `reporte-${Date.now()}`;
     pdf.save(`${finalFilename}.pdf`);
     
-    console.log('✅ PDF avanzado exportado exitosamente');
+          console.log('PDF avanzado exportado exitosamente');
     
   } catch (error) {
-    console.error('❌ Error al exportar PDF avanzado:', error);
+          console.error('Error al exportar PDF avanzado:', error);
     throw new Error(`Error al exportar PDF: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 };

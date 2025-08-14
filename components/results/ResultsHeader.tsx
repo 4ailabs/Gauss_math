@@ -106,7 +106,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
     };
 
     // Resumen ejecutivo
-    createSection('📋 RESUMEN EJECUTIVO');
+            createSection('RESUMEN EJECUTIVO');
     
     doc.setFontSize(10);
     doc.setTextColor(55, 65, 81);
@@ -115,7 +115,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
     yPosition += (summaryLines.length * 4.5) + 15;
 
     // Conceptos clave
-    createSection('🎯 CONCEPTOS CLAVE', [236, 254, 255]);
+            createSection('CONCEPTOS CLAVE', [236, 254, 255]);
 
     processedData.keyConcepts.forEach((concept, index) => {
       if (yPosition > 260) {
@@ -211,7 +211,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
       if (problem.solution) {
         doc.setFontSize(9);
         doc.setTextColor(34, 197, 94); // Green-500
-        doc.text('💡 Solución:', margin + 12, yPosition);
+        doc.text('Solución:', margin + 12, yPosition);
         yPosition += 6;
         
         doc.setTextColor(75, 85, 99);
@@ -230,7 +230,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
     
     doc.setFontSize(12);
     doc.setTextColor(13, 148, 136);
-    doc.text('📊 RESUMEN DEL ANÁLISIS', margin, yPosition + 6);
+            doc.text('RESUMEN DEL ANÁLISIS', margin, yPosition + 6);
     
     doc.setFontSize(9);
     doc.setTextColor(75, 85, 99);

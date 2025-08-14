@@ -366,7 +366,7 @@ const HelpView: React.FC = React.memo(() => {
           <div className="space-y-6">
             <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-4 border border-teal-100">
               <h3 className="text-lg font-semibold text-slate-600 mb-3 flex items-center gap-2">
-                <StarIcon className="w-5 h-5 text-teal-500" />
+                <StarIcon className="w-5 h-5 text-slate-500" />
                 ¿Qué es Gauss∑ AI?
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed mb-3">
@@ -375,22 +375,22 @@ const HelpView: React.FC = React.memo(() => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-teal-600">
+                  <div className="text-xl font-bold text-slate-600">
                     <TargetIcon className="w-6 h-6 mx-auto" />
                   </div>
-                  <div className="text-xs text-gray-600">Precisión Matemática</div>
+                  <div className="text-xs text-slate-500">Precisión Matemática</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-xl font-bold text-slate-600">
                     <ZapIcon className="w-6 h-6 mx-auto" />
                   </div>
-                  <div className="text-xs text-gray-600">Aprendizaje Acelerado</div>
+                  <div className="text-xs text-slate-500">Aprendizaje Acelerado</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-purple-600">
+                  <div className="text-xl font-bold text-slate-600">
                     <LightbulbIcon className="w-6 h-6 mx-auto" />
                   </div>
-                  <div className="text-xs text-gray-600">Comprensión Profunda</div>
+                  <div className="text-xs text-slate-500">Comprensión Profunda</div>
                 </div>
               </div>
             </div>
@@ -398,7 +398,7 @@ const HelpView: React.FC = React.memo(() => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="p-4">
                   <h4 className="text-base font-semibold text-slate-600 mb-2 flex items-center gap-2">
-                    <GraduationCapIcon className="w-4 h-4 text-blue-500" />
+                    <GraduationCapIcon className="w-4 h-4 text-slate-500" />
                     Para Estudiantes
                   </h4>
                   <ul className="space-y-1 text-xs text-slate-500">
@@ -411,7 +411,7 @@ const HelpView: React.FC = React.memo(() => {
 
                 <Card className="p-4">
                   <h4 className="text-base font-semibold text-slate-600 mb-2 flex items-center gap-2">
-                    <TargetIcon className="w-4 h-4 text-green-500" />
+                    <TargetIcon className="w-4 h-4 text-slate-500" />
                     Para Profesores
                   </h4>
                   <ul className="space-y-1 text-xs text-slate-500">
@@ -432,18 +432,18 @@ const HelpView: React.FC = React.memo(() => {
               {features.map((feature, index) => (
                 <Card key={index} className="p-3 hover:shadow-lg transition-shadow duration-200">
                   <div className="flex items-start gap-2">
-                    <div className="text-teal-600 flex-shrink-0">
+                    <div className="text-slate-500 flex-shrink-0">
                       {feature.icon}
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold text-slate-600 mb-1 text-sm">{feature.title}</h4>
                       <p className="text-xs text-slate-500 leading-relaxed">{feature.description}</p>
                       <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                        feature.category === 'core' ? 'bg-blue-100 text-blue-800' :
-                        feature.category === 'learning' ? 'bg-green-100 text-green-800' :
-                        feature.category === 'interactive' ? 'bg-purple-100 text-purple-800' :
-                        feature.category === 'input' ? 'bg-orange-100 text-orange-800' :
-                        'bg-gray-100 text-gray-800'
+                        feature.category === 'core' ? 'bg-slate-100 text-slate-700' :
+                        feature.category === 'learning' ? 'bg-slate-100 text-slate-700' :
+                        feature.category === 'interactive' ? 'bg-slate-100 text-slate-700' :
+                        feature.category === 'input' ? 'bg-slate-100 text-slate-700' :
+                        'bg-slate-100 text-slate-700'
                       }`}>
                         {feature.category === 'core' ? 'Núcleo' :
                          feature.category === 'learning' ? 'Aprendizaje' :
@@ -517,7 +517,10 @@ const HelpView: React.FC = React.memo(() => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                 <div className="bg-white p-2 rounded-lg border border-purple-200">
-                  <div className="font-semibold text-slate-600 mb-1 text-sm">🎯 Principios Clave</div>
+                  <div className="font-semibold text-slate-600 mb-1 text-sm flex items-center gap-1">
+                    <TargetIcon className="w-3 h-3 text-slate-500" />
+                    Principios Clave
+                  </div>
                   <ul className="space-y-0.5 text-slate-500">
                     <li>• Sé específico y detallado</li>
                     <li>• Solicita ejemplos y aplicaciones</li>
@@ -526,7 +529,10 @@ const HelpView: React.FC = React.memo(() => {
                   </ul>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-slate-200">
-                  <div className="font-semibold text-slate-600 mb-1 text-sm">💡 Beneficios</div>
+                  <div className="font-semibold text-slate-600 mb-1 text-sm flex items-center gap-1">
+                    <LightbulbIcon className="w-3 h-3 text-slate-500" />
+                    Beneficios
+                  </div>
                   <ul className="space-y-0.5 text-slate-500">
                     <li>• Explicaciones más claras</li>
                     <li>• Comprensión conceptual profunda</li>
@@ -549,17 +555,23 @@ const HelpView: React.FC = React.memo(() => {
                 
                 <div className="space-y-3">
                   {category.examples.map((example, exampleIndex) => (
-                    <div key={exampleIndex} className="bg-gray-50 rounded-lg p-3 border-l-4 border-purple-300">
+                    <div key={exampleIndex} className="bg-slate-50 rounded-lg p-3 border-l-4 border-slate-300">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                          <div className="font-medium text-red-600 mb-1 text-xs">❌ Prompt Básico</div>
-                          <div className="bg-white p-2 rounded border border-red-200 text-xs text-gray-700">
+                          <div className="font-medium text-slate-600 mb-1 text-xs flex items-center gap-1">
+                            <FileTextIcon className="w-3 h-3 text-slate-400" />
+                            Prompt Básico
+                          </div>
+                          <div className="bg-white p-2 rounded border border-slate-200 text-xs text-slate-600">
                             "{example.prompt}"
                           </div>
                         </div>
                         <div>
-                          <div className="font-medium text-green-600 mb-1 text-xs">✅ Prompt Mejorado</div>
-                          <div className="bg-white p-2 rounded border border-green-200 text-xs text-gray-700">
+                          <div className="font-medium text-slate-600 mb-1 text-xs flex items-center gap-1">
+                            <StarIcon className="w-3 h-3 text-slate-400" />
+                            Prompt Mejorado
+                          </div>
+                          <div className="bg-white p-2 rounded border border-slate-200 text-xs text-slate-600">
                             "{example.improvement}"
                           </div>
                         </div>
@@ -570,14 +582,17 @@ const HelpView: React.FC = React.memo(() => {
               </Card>
             ))}
 
-            <Card className="p-4 bg-gradient-to-r from-blue-50 to-teal-50 border border-blue-200">
+            <Card className="p-4 bg-gradient-to-r from-slate-50 to-gray-50 border border-slate-200">
               <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
-                <LightbulbIcon className="w-4 h-4 text-blue-500" />
+                <LightbulbIcon className="w-4 h-4 text-slate-500" />
                 Consejos Específicos por Materia
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">🔬 Investigación Matemática</h5>
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm flex items-center gap-1">
+                    <CalculatorIcon className="w-3 h-3 text-slate-500" />
+                    Investigación Matemática
+                  </h5>
                   <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita análisis de complejidad</li>
                     <li>• Pide pseudocódigo y algoritmos</li>
@@ -586,7 +601,10 @@ const HelpView: React.FC = React.memo(() => {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">🗄️ Bases de Datos</h5>
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm flex items-center gap-1">
+                    <BookOpenIcon className="w-3 h-3 text-slate-500" />
+                    Bases de Datos
+                  </h5>
                   <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita consultas SQL optimizadas</li>
                     <li>• Pide diagramas ER y normalización</li>
@@ -595,7 +613,10 @@ const HelpView: React.FC = React.memo(() => {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-slate-600 mb-2 text-sm">💰 Finanzas e Inversiones</h5>
+                  <h5 className="font-semibold text-slate-600 mb-2 text-sm flex items-center gap-1">
+                    <StarIcon className="w-3 h-3 text-slate-500" />
+                    Finanzas e Inversiones
+                  </h5>
                   <ul className="space-y-1 text-xs text-slate-500">
                     <li>• Solicita cálculos paso a paso</li>
                     <li>• Pide interpretación de ratios</li>
@@ -614,13 +635,13 @@ const HelpView: React.FC = React.memo(() => {
             {tips.map((category, index) => (
               <Card key={index} className="p-4">
                 <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
-                  <LightbulbIcon className="w-4 h-4 text-yellow-500" />
+                  <LightbulbIcon className="w-4 h-4 text-slate-500" />
                   {category.category}
                 </h4>
                 <ul className="space-y-1">
                   {category.items.map((tip, tipIndex) => (
                     <li key={tipIndex} className="flex items-start gap-2 text-xs text-slate-500">
-                      <LightbulbIcon className="w-3 h-3 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <LightbulbIcon className="w-3 h-3 text-slate-400 mt-0.5 flex-shrink-0" />
                       <span>{tip}</span>
                     </li>
                   ))}
@@ -636,13 +657,13 @@ const HelpView: React.FC = React.memo(() => {
             {troubleshooting.map((item, index) => (
               <Card key={index} className="p-4">
                 <h4 className="text-base font-semibold text-slate-600 mb-3 flex items-center gap-2">
-                  <SettingsIcon className="w-4 h-4 text-red-500" />
+                  <SettingsIcon className="w-4 h-4 text-slate-500" />
                   {item.problem}
                 </h4>
                 <div className="space-y-1">
                   {item.solutions.map((solution, solutionIndex) => (
                     <div key={solutionIndex} className="flex items-start gap-2 text-xs text-slate-500">
-                      <CheckIcon className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckIcon className="w-3 h-3 text-slate-400 mt-0.5 flex-shrink-0" />
                       <span>{solution}</span>
                     </div>
                   ))}

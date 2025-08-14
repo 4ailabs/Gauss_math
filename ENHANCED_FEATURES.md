@@ -1,6 +1,6 @@
-# 🚀 Funcionalidades Mejoradas con LangExtract
+# Funcionalidades Mejoradas con LangExtract
 
-## 📋 Descripción General
+## Descripción General
 
 Gauss-MathMind-IA ahora integra **LangExtract de Google** para proporcionar una experiencia de aprendizaje matemático significativamente mejorada. Esta integración permite:
 
@@ -10,7 +10,7 @@ Gauss-MathMind-IA ahora integra **LangExtract de Google** para proporcionar una 
 - **Mapas conceptuales** automáticos
 - **Relaciones entre conceptos** identificadas automáticamente
 
-## 🔧 Instalación y Configuración
+## Instalación y Configuración
 
 ### 1. Instalar Dependencias
 
@@ -37,7 +37,7 @@ LANGEXTRACT_API_KEY=tu-api-key-aqui
 GEMINI_API_KEY=tu-gemini-api-key-aqui
 ```
 
-## 🎯 Nuevas Funcionalidades
+## Nuevas Funcionalidades
 
 ### 1. Extracción Mejorada de Conceptos
 
@@ -97,7 +97,7 @@ GEMINI_API_KEY=tu-gemini-api-key-aqui
 - **Agrupación por tipo** de relación
 - **Estadísticas** de conexiones identificadas
 
-## 🏗️ Arquitectura Técnica
+## Arquitectura Técnica
 
 ### Servicios Principales
 
@@ -139,7 +139,7 @@ const result = await extract({
 - Gráfico de red conceptual
 - Estadísticas de conexiones
 
-## 🔄 Flujo de Procesamiento
+## Flujo de Procesamiento
 
 ### 1. Procesamiento Mejorado (Prioritario)
 ```typescript
@@ -160,7 +160,7 @@ Si LangExtract falla, la aplicación automáticamente usa el procesamiento bási
 - **Hasta 10 workers** para procesamiento paralelo
 - **Buffers optimizados** para diferentes tipos de contenido
 
-## 📊 Métricas y Rendimiento
+## Métricas y Rendimiento
 
 ### Indicadores de Calidad:
 - **Total de conceptos** extraídos
@@ -175,7 +175,7 @@ Si LangExtract falla, la aplicación automáticamente usa el procesamiento bási
 - **Char buffer**: 2000 caracteres por contexto
 - **Fallback automático** para máxima confiabilidad
 
-## 🚀 Uso y Ejemplos
+## Uso y Ejemplos
 
 ### Procesamiento Básico:
 ```typescript
@@ -192,7 +192,7 @@ const service = EnhancedMathService.getInstance();
 const concepts = await service.extractMathConcepts(notes, subject);
 ```
 
-## 🔧 Configuración Avanzada
+## Configuración Avanzada
 
 ### Personalización de Prompts:
 Los prompts están definidos en `EnhancedMathService` y pueden ser personalizados:
@@ -229,7 +229,7 @@ const result = await extract({
 - Mejorar ejemplos en `getMathExtractionExamples()`
 - Verificar calidad del texto de entrada
 
-## 🔮 Futuras Mejoras
+## Futuras Mejoras
 
 ### Planificadas:
 - **Visualización 3D** del mapa conceptual
@@ -244,7 +244,7 @@ const result = await extract({
 - **Realidad aumentada** para visualización
 - **Colaboración en tiempo real** entre estudiantes
 
-## 📚 Referencias
+## Referencias
 
 - [LangExtract GitHub](https://github.com/google/langextract)
 - [Documentación de LangExtract](https://pypi.org/project/langextract/)
@@ -253,4 +253,4 @@ const result = await extract({
 
 ---
 
-**¡Disfruta de la nueva experiencia de aprendizaje matemático mejorada! 🎓✨**
+**¡Disfruta de la nueva experiencia de aprendizaje matemático mejorada!**

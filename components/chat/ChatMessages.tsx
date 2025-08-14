@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { ChatMessage } from './ChatMessage';
+import { MessageCircleIcon } from '../ui/Icons';
 
 export const ChatMessages: React.FC = React.memo(() => {
   const { state: { assistantHistory } } = useApp();
@@ -20,7 +21,7 @@ export const ChatMessages: React.FC = React.memo(() => {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-teal-600 text-xl">💬</span>
+              <MessageCircleIcon className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-gray-500 text-base sm:text-lg font-medium mb-2">¡Hola! Soy tu asistente de matemáticas</p>
             <p className="text-gray-400 text-xs sm:text-sm px-2 sm:px-0">Pregúntame cualquier cosa sobre tus apuntes o conceptos matemáticos</p>

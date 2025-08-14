@@ -2,15 +2,15 @@
 
 Una aplicación de inteligencia artificial para procesar y analizar apuntes de matemáticas con una interfaz moderna y funcional.
 
-## 🎯 Características Principales
+## Características Principales
 
-### 🔍 **Interfaz Moderna**
+### Interfaz Moderna
 - **Diseño limpio y responsive** con Tailwind CSS
 - **Navegación intuitiva** entre diferentes vistas
 - **Tarjetas interactivas** con efectos hover y animaciones
 - **Tema claro** con tipografía Inter y colores teal
 
-### 📊 **Tipos de Análisis**
+### Tipos de Análisis
 - **Procesar Apuntes**: Análisis completo de contenido matemático
 - **Generar Quiz**: Creación de preguntas de práctica
 - **Encontrar Problemas**: Identificación de problemas relacionados
@@ -21,19 +21,19 @@ Una aplicación de inteligencia artificial para procesar y analizar apuntes de m
 - **Generación de preguntas de práctica** personalizadas
 - **Identificación de problemas relacionados**
 
-### 💬 **Chat Interactivo**
+### Chat Interactivo
 - **Conversación con el reporte** generado
 - **Soporte para imágenes** en el chat
 - **Respuestas en tiempo real** con streaming
 - **Historial de conversación** persistente
 
-### 📱 **Funcionalidades Avanzadas**
+### Funcionalidades Avanzadas
 - **Escaneo de imágenes** para extraer texto
 - **Grabación de voz** para entrada de audio
 - **Exportación de resultados** en múltiples formatos
 - **Sistema de materias** personalizable
 
-## 🚀 Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **React 19** con TypeScript
 - **Tailwind CSS** para estilos modernos
@@ -42,7 +42,7 @@ Una aplicación de inteligencia artificial para procesar y analizar apuntes de m
 - **Vite** para desarrollo rápido
 - **CSS personalizado** para estilos específicos
 
-## 📦 Instalación
+## Instalación
 
 1. **Clonar el repositorio**
    ```bash
@@ -67,7 +67,7 @@ Una aplicación de inteligencia artificial para procesar y analizar apuntes de m
    npm run dev
    ```
 
-## 🎨 Características de la Interfaz
+## Características de la Interfaz
 
 ### **Barra de Navegación Superior**
 - Logo "Gauss∑ AI" prominente
@@ -94,7 +94,7 @@ Una aplicación de inteligencia artificial para procesar y analizar apuntes de m
 - Respuestas en streaming
 - Historial persistente
 
-## 🔧 Configuración
+## Configuración
 
 ### **Variables de Entorno**
 ```env
@@ -106,7 +106,7 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 - **Álgebra Lineal**: Matrices, vectores, transformaciones lineales
 - **Probabilidad y Estadística**: Distribuciones, inferencia, análisis de datos
 
-## 📱 Uso
+## Uso
 
 ### **1. Iniciar Análisis**
 - Selecciona la materia que quieres estudiar
@@ -128,7 +128,7 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 - Usa el chat integrado para dudas adicionales
 - Recibe respuestas detalladas en tiempo real
 
-## 🎯 Casos de Uso
+## Casos de Uso
 
 ### **Estudiantes**
 - Procesar apuntes de matemáticas
@@ -148,7 +148,7 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 - Practicar con problemas adaptados
 - Recibir feedback inmediato
 
-## 🔒 Privacidad y Seguridad
+## Privacidad y Seguridad
 
 - **Datos locales**: El contenido se procesa localmente
 - **API segura**: Conexión segura con Google AI
@@ -163,7 +163,7 @@ GEMINI_API_KEY=tu_api_key_de_google_ai
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
@@ -175,7 +175,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Tailwind CSS** por el framework de estilos
 - **Vite** por el bundler rápido
 
-## 📞 Soporte
+## Soporte
 
 Si tienes preguntas o necesitas ayuda:
 - Abre un issue en GitHub
@@ -184,4 +184,4 @@ Si tienes preguntas o necesitas ayuda:
 
 ---
 
-**Desarrollado con ❤️ para estudiantes de matemáticas**
+**Desarrollado para estudiantes de matemáticas**
