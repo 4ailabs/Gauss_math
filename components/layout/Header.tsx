@@ -12,6 +12,7 @@ export const Header: React.FC = React.memo(() => {
     { key: 'library', label: 'Biblioteca' },
     { key: 'recent', label: 'Recientes' },
     { key: 'study', label: 'Estudio' },
+    { key: 'research', label: 'Investigación' },
     { key: 'help', label: 'Ayuda' },
   ] as const;
 

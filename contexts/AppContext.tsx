@@ -9,7 +9,7 @@ interface AppState {
   selectedSubject: string;
   
   // UI state
-  activeView: 'search' | 'results' | 'chat' | 'library' | 'help' | 'recent' | 'study';
+  activeView: 'search' | 'results' | 'chat' | 'library' | 'help' | 'recent' | 'study' | 'research';
   searchType: 'research' | 'systematic' | 'papers';
   gatherType: 'papers' | 'trials';
   

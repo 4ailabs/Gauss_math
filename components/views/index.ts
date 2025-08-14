@@ -8,3 +8,4 @@ export const RecentView = lazy(() => import('./RecentView'));
 export const StudyView = lazy(() => import('./StudyView'));
 export const HelpView = lazy(() => import('./HelpView'));
 export const ResultsView = lazy(() => import('./ResultsView'));
+export const ResearchView = lazy(() => import('./ResearchView'));

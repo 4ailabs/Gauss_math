@@ -12,6 +12,7 @@ import {
   StudyView,
   HelpView,
   ResultsView,
+  ResearchView,
 } from './components/views';
 import './App.css';
 
@@ -35,6 +36,8 @@ const ViewRouter: React.FC = React.memo(() => {
         return <StudyView />;
       case 'help':
         return <HelpView />;
+      case 'research':
+        return <ResearchView />;
       default:
         return <SearchView />;
     }
