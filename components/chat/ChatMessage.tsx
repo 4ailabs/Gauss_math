@@ -80,7 +80,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 group`}>
-      <div className={`max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
+      <div className={`max-w-[95%] sm:max-w-[85%] md:max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
         <div
           className={`relative inline-block p-4 rounded-lg shadow-sm ${
             isUser
@@ -92,7 +92,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
           {!isUser && (
             <button
               onClick={handleCopy}
-              className={`absolute top-2 right-2 p-1.5 rounded-md transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+              className={`absolute top-2 right-2 p-2 rounded-md transition-all duration-200 
+                         opacity-0 group-hover:opacity-100 touch:opacity-100 active:scale-95
+                         sm:p-1.5 ${
                 copied 
                   ? 'bg-green-100 text-green-600' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800'
@@ -100,14 +102,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
               title={copied ? 'Copiado!' : 'Copiar mensaje'}
             >
               {copied ? (
-                <CheckIcon className="w-3 h-3" />
+                <CheckIcon className="w-4 h-4 sm:w-3 sm:h-3" />
               ) : (
-                <CopyIcon className="w-3 h-3" />
+                <CopyIcon className="w-4 h-4 sm:w-3 sm:h-3" />
               )}
             </button>
           )}
           
-          <div className="space-y-1 pr-8">
+          <div className="space-y-1 pr-10 sm:pr-8">
             {parsedContent.map((content, index) => (
               <ContentRenderer key={index} content={content} isUser={isUser} />
             ))}

@@ -35,7 +35,9 @@ import {
   Clock,
   Trophy,
   BarChart3,
-  ArrowRight
+  ArrowRight,
+  Menu,
+  X as XClose
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -81,3 +83,5 @@ export const ClockIcon: React.FC<IconProps> = (props) => <Clock {...props} />;
 export const TrophyIcon: React.FC<IconProps> = (props) => <Trophy {...props} />;
 export const BarChart3Icon: React.FC<IconProps> = (props) => <BarChart3 {...props} />;
 export const ArrowRightIcon: React.FC<IconProps> = (props) => <ArrowRight {...props} />;
+export const MenuIcon: React.FC<IconProps> = (props) => <Menu {...props} />;
+export const XCloseIcon: React.FC<IconProps> = (props) => <XClose {...props} />;

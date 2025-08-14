@@ -47,14 +47,14 @@ export const ChatInput: React.FC = React.memo(() => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
       <div className="flex-1">
         <textarea
           value={assistantInput}
           onChange={(e) => setAssistantInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Escribe tu pregunta... (Shift+Enter para nueva línea)"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none bg-white text-gray-900 placeholder-gray-500"
+          placeholder="Escribe tu pregunta..."
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none bg-white text-gray-900 placeholder-gray-500 text-base"
           rows={2}
           disabled={isTyping}
           style={{ 
@@ -68,8 +68,9 @@ export const ChatInput: React.FC = React.memo(() => {
         type="submit"
         disabled={!assistantInput.trim() || isTyping}
         loading={isTyping}
-        icon={!isTyping && <SendIcon className="w-4 h-4" />}
-        className="self-end"
+        icon={!isTyping && <SendIcon className="w-5 h-5 sm:w-4 sm:h-4" />}
+        className="self-end sm:self-end w-full sm:w-auto py-3 sm:py-2"
+        size="md"
         onClick={(e) => {
           console.log('Button clicked');
           if (!isTyping && assistantInput.trim()) {

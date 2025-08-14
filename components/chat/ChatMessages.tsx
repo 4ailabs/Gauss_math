@@ -15,15 +15,15 @@ export const ChatMessages: React.FC = React.memo(() => {
   }, [assistantHistory]);
 
   return (
-    <div className="h-96 bg-gray-50 rounded-lg p-4 overflow-y-auto border border-gray-200">
+    <div className="h-64 sm:h-80 md:h-96 bg-gray-50 rounded-lg p-3 sm:p-4 overflow-y-auto border border-gray-200">
       {assistantHistory.length === 0 ? (
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-teal-600 text-xl">💬</span>
             </div>
-            <p className="text-gray-500 text-lg font-medium mb-2">¡Hola! Soy tu asistente de matemáticas</p>
-            <p className="text-gray-400 text-sm">Pregúntame cualquier cosa sobre tus apuntes o conceptos matemáticos</p>
+            <p className="text-gray-500 text-base sm:text-lg font-medium mb-2">¡Hola! Soy tu asistente de matemáticas</p>
+            <p className="text-gray-400 text-xs sm:text-sm px-2 sm:px-0">Pregúntame cualquier cosa sobre tus apuntes o conceptos matemáticos</p>
           </div>
         </div>
       ) : (

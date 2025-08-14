@@ -199,29 +199,29 @@ const StudyView: React.FC = React.memo(() => {
         </div>
 
         {/* Study Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card padding="md" className="text-center">
-            <BarChart3Icon className="w-6 h-6 text-teal-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">{getAverageConfidence()}%</div>
-            <div className="text-sm text-gray-600">Confianza</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <Card padding="sm" className="text-center">
+            <BarChart3Icon className="w-5 h-5 md:w-6 md:h-6 text-teal-600 mx-auto mb-1 md:mb-2" />
+            <div className="text-lg md:text-2xl font-bold text-gray-900">{getAverageConfidence()}%</div>
+            <div className="text-xs md:text-sm text-gray-600">Confianza</div>
           </Card>
           
-          <Card padding="md" className="text-center">
-            <BookOpenIcon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">{flashcards.length}</div>
-            <div className="text-sm text-gray-600">Tarjetas</div>
+          <Card padding="sm" className="text-center">
+            <BookOpenIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-600 mx-auto mb-1 md:mb-2" />
+            <div className="text-lg md:text-2xl font-bold text-gray-900">{flashcards.length}</div>
+            <div className="text-xs md:text-sm text-gray-600">Tarjetas</div>
           </Card>
           
-          <Card padding="md" className="text-center">
-            <TrophyIcon className="w-6 h-6 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">{sessionStats.reviewed}</div>
-            <div className="text-sm text-gray-600">Revisadas</div>
+          <Card padding="sm" className="text-center">
+            <TrophyIcon className="w-5 h-5 md:w-6 md:h-6 text-green-600 mx-auto mb-1 md:mb-2" />
+            <div className="text-lg md:text-2xl font-bold text-gray-900">{sessionStats.reviewed}</div>
+            <div className="text-xs md:text-sm text-gray-600">Revisadas</div>
           </Card>
           
-          <Card padding="md" className="text-center">
-            <ClockIcon className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">{getStudyTime()}</div>
-            <div className="text-sm text-gray-600">Minutos</div>
+          <Card padding="sm" className="text-center">
+            <ClockIcon className="w-5 h-5 md:w-6 md:h-6 text-purple-600 mx-auto mb-1 md:mb-2" />
+            <div className="text-lg md:text-2xl font-bold text-gray-900">{getStudyTime()}</div>
+            <div className="text-xs md:text-sm text-gray-600">Minutos</div>
           </Card>
         </div>
 
@@ -250,17 +250,19 @@ const StudyView: React.FC = React.memo(() => {
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
           <Button
             variant="secondary"
+            size="md"
             onClick={handlePrevious}
             disabled={currentIndex === 0}
+            className="w-full sm:w-auto py-3 sm:py-2"
           >
             ← Anterior
           </Button>
           
-          <div className="text-center">
-            <span className="text-sm text-gray-500">
+          <div className="text-center order-first sm:order-none">
+            <span className="text-xs sm:text-sm text-gray-500">
               {currentIndex === flashcards.length - 1 
                 ? 'Última tarjeta' 
                 : `${flashcards.length - currentIndex - 1} restantes`
@@ -270,8 +272,10 @@ const StudyView: React.FC = React.memo(() => {
           
           <Button
             variant="secondary"
+            size="md"
             onClick={handleNext}
             disabled={currentIndex === flashcards.length - 1}
+            className="w-full sm:w-auto py-3 sm:py-2"
           >
             Siguiente →
           </Button>
