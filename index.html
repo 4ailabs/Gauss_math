@@ -38,19 +38,18 @@
     }
   </script>
   <style>
-    /* Fijar la aplicación en móvil */
+    /* iOS Safari viewport fixes */
     html, body {
       height: 100%;
-      overflow: hidden;
-      position: fixed;
       width: 100%;
       -webkit-overflow-scrolling: touch;
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
     
     #root {
-      height: 100vh;
-      height: 100dvh; /* Dynamic viewport height for mobile */
-      overflow: hidden;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      width: 100%;
       position: relative;
     }
     
@@ -85,38 +84,40 @@
       }
     }
 
-    /* Ajustes específicos para iPhone */
-    @media screen and (max-width: 430px) {
-      .container {
-        padding-bottom: 80px; /* Espacio extra para la barra de navegación */
+    /* Ajustes específicos para iPhone y dispositivos móviles */
+    @media screen and (max-width: 768px) {
+      /* Permitir scroll vertical en el layout principal */
+      html, body {
+        overflow-y: auto;
+        position: static;
+        height: auto;
       }
       
-      /* Asegurar que el contenido principal no se corte */
+      #root {
+        overflow-y: auto;
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+      }
+      
+      /* Asegurar que el main permita scroll */
       main {
-        padding-bottom: 20px;
+        overflow-y: visible;
+        max-height: none;
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom, 20px));
       }
       
-      /* Footer siempre visible */
-      footer {
-        position: relative;
-        z-index: 10;
-        background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
-        padding-bottom: 20px;
+      /* Header más compacto en móvil */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
       }
     }
 
-    /* Ajustes para navegadores con barras de navegación */
-    @media screen and (max-height: 700px) {
-      .container {
-        padding-bottom: 60px;
-      }
-      
-      header {
-        margin-bottom: 1rem !important;
-      }
-      
-      nav {
-        margin-bottom: 1rem !important;
+    /* Extra padding para iPhone X y posteriores */
+    @media screen and (max-width: 430px) {
+      main {
+        padding-bottom: calc(3rem + env(safe-area-inset-bottom, 30px));
       }
     }
   </style>

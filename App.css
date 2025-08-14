@@ -714,6 +714,47 @@ input[type="text"]:disabled {
   }
 }
 
+/* iOS Safari viewport fixes */
+.ios-full-height {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Mobile scroll optimizations for iOS */
+@media (max-width: 768px) {
+  /* Enable smooth scrolling on iOS */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix viewport height issues on iPhone */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Remove height restrictions to allow natural scroll */
+  main {
+    overflow-y: visible !important;
+    max-height: none !important;
+  }
+  
+  /* Improve scroll behavior */
+  body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Mobile touch optimizations */
 @media (max-width: 640px) {
   /* Improve touch targets */
@@ -739,6 +780,11 @@ input[type="text"]:disabled {
   /* Smaller padding on mobile */
   .results-fullscreen {
     padding-bottom: 80px;
+  }
+  
+  /* Extra bottom padding for iPhone */
+  main {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
   }
 }
 

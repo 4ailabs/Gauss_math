@@ -23,7 +23,7 @@ const SearchView: React.FC = React.memo(() => {
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <SearchTypeSelector />
         <SubjectSelector />
         
