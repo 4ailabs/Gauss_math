@@ -53,6 +53,8 @@ type AppAction =
   | { type: 'SET_ASSISTANT_INPUT'; payload: string }
   | { type: 'SET_ANALYSIS_HISTORY'; payload: AnalysisHistory[] }
   | { type: 'ADD_TO_HISTORY'; payload: AnalysisHistory }
+  | { type: 'REMOVE_FROM_HISTORY'; payload: string }
+  | { type: 'CLEAR_ANALYSIS_HISTORY' }
   | { type: 'CLEAR_ASSISTANT_HISTORY' };
 
 // Initial state
@@ -142,6 +144,11 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
     case 'ADD_TO_HISTORY':
       const newHistory = [action.payload, ...state.analysisHistory];
       return { ...state, analysisHistory: newHistory };
+    case 'REMOVE_FROM_HISTORY':
+      const filteredHistory = state.analysisHistory.filter(item => item.id !== action.payload);
+      return { ...state, analysisHistory: filteredHistory };
+    case 'CLEAR_ANALYSIS_HISTORY':
+      return { ...state, analysisHistory: [] };
     case 'CLEAR_ASSISTANT_HISTORY':
       return { ...state, assistantHistory: [] };
     default:
@@ -175,6 +182,8 @@ interface AppContextType {
   setAnalysisHistory: (history: AnalysisHistory[]) => void;
   addToHistory: (item: AnalysisHistory) => void;
   loadFromHistory: (item: AnalysisHistory) => void;
+  removeFromHistory: (id: string) => void;
+  clearAnalysisHistory: () => void;
   clearAssistantHistory: () => void;
 }
 
@@ -285,6 +294,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     dispatch({ type: 'CLEAR_ASSISTANT_HISTORY' });
   }, []);
 
+  const removeFromHistory = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_FROM_HISTORY', payload: id });
+    // Persist to localStorage
+    const newHistory = state.analysisHistory.filter(item => item.id !== id);
+    localStorage.setItem('gaussmathmind_history', JSON.stringify(newHistory));
+  }, [state.analysisHistory]);
+
+  const clearAnalysisHistory = useCallback(() => {
+    dispatch({ type: 'CLEAR_ANALYSIS_HISTORY' });
+    // Clear localStorage
+    localStorage.removeItem('gaussmathmind_history');
+  }, []);
+
   const value: AppContextType = {
     state,
     dispatch,
@@ -309,6 +331,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setAnalysisHistory,
     addToHistory,
     loadFromHistory,
+    removeFromHistory,
+    clearAnalysisHistory,
     clearAssistantHistory,
   };
 

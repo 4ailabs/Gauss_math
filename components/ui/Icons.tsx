@@ -43,7 +43,9 @@ import {
   Home,
   GraduationCap,
   BarChart,
-  Network
+  Network,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -99,3 +101,7 @@ export const HomeIcon: React.FC<IconProps> = (props) => <Home {...props} />;
 export const GraduationCapIcon: React.FC<IconProps> = (props) => <GraduationCap {...props} />;
 export const ChartBarIcon: React.FC<IconProps> = (props) => <BarChart {...props} />;
 export const NetworkIcon: React.FC<IconProps> = (props) => <Network {...props} />;
+
+// Iconos para gestión de biblioteca
+export const Trash2Icon: React.FC<IconProps> = (props) => <Trash2 {...props} />;
+export const AlertTriangleIcon: React.FC<IconProps> = (props) => <AlertTriangle {...props} />;
