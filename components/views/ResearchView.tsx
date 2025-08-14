@@ -11,7 +11,8 @@ import {
   RefreshCwIcon,
   FileTextIcon,
   GraduationCapIcon,
-  CopyIcon
+  CopyIcon,
+  DownloadIcon
 } from '../ui/Icons';
 import { 
   createResearchPlan, 
@@ -28,6 +29,7 @@ import { usePageVisibility } from '../../hooks/usePageVisibility';
 import { ResearchExitWarning } from '../ui/ResearchExitWarning';
 import { EnhancedSourcesDisplay } from '../ui/EnhancedSourcesDisplay';
 import { ApiDiagnostic } from '../debug/ApiDiagnostic';
+import { exportReportToPDF } from '../../utils/pdfExport';
 
 
 // Estados de investigación
@@ -980,6 +982,7 @@ const ReportDisplay: React.FC<{
   onReset: () => void;
 }> = ({ report, sources, topic, onReset }) => {
   const [showCopyToast, setShowCopyToast] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
 
   // Logging para debugging
   console.log('🔍 ReportDisplay renderizando con:', { report, sources, topic });
@@ -1042,6 +1045,30 @@ const ReportDisplay: React.FC<{
       console.error('Error al copiar:', err);
     }
   };
+
+  const handleExportToPDF = async () => {
+    try {
+      setIsExportingPDF(true);
+      console.log('🔄 Iniciando exportación a PDF...');
+      
+      await exportReportToPDF(report, topic, sources, {
+        filename: `reporte-${topic.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase()}`,
+        includeMetadata: true,
+        includeSources: true,
+        format: 'a4'
+      });
+      
+      // Mostrar notificación de éxito
+      setShowCopyToast(true);
+      setTimeout(() => setShowCopyToast(false), 3000);
+      
+    } catch (error) {
+      console.error('❌ Error al exportar PDF:', error);
+      alert('Error al exportar el reporte a PDF. Por favor, inténtalo de nuevo.');
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
   return (
     <div className="space-y-3 sm:space-y-4">
       <div className="text-center">
@@ -1084,15 +1111,28 @@ const ReportDisplay: React.FC<{
             <FileTextIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
             Reporte Completo
           </h3>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleCopyReport}
-            icon={<CopyIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
-            className="min-h-[40px] sm:min-h-[36px]"
-          >
-            Copiar Reporte
-          </Button>
+          <div className="flex gap-2 sm:gap-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleCopyReport}
+              icon={<CopyIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
+              className="min-h-[40px] sm:min-h-[36px]"
+            >
+              Copiar
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleExportToPDF}
+              disabled={isExportingPDF}
+              loading={isExportingPDF}
+              icon={!isExportingPDF && <DownloadIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
+              className="min-h-[40px] sm:min-h-[36px]"
+            >
+              {isExportingPDF ? 'Exportando...' : 'PDF'}
+            </Button>
+          </div>
         </div>
         <div className="prose max-w-none">
           <div 
@@ -1137,12 +1177,14 @@ const ReportDisplay: React.FC<{
         </Button>
       </div>
 
-      {/* Toast de confirmación de copia */}
+      {/* Toast de confirmación */}
       {showCopyToast && (
         <div className="fixed bottom-3 sm:bottom-4 right-3 sm:right-4 bg-green-500 text-white px-3 sm:px-4 py-2 rounded-lg shadow-lg z-50 animate-in slide-in-from-bottom-2">
           <div className="flex items-center gap-2">
             <CheckIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="text-sm">Reporte copiado al portapapeles</span>
+            <span className="text-sm">
+              {isExportingPDF ? 'PDF exportado exitosamente' : 'Reporte copiado al portapapeles'}
+            </span>
           </div>
         </div>
       )}
