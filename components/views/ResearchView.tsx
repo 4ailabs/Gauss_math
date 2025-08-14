@@ -12,6 +12,15 @@ import {
   FileTextIcon,
   GraduationCapIcon
 } from '../ui/Icons';
+import { 
+  createResearchPlan, 
+  refineResearchPlan, 
+  researchSubtopic, 
+  synthesizeReport,
+  isGeminiAvailable,
+  type Source,
+  type FinalReport
+} from '../../services/researchService';
 
 // Estados de investigación
 enum ResearchState {
@@ -33,19 +42,9 @@ interface Subtopic {
   status: 'pending' | 'loading' | 'complete';
 }
 
-interface Source {
-  uri: string;
-  title: string;
-}
-
 interface ChatMessage {
   role: 'user' | 'model';
   content: string;
-}
-
-interface FinalReport {
-  summary: string[];
-  report: string;
 }
 
 const ResearchView: React.FC = React.memo(() => {
@@ -78,16 +77,10 @@ const ResearchView: React.FC = React.memo(() => {
     setResearchState(ResearchState.PLANNING);
 
     try {
-      // Simular generación de plan (aquí se integraría con el servicio real)
-      const mockPlan = [
-        'Revisión de Literatura',
-        'Metodología de Investigación',
-        'Análisis de Datos',
-        'Resultados y Discusión',
-        'Conclusiones y Trabajo Futuro'
-      ];
+      // Usar el servicio real de Gemini
+      const plan = await createResearchPlan(newTopic);
       
-      setSubtopics(mockPlan);
+      setSubtopics(plan);
       setChatHistory([{ 
         role: 'model', 
         content: `Aquí tienes un borrador del plan de investigación para '${newTopic}'. Puedes aprobarlo o sugerir cambios.` 
@@ -105,8 +98,8 @@ const ResearchView: React.FC = React.memo(() => {
     setResearchState(ResearchState.REFINING_PLAN);
     
     try {
-      // Simular refinamiento del plan
-      const refinedPlan = [...subtopics, 'Nuevo Subtópico Basado en Feedback'];
+      // Usar el servicio real de Gemini
+      const refinedPlan = await refineResearchPlan(topic, subtopics, feedback);
       setSubtopics(refinedPlan);
       setChatHistory(prev => [...prev, { 
         role: 'model', 
@@ -123,7 +116,7 @@ const ResearchView: React.FC = React.memo(() => {
       }]);
       setResearchState(ResearchState.PLAN_REVIEW);
     }
-  }, [subtopics]);
+  }, [topic, subtopics]);
 
   const handleApprovePlan = useCallback(async () => {
     setResearchState(ResearchState.RESEARCHING);
@@ -138,36 +131,50 @@ const ResearchView: React.FC = React.memo(() => {
 
       setSubtopicObjects(initialSubtopics);
 
-      // Simular investigación de subtópicos
+      // Usar el servicio real de Gemini para investigar subtópicos
       for (let i = 0; i < subtopics.length; i++) {
         setSubtopicObjects(prev => prev.map((st, index) => 
           index === i ? { ...st, status: 'loading' } : st
         ));
 
-        // Simular tiempo de investigación
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const mockContent = `Contenido investigado para: ${subtopics[i]}. Este es un ejemplo de la investigación realizada.`;
-        const mockSources = [{ uri: `https://example.com/${i}`, title: `Fuente ${i + 1}` }];
-        
-        setSubtopicObjects(prev => prev.map((st, index) => 
-          index === i ? { ...st, content: mockContent, sources: mockSources, status: 'complete' } : st
-        ));
+        try {
+          const { content, sources: subtopicSources } = await researchSubtopic(subtopics[i], topic);
+          
+          setSubtopicObjects(prev => prev.map((st, index) => 
+            index === i ? { ...st, content, sources: subtopicSources, status: 'complete' } : st
+          ));
+          
+          // Agregar fuentes únicas
+          setSources(prev => {
+            const newSources = [...prev, ...subtopicSources];
+            return newSources.filter((source, index, self) => 
+              index === self.findIndex(s => s.uri === source.uri)
+            );
+          });
+        } catch (err) {
+          console.error(`Error investigando subtópico ${subtopics[i]}:`, err);
+          setSubtopicObjects(prev => prev.map((st, index) => 
+            index === i ? { ...st, content: `Error al investigar: ${subtopics[i]}`, sources: [], status: 'complete' } : st
+          ));
+        }
       }
 
-      setSources([{ uri: 'https://example.com', title: 'Fuente Principal' }]);
       setResearchState(ResearchState.SYNTHESIZING);
       
-      // Simular síntesis del reporte
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockReport: FinalReport = {
-        summary: ['Resumen ejecutivo de la investigación', 'Hallazgos principales', 'Recomendaciones'],
-        report: 'Reporte completo de la investigación matemática...'
-      };
-      
-      setFinalReport(mockReport);
-      setResearchState(ResearchState.DONE);
+      // Usar el servicio real de Gemini para sintetizar el reporte
+      try {
+        const researchedContent = subtopicObjects
+          .filter(st => st.status === 'complete')
+          .map(st => ({ title: st.title, content: st.content }));
+        
+        const report = await synthesizeReport(topic, researchedContent);
+        setFinalReport(report);
+        setResearchState(ResearchState.DONE);
+      } catch (err) {
+        console.error('Error al sintetizar el reporte:', err);
+        setError('Error al generar el reporte final');
+        setResearchState(ResearchState.ERROR);
+      }
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Ocurrió un error desconocido.');
@@ -240,14 +247,33 @@ const ResearchView: React.FC = React.memo(() => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="text-center py-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Agente de Investigación Matemática
-        </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Genera, refina y ejecuta planes de investigación matemática con IA avanzada
+      {/* Header Optimizado */}
+      <div className="text-center py-6">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <TargetIcon className="w-8 h-8 text-teal-600" />
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Agente de Investigación Matemática
+          </h1>
+        </div>
+        
+        <p className="text-base text-gray-600 max-w-xl mx-auto mb-4">
+          Genera, refina y ejecuta planes de investigación con IA avanzada
         </p>
+        
+        {/* Indicador de estado de Gemini */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-sm font-medium">
+          {isGeminiAvailable() ? (
+            <>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-teal-700">Gemini AI Conectado</span>
+            </>
+          ) : (
+            <>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <span className="text-yellow-700">Modo Fallback</span>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Contenido Principal */}
@@ -282,7 +308,7 @@ const ResearchView: React.FC = React.memo(() => {
   );
 });
 
-// Componente de entrada de tema
+// Componente de entrada de tema optimizado
 const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading: boolean }> = ({ 
   onStartResearch, 
   isLoading 
@@ -297,26 +323,30 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
   };
 
   return (
-    <Card className="p-8 text-center">
+    <Card className="p-6">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
-          <TargetIcon className="w-16 h-16 text-teal-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Inicia tu Investigación Matemática
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            ¿Qué quieres investigar?
           </h2>
-          <p className="text-gray-600">
-            Describe el tema o problema matemático que quieres investigar
+          <p className="text-sm text-gray-600">
+            Describe tu tema de investigación matemática
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <textarea
-            value={inputTopic}
-            onChange={(e) => setInputTopic(e.target.value)}
-            placeholder="Ej: Análisis de algoritmos de optimización para redes neuronales..."
-            className="w-full h-32 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500"
-            disabled={isLoading}
-          />
+          <div className="relative">
+            <textarea
+              value={inputTopic}
+              onChange={(e) => setInputTopic(e.target.value)}
+              placeholder="Ej: Análisis de algoritmos de optimización para redes neuronales, Teoría de grafos en criptografía, Aplicaciones del cálculo tensorial..."
+              className="w-full h-28 p-4 pr-12 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none text-gray-900 placeholder-gray-500 text-sm"
+              disabled={isLoading}
+            />
+            <div className="absolute top-3 right-3">
+              <LightbulbIcon className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
           
           <Button
             type="submit"
@@ -324,7 +354,8 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
             size="lg"
             disabled={!inputTopic.trim() || isLoading}
             loading={isLoading}
-            icon={!isLoading && <LightbulbIcon className="w-5 h-5" />}
+            className="w-full"
+            icon={!isLoading && <TargetIcon className="w-5 h-5" />}
           >
             {isLoading ? 'Generando Plan...' : 'Generar Plan de Investigación'}
           </Button>
@@ -334,7 +365,7 @@ const TopicInput: React.FC<{ onStartResearch: (topic: string) => void; isLoading
   );
 };
 
-// Componente de revisión de plan
+// Componente de revisión de plan optimizado
 const PlanReview: React.FC<{
   topic: string;
   subtopics: string[];
@@ -353,89 +384,94 @@ const PlanReview: React.FC<{
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Plan de Investigación: {topic}
+    <div className="space-y-4">
+      {/* Header compacto */}
+      <div className="text-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-1">
+          Plan de Investigación
         </h2>
-        <p className="text-gray-600">
-          Revisa el plan generado y apróbalo o sugiere mejoras
+        <p className="text-sm text-gray-600">
+          {topic}
         </p>
       </div>
 
-      {/* Subtópicos */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <FileTextIcon className="w-5 h-5 text-blue-600" />
-          Estructura de la Investigación
-        </h3>
-        <div className="space-y-3">
-          {subtopics.map((subtopic, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <span className="w-6 h-6 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-sm font-medium">
-                {index + 1}
-              </span>
-              <span className="text-gray-700">{subtopic}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Chat de refinamiento */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <MessageCircleIcon className="w-5 h-5 text-purple-600" />
-          Refinar Plan
-        </h3>
-        
-        <div className="space-y-4 mb-4 max-h-64 overflow-y-auto">
-          {chatHistory.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-teal-500 text-white'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {message.content}
+      {/* Subtópicos y Chat en grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Subtópicos */}
+        <Card className="p-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <FileTextIcon className="w-4 h-4 text-blue-600" />
+            Estructura
+          </h3>
+          <div className="space-y-2">
+            {subtopics.map((subtopic, index) => (
+              <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                <span className="w-5 h-5 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xs font-medium">
+                  {index + 1}
+                </span>
+                <span className="text-sm text-gray-700">{subtopic}</span>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
 
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Sugiere mejoras al plan..."
-            className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
-            disabled={isRefining}
-          />
-          <Button
-            onClick={handleRefine}
-            variant="secondary"
-            size="md"
-            disabled={!feedback.trim() || isRefining}
-            loading={isRefining}
-          >
+        {/* Chat de refinamiento */}
+        <Card className="p-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <MessageCircleIcon className="w-4 h-4 text-purple-600" />
             Refinar
-          </Button>
-        </div>
-      </Card>
+          </h3>
+          
+          <div className="space-y-3 mb-3 max-h-48 overflow-y-auto">
+            {chatHistory.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-full px-3 py-2 rounded-lg text-sm ${
+                    message.role === 'user'
+                      ? 'bg-teal-500 text-white'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {message.content}
+                </div>
+              </div>
+            ))}
+          </div>
 
-      {/* Botones de acción */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Sugiere mejoras..."
+              className="flex-1 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+              disabled={isRefining}
+            />
+            <Button
+              onClick={handleRefine}
+              variant="secondary"
+              size="sm"
+              disabled={!feedback.trim() || isRefining}
+              loading={isRefining}
+            >
+              Refinar
+            </Button>
+          </div>
+        </Card>
+      </div>
+
+      {/* Botón de acción principal */}
+      <div className="flex justify-center pt-2">
         <Button
           onClick={onApprove}
           variant="primary"
           size="lg"
           icon={<CheckIcon className="w-5 h-5" />}
           disabled={isRefining}
+          className="min-w-[280px]"
         >
           Aprobar Plan e Iniciar Investigación
         </Button>
