@@ -49,7 +49,7 @@ const ResultsView: React.FC = React.memo(() => {
       {/* Mobile Sidebar Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="md:hidden fixed bottom-4 right-4 z-50 bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center touch-manipulation safe-area-bottom safe-area-right"
+        className="md:hidden fixed bottom-4 right-4 z-50 bg-slate-600 text-white p-4 rounded-full shadow-lg hover:bg-slate-700 transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center touch-manipulation safe-area-bottom safe-area-right"
         aria-label={isSidebarOpen ? 'Cerrar panel' : 'Abrir panel'}
         style={{ 
           bottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
@@ -70,22 +70,22 @@ const ResultsView: React.FC = React.memo(() => {
           <div className="max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
             <ResultsSummary summary={processedData.summary} />
             
-            <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-sm">
+              <h2 className="text-sm sm:text-base font-medium text-slate-700 mb-3 flex items-center gap-2">
                 METODOLOGÍA
-                <ChevronRightIcon className="w-4 h-4" />
+                <ChevronRightIcon className="w-3 h-3" />
               </h2>
-              <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Analizamos los apuntes proporcionados usando inteligencia artificial avanzada. 
-                Se identificaron <span className="font-semibold text-teal-600">{processedData.keyConcepts.length} conceptos clave</span>, 
-                se generaron <span className="font-semibold text-blue-600">{processedData.quizQuestions.length} preguntas de práctica</span>, 
-                y se crearon <span className="font-semibold text-green-600">{processedData.relatedProblems.length} problemas relacionados</span>. 
+                Se identificaron <span className="font-medium text-slate-600">{processedData.keyConcepts.length} conceptos clave</span>, 
+                se generaron <span className="font-medium text-slate-600">{processedData.quizQuestions.length} preguntas de práctica</span>, 
+                y se crearon <span className="font-medium text-slate-600">{processedData.relatedProblems.length} problemas relacionados</span>. 
                 Cada elemento fue revisado para asegurar precisión matemática y relevancia educativa.
               </p>
             </div>
 
             <div className="space-y-6 md:space-y-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 border-b border-gray-200 pb-3">RESULTADOS</h2>
+              <h2 className="text-base sm:text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">RESULTADOS</h2>
               
               {/* Mostrar conceptos mejorados si están disponibles */}
               {(processedData as any).enhancedConcepts ? (
