@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { DownloadIcon, ChevronRightIcon, MenuIcon, XCloseIcon, HomeIcon, BookOpenIcon } from '../ui/Icons';
+import { DownloadIcon, ChevronRightIcon, HomeIcon, BookOpenIcon } from '../ui/Icons';
 import { ResultsHeader } from '../results/ResultsHeader';
 import { ResultsSummary } from '../results/ResultsSummary';
 import { ConceptsSection } from '../results/ConceptsSection';
@@ -16,7 +16,6 @@ import { ProgressiveProblemsSection } from '../results/ProgressiveProblemsSectio
 
 const ResultsView: React.FC = React.memo(() => {
   const { state: { processedData, selectedSubject, searchType }, setActiveView } = useApp();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Prevent body scroll when results view is open
   useEffect(() => {
@@ -48,23 +47,6 @@ const ResultsView: React.FC = React.memo(() => {
         />
       </div>
       
-      {/* Mobile Sidebar Toggle Button */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="md:hidden fixed bottom-4 right-4 z-50 bg-slate-600 text-white p-4 rounded-full shadow-lg hover:bg-slate-700 transition-colors min-h-[56px] min-w-[56px] flex items-center justify-center touch-manipulation safe-area-bottom safe-area-right"
-        aria-label={isSidebarOpen ? 'Cerrar panel' : 'Abrir panel'}
-        style={{ 
-          bottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
-          right: `calc(1rem + env(safe-area-inset-right, 0px))`
-        }}
-      >
-        {isSidebarOpen ? (
-          <XCloseIcon className="w-6 h-6" />
-        ) : (
-          <MenuIcon className="w-6 h-6" />
-        )}
-      </button>
-
       {/* Main Content Area */}
       <div className="results-content-area">
         {/* Left Content Panel */}
@@ -248,19 +230,11 @@ const ResultsView: React.FC = React.memo(() => {
           </div>
         </div>
 
-        {/* Right Sidebar */}
-        <div className={`results-sidebar-panel ${isSidebarOpen ? 'mobile-sidebar-open' : 'mobile-sidebar-closed'} md:block`}>
+        {/* Right Sidebar - Solo visible en desktop */}
+        <div className="hidden md:block w-80 min-w-w-80 border-l border-gray-200 bg-white">
           <ResultsSidebar processedData={processedData} />
         </div>
       </div>
-
-      {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 });
