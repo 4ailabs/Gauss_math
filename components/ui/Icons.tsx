@@ -27,6 +27,7 @@ import {
   HelpCircle,
   Bell,
   ChevronDown,
+  ChevronUp,
   ChevronRight,
   MoreHorizontal,
   Check,
@@ -75,6 +76,7 @@ export const UploadIcon: React.FC<IconProps> = (props) => <Upload {...props} />;
 export const HelpCircleIcon: React.FC<IconProps> = (props) => <HelpCircle {...props} />;
 export const BellIcon: React.FC<IconProps> = (props) => <Bell {...props} />;
 export const ChevronDownIcon: React.FC<IconProps> = (props) => <ChevronDown {...props} />;
+export const ChevronUpIcon: React.FC<IconProps> = (props) => <ChevronUp {...props} />;
 export const ChevronRightIcon: React.FC<IconProps> = (props) => <ChevronRight {...props} />;
 export const MoreHorizontalIcon: React.FC<IconProps> = (props) => <MoreHorizontal {...props} />;
 export const CheckIcon: React.FC<IconProps> = (props) => <Check {...props} />;
