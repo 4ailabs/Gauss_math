@@ -28,7 +28,7 @@ import { useResearchPersistence } from '../../hooks/useResearchPersistence';
 import { usePageVisibility } from '../../hooks/usePageVisibility';
 import { ResearchExitWarning } from '../ui/ResearchExitWarning';
 import { EnhancedSourcesDisplay } from '../ui/EnhancedSourcesDisplay';
-import { ApiDiagnostic } from '../debug/ApiDiagnostic';
+
 import { exportReportToPDF } from '../../utils/pdfExport';
 
 
@@ -89,7 +89,7 @@ const ResearchView: React.FC = React.memo(() => {
   const [showExitWarning, setShowExitWarning] = useState(false);
   
   // Estado para el diagnóstico de API
-  const [showDiagnostic, setShowDiagnostic] = useState(false);
+
   
   // Ref para mantener los datos de investigación de forma síncrona
   const researchDataRef = React.useRef<Subtopic[]>([]);
@@ -585,14 +585,7 @@ ${subtopicObjects.map((st, index) => `
             )}
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowDiagnostic(!showDiagnostic)}
-            className="text-xs px-2 py-1"
-          >
-            {showDiagnostic ? 'Ocultar' : 'Diagnosticar'} API
-          </Button>
+
         </div>
         
 
@@ -600,12 +593,7 @@ ${subtopicObjects.map((st, index) => `
 
 
 
-      {/* Diagnóstico de API */}
-      {showDiagnostic && (
-        <div className="mb-4">
-          <ApiDiagnostic />
-        </div>
-      )}
+
 
       {/* Contenido Principal - Padding responsive */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
