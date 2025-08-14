@@ -524,13 +524,7 @@ const HelpView: React.FC = React.memo(() => {
         </div>
       </Card>
       
-      {/* Crédito */}
-      <div className="text-center py-4">
-        <p className="text-xs text-gray-400">
-          Powered by <span className="font-medium text-gray-500">4ailabs</span> • 
-          Gauss∑ AI v2.0 con funcionalidades mejoradas
-        </p>
-      </div>
+      {/* El Layout ya incluye el footer con el crédito */}
     </div>
   );
 });
