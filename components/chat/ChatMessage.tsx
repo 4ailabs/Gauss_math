@@ -66,25 +66,58 @@ const ContentRenderer: React.FC<{ content: ParsedContent; isUser: boolean }> = (
 export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) => {
   const isUser = message.role === 'user';
   const parsedContent = parseMarkdown(message.content);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
+  };
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 group`}>
       <div className={`max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
         <div
-          className={`inline-block p-4 rounded-lg shadow-sm ${
+          className={`relative inline-block p-4 rounded-lg shadow-sm ${
             isUser
               ? 'bg-teal-600 text-white rounded-br-sm'
               : 'bg-white text-gray-900 border border-gray-200 rounded-bl-sm'
           }`}
         >
-          <div className="space-y-1">
+          {/* Botón de copiar - solo para mensajes de la IA */}
+          {!isUser && (
+            <button
+              onClick={handleCopy}
+              className={`absolute top-2 right-2 p-1.5 rounded-md transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                copied 
+                  ? 'bg-green-100 text-green-600' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800'
+              }`}
+              title={copied ? 'Copiado!' : 'Copiar mensaje'}
+            >
+              {copied ? (
+                <CheckIcon className="w-3 h-3" />
+              ) : (
+                <CopyIcon className="w-3 h-3" />
+              )}
+            </button>
+          )}
+          
+          <div className="space-y-1 pr-8">
             {parsedContent.map((content, index) => (
               <ContentRenderer key={index} content={content} isUser={isUser} />
             ))}
           </div>
         </div>
-        <div className={`text-xs text-gray-500 mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
-          {isUser ? 'Tú' : 'IA'}
+        <div className={`text-xs text-gray-500 mt-1 flex items-center gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
+          <span>{isUser ? 'Tú' : 'IA'}</span>
+          {copied && !isUser && (
+            <span className="text-green-600 text-xs">✓ Copiado</span>
+          )}
         </div>
       </div>
     </div>
