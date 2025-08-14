@@ -171,45 +171,58 @@ const StudyView: React.FC = React.memo(() => {
 
     return (
       <div className="space-y-6">
-        {/* Flashcard Header */}
-        <div className="flex items-center justify-between">
+        {/* Flashcard Header - móvil optimizado */}
+        <div className="space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-slate-600">Flashcards - {selectedSubject}</h2>
-            <p className="text-slate-500 mt-1">Memoriza conceptos clave</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-600">Flashcards - {selectedSubject}</h2>
+            <p className="text-slate-500 mt-1 text-sm sm:text-base">Memoriza conceptos clave</p>
           </div>
           
-          <div className="flex gap-3">
+          {/* Botones en grid móvil para evitar overflow */}
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-3">
             <Button
               variant="secondary"
+              size="sm"
               onClick={() => setShowFlashcards(false)}
+              className="text-xs sm:text-sm px-2 sm:px-3 py-2"
             >
-              Ver Progreso
+              <span className="hidden sm:inline">Ver Progreso</span>
+              <span className="sm:hidden">Progreso</span>
             </Button>
             
             <Button
               variant="secondary"
+              size="sm"
               onClick={shuffleFlashcards}
               icon={<RefreshCwIcon className="w-4 h-4" />}
               disabled={isStudying}
+              className="text-xs sm:text-sm px-2 sm:px-3 py-2"
             >
-              Mezclar
+              <span className="hidden sm:inline">Mezclar</span>
+              <span className="sm:hidden">Mezclar</span>
             </Button>
             
             {!isStudying ? (
               <Button
                 variant="primary"
+                size="sm"
                 onClick={startStudySession}
                 icon={<PlayIcon className="w-4 h-4" />}
+                className="text-xs sm:text-sm px-2 sm:px-3 py-2"
               >
-                Iniciar
+                <span className="hidden sm:inline">Iniciar</span>
+                <span className="sm:hidden">Play</span>
               </Button>
             ) : (
               <Button
                 variant="secondary"
+                size="sm"
                 onClick={stopStudySession}
                 icon={<PauseIcon className="w-4 h-4" />}
+                className="text-xs sm:text-sm px-2 sm:px-3 py-2"
               >
-                Pausar
+                <span className="hidden sm:inline">Pausar</span>
+                <span className="sm:hidden">Pausa</span>
               </Button>
             )}
           </div>
