@@ -63,8 +63,8 @@ const ViewLoadingFallback: React.FC = () => (
     <CardSkeleton />
     <div className="flex justify-center">
       <LoadingSpinner size="lg" text="Cargando..." />
-    </div>
-  </div>
+                  </div>
+                </div>
 );
 
 // Main App Content Component

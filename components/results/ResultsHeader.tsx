@@ -260,7 +260,7 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
       doc.text(`Generado el ${currentDate}`, pageWidth/2 - 30, 282);
       
       // Información derecha
-      doc.text('Powered by 4ailabs • Gauss∑ AI', pageWidth - margin - 60, 282);
+      doc.text('Gauss∑ AI', pageWidth - margin - 30, 282);
     };
 
     // Agregar footer a todas las páginas
