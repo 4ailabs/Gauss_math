@@ -11,11 +11,22 @@ export interface FinalReport {
   report: string;
 }
 
-// Verificar que la API key esté configurada
-const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || '';
+// Verificar que la API key esté configurada (Vite requiere prefijo VITE_)
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 
+               import.meta.env.VITE_API_KEY || 
+               process.env.GEMINI_API_KEY || 
+               process.env.API_KEY || '';
 
 if (!apiKey) {
-  console.warn("GEMINI_API_KEY no está configurada. La funcionalidad de investigación estará limitada.");
+  console.warn("VITE_GEMINI_API_KEY no está configurada. La funcionalidad de investigación estará limitada.");
+  console.log("Variables de entorno disponibles:", {
+    VITE_GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY ? 'Configurada' : 'No configurada',
+    VITE_API_KEY: import.meta.env.VITE_API_KEY ? 'Configurada' : 'No configurada',
+    NODE_ENV: import.meta.env.NODE_ENV,
+    MODE: import.meta.env.MODE
+  });
+} else {
+  console.log("✅ API Key de Gemini configurada correctamente:", apiKey.substring(0, 10) + '...');
 }
 
 const ai = new GoogleGenAI({ apiKey });

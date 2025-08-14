@@ -27,6 +27,7 @@ import { useResearchPersistence } from '../../hooks/useResearchPersistence';
 import { usePageVisibility } from '../../hooks/usePageVisibility';
 import { ResearchExitWarning } from '../ui/ResearchExitWarning';
 import { EnhancedSourcesDisplay } from '../ui/EnhancedSourcesDisplay';
+import { ApiDiagnostic } from '../debug/ApiDiagnostic';
 
 
 // Estados de investigación
@@ -84,6 +85,9 @@ const ResearchView: React.FC = React.memo(() => {
   
   // Estado para el warning de salida
   const [showExitWarning, setShowExitWarning] = useState(false);
+  
+  // Estado para el diagnóstico de API
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
   
   // Hook avanzado de investigación (solo funciones principales)
   const {
@@ -522,24 +526,42 @@ ${subtopicObjects.map((st, index) => `
         </p>
         
         {/* Indicador de estado de Gemini - Responsive */}
-        <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-xs sm:text-sm font-medium">
-          {isGeminiAvailable() ? (
-            <>
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-teal-700">Gemini AI Conectado</span>
-            </>
-          ) : (
-            <>
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full"></div>
-              <span className="text-yellow-700">Modo Fallback</span>
-            </>
-          )}
+        <div className="flex items-center gap-3">
+          <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-full text-xs sm:text-sm font-medium">
+            {isGeminiAvailable() ? (
+              <>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-teal-700">Gemini AI Conectado</span>
+              </>
+            ) : (
+              <>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full"></div>
+                <span className="text-yellow-700">Modo Fallback</span>
+              </>
+            )}
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowDiagnostic(!showDiagnostic)}
+            className="text-xs px-2 py-1"
+          >
+            {showDiagnostic ? 'Ocultar' : 'Diagnosticar'} API
+          </Button>
         </div>
         
 
       </div>
 
 
+
+      {/* Diagnóstico de API */}
+      {showDiagnostic && (
+        <div className="mb-4">
+          <ApiDiagnostic />
+        </div>
+      )}
 
       {/* Contenido Principal - Padding responsive */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
