@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from '../ui/Button';
-import { DownloadIcon, ShareIcon } from '../ui/Icons';
+import { DownloadIcon, FileTextIcon } from '../ui/Icons';
 import { ProcessedData } from '../../types';
+import jsPDF from 'jspdf';
 
 interface ResultsHeaderProps {
   subject: string;
@@ -20,48 +21,169 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = React.memo(({
     day: 'numeric' 
   });
 
-  const handleShare = async () => {
+  const generatePDF = () => {
     if (!processedData) return;
 
-    // Crear un resumen del análisis para compartir
-    const summary = `📊 Análisis de ${subject}
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+    let yPosition = 30;
 
-🔑 Conceptos Clave:
-${processedData.keyConcepts.slice(0, 3).map(concept => `• ${concept.concept}`).join('\n')}
+    // Configurar fuentes
+    doc.setFont('helvetica');
+    
+    // Título principal
+    doc.setFontSize(24);
+    doc.setTextColor(44, 62, 80);
+    doc.text('Gauss∑ AI', margin, yPosition);
+    yPosition += 15;
 
-❓ Preguntas Generadas:
-${processedData.quizQuestions.slice(0, 2).map(q => `• ${q.question}`).join('\n')}
+    // Subtítulo
+    doc.setFontSize(16);
+    doc.setTextColor(52, 73, 94);
+    doc.text(`Análisis de ${subject}`, margin, yPosition);
+    yPosition += 20;
 
-📝 Problemas Relacionados:
-${processedData.relatedProblems.slice(0, 2).map(p => `• ${p.problem}`).join('\n')}
+    // Información del reporte
+    doc.setFontSize(12);
+    doc.setTextColor(127, 140, 141);
+    doc.text(`Fecha: ${currentDate}`, margin, yPosition);
+    yPosition += 10;
+    doc.text(`Reporte Científico • ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`, margin, yPosition);
+    yPosition += 20;
 
-📅 Fecha: ${currentDate}
-🔗 Generado con Gauss∑ AI - Powered by 4ailabs`;
+    // Resumen ejecutivo
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('RESUMEN EJECUTIVO', margin, yPosition);
+    yPosition += 10;
 
-    try {
-      if (navigator.share) {
-        // Usar Web Share API si está disponible
-        await navigator.share({
-          title: `Análisis de ${subject} - Gauss∑ AI`,
-          text: summary,
-          url: window.location.href
-        });
-      } else {
-        // Fallback: copiar al portapapeles
-        await navigator.clipboard.writeText(summary);
-        alert('Resumen del análisis copiado al portapapeles');
-      }
-    } catch (error) {
-      console.error('Error al compartir:', error);
-      // Fallback adicional: copiar solo el resumen
-      try {
-        await navigator.clipboard.writeText(summary);
-        alert('Resumen del análisis copiado al portapapeles');
-      } catch (clipboardError) {
-        console.error('Error al copiar al portapapeles:', clipboardError);
-        alert('Error al compartir. Intenta copiar manualmente el contenido.');
-      }
+    doc.setFontSize(10);
+    doc.setTextColor(52, 73, 94);
+    const summaryLines = doc.splitTextToSize(processedData.summary, contentWidth);
+    doc.text(summaryLines, margin, yPosition);
+    yPosition += (summaryLines.length * 5) + 15;
+
+    // Conceptos clave
+    if (yPosition > 250) {
+      doc.addPage();
+      yPosition = 30;
     }
+
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('CONCEPTOS CLAVE', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(52, 73, 94);
+    processedData.keyConcepts.forEach((concept, index) => {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 30;
+      }
+      
+      const conceptText = `${index + 1}. ${concept.concept}`;
+      const conceptLines = doc.splitTextToSize(conceptText, contentWidth);
+      doc.text(conceptLines, margin, yPosition);
+      yPosition += (conceptLines.length * 5) + 5;
+      
+      if (concept.definition) {
+        const definitionLines = doc.splitTextToSize(`   ${concept.definition}`, contentWidth - 10);
+        doc.setTextColor(127, 140, 141);
+        doc.text(definitionLines, margin + 10, yPosition);
+        yPosition += (definitionLines.length * 5) + 5;
+        doc.setTextColor(52, 73, 94);
+      }
+    });
+
+    // Preguntas de práctica
+    if (yPosition > 250) {
+      doc.addPage();
+      yPosition = 30;
+    }
+
+    yPosition += 10;
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('PREGUNTAS DE PRÁCTICA', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(52, 73, 94);
+    processedData.quizQuestions.forEach((question, index) => {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 30;
+      }
+      
+      const questionText = `${index + 1}. ${question.question}`;
+      const questionLines = doc.splitTextToSize(questionText, contentWidth);
+      doc.text(questionLines, margin, yPosition);
+      yPosition += (questionLines.length * 5) + 5;
+      
+      if (question.answer) {
+        const answerLines = doc.splitTextToSize(`   Respuesta: ${question.answer}`, contentWidth - 10);
+        doc.setTextColor(127, 140, 141);
+        doc.text(answerLines, margin + 10, yPosition);
+        yPosition += (answerLines.length * 5) + 5;
+        doc.setTextColor(52, 73, 94);
+      }
+    });
+
+    // Problemas relacionados
+    if (yPosition > 250) {
+      doc.addPage();
+      yPosition = 30;
+    }
+
+    yPosition += 10;
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('PROBLEMAS RELACIONADOS', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(52, 73, 94);
+    processedData.relatedProblems.forEach((problem, index) => {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 30;
+      }
+      
+      const problemText = `${index + 1}. ${problem.problem}`;
+      const problemLines = doc.splitTextToSize(problemText, contentWidth);
+      doc.text(problemLines, margin, yPosition);
+      yPosition += (problemLines.length * 5) + 5;
+      
+      if (problem.solution) {
+        const solutionLines = doc.splitTextToSize(`   Solución: ${problem.solution}`, contentWidth - 10);
+        doc.setTextColor(127, 140, 141);
+        doc.text(solutionLines, margin + 10, yPosition);
+        yPosition += (solutionLines.length * 5) + 5;
+        doc.setTextColor(52, 73, 94);
+      }
+    });
+
+    // Footer en cada página
+    const addFooter = (pageNumber: number) => {
+      doc.setFontSize(8);
+      doc.setTextColor(127, 140, 141);
+      doc.text(`Página ${pageNumber}`, margin, 280);
+      doc.text('Powered by 4ailabs', pageWidth - margin - 40, 280);
+    };
+
+    // Agregar footer a todas las páginas
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      addFooter(i);
+    }
+
+    // Descargar el PDF
+    const fileName = `gauss-ai-analisis-${subject.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
   };
 
   return (
@@ -77,12 +199,12 @@ ${processedData.relatedProblems.slice(0, 2).map(p => `• ${p.problem}`).join('\
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleShare}
-            icon={<ShareIcon className="w-4 h-4" />}
+            onClick={generatePDF}
+            icon={<FileTextIcon className="w-4 h-4" />}
             className="flex-1 sm:flex-none"
           >
-            <span className="hidden sm:inline">Compartir</span>
-            <span className="sm:hidden">Compartir</span>
+            <span className="hidden sm:inline">Descargar</span>
+            <span className="sm:hidden">PDF</span>
           </Button>
           <Button
             variant="secondary"
