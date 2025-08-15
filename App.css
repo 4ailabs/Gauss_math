@@ -669,6 +669,15 @@ input[type="text"]:disabled {
   z-index: 40;
 }
 
+/* Permitir scroll en móvil */
+@media (max-width: 768px) {
+  .results-fullscreen {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Mejor scroll en iOS */
+  }
+}
+
 /* Flashcards animations */
 .preserve-3d {
   transform-style: preserve-3d;
@@ -743,11 +752,20 @@ input[type="text"]:disabled {
   
   .results-content-area {
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .results-main-panel {
     width: 100% !important;
     padding-bottom: 80px; /* Space for floating button */
+    overflow-y: visible;
+  }
+  
+  /* Asegurar que el contenido principal sea scrolleable */
+  .results-main-panel > div {
+    overflow-y: visible;
+    max-height: none;
   }
 }
 

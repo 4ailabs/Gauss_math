@@ -19,15 +19,33 @@ const ResultsView: React.FC = React.memo(() => {
 
   // Prevent body scroll when results view is open
   useEffect(() => {
-    // Disable body scroll
-    document.body.style.overflow = 'hidden';
+    // Función para manejar el scroll del body
+    const handleBodyScroll = () => {
+      const isMobile = window.innerWidth < 768;
+      
+      if (isMobile) {
+        // Habilitar scroll en móvil
+        document.body.style.overflow = 'auto';
+      } else {
+        // Deshabilitar scroll en desktop
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    // Aplicar configuración inicial
+    handleBodyScroll();
     
     // Debug: Log sidebar visibility
     console.log('ResultsView mounted, processedData:', processedData);
     console.log('Sidebar should be visible on desktop');
+    console.log('Mobile scroll enabled:', window.innerWidth < 768);
+
+    // Agregar listener para resize
+    window.addEventListener('resize', handleBodyScroll);
 
     // Cleanup: restore body scroll when component unmounts
     return () => {
+      window.removeEventListener('resize', handleBodyScroll);
       document.body.style.overflow = 'unset';
     };
   }, [processedData]);
