@@ -672,9 +672,11 @@ input[type="text"]:disabled {
 /* Permitir scroll en móvil */
 @media (max-width: 768px) {
   .results-fullscreen {
-    overflow-y: auto;
+    overflow-y: auto !important;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch; /* Mejor scroll en iOS */
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
   }
 }
 
@@ -752,14 +754,15 @@ input[type="text"]:disabled {
   
   .results-content-area {
     flex-direction: column;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
   }
   
   .results-main-panel {
     width: 100% !important;
-    padding-bottom: 80px; /* Space for floating button */
-    overflow-y: visible;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* Space for floating button and safe area */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   
   /* Asegurar que el contenido principal sea scrolleable */
@@ -918,7 +921,8 @@ body {
     bottom: 0;
     height: 100vh;
     height: -webkit-fill-available;
-    overflow: hidden;
+    overflow-y: auto !important;
+    overflow-x: hidden;
   }
   
   .results-header-fixed {
@@ -927,9 +931,10 @@ body {
   
   .results-content-area {
     flex-direction: column;
-    height: calc(100vh - 120px);
-    height: calc(-webkit-fill-available - 120px);
+    height: 100vh;
+    height: -webkit-fill-available;
     padding-top: 120px;
+    overflow: hidden;
   }
   
   .results-sidebar-panel {
@@ -938,14 +943,16 @@ body {
     border-top: 1px solid #e5e7eb;
     max-height: 40vh;
     max-height: calc(40 * (-webkit-fill-available / 100));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .results-main-panel {
     flex: 1;
-    min-height: 60vh;
-    min-height: calc(60 * (-webkit-fill-available / 100));
+    min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
 

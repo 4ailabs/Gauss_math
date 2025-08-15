@@ -24,11 +24,17 @@ const ResultsView: React.FC = React.memo(() => {
       const isMobile = window.innerWidth < 768;
       
       if (isMobile) {
-        // Habilitar scroll en móvil
-        document.body.style.overflow = 'auto';
+        // Habilitar scroll en móvil - permitir que el contenedor results-fullscreen maneje el scroll
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
       } else {
         // Deshabilitar scroll en desktop
         document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
       }
     };
 
@@ -47,6 +53,9 @@ const ResultsView: React.FC = React.memo(() => {
     return () => {
       window.removeEventListener('resize', handleBodyScroll);
       document.body.style.overflow = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
+      document.body.style.height = 'unset';
     };
   }, [processedData]);
 
