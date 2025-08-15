@@ -24,13 +24,12 @@ const ResultsView: React.FC = React.memo(() => {
       const isMobile = window.innerWidth < 768;
       
       if (isMobile) {
-        // Habilitar scroll en móvil - permitir que el contenedor results-fullscreen maneje el scroll
+        // En móvil, no interferir con el scroll natural del body
+        // Dejar que results-fullscreen maneje el scroll internamente
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.height = '100%';
+        document.body.style.position = 'relative';
       } else {
-        // Deshabilitar scroll en desktop
+        // En desktop, prevenir scroll del body
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
@@ -52,10 +51,10 @@ const ResultsView: React.FC = React.memo(() => {
     // Cleanup: restore body scroll when component unmounts
     return () => {
       window.removeEventListener('resize', handleBodyScroll);
-      document.body.style.overflow = 'unset';
-      document.body.style.position = 'unset';
-      document.body.style.width = 'unset';
-      document.body.style.height = 'unset';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
     };
   }, [processedData]);
 

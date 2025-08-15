@@ -672,11 +672,12 @@ input[type="text"]:disabled {
 /* Permitir scroll en móvil */
 @media (max-width: 768px) {
   .results-fullscreen {
-    overflow-y: auto !important;
+    overflow-y: scroll !important;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch; /* Mejor scroll en iOS */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     height: 100vh !important;
-    height: -webkit-fill-available !important;
+    height: 100dvh !important; /* Dynamic viewport height for iOS */
   }
 }
 
@@ -741,34 +742,24 @@ input[type="text"]:disabled {
 
 @media (max-width: 768px) {
   .results-sidebar-panel {
-    position: fixed !important;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 320px !important;
-    max-width: 85vw;
-    z-index: 50;
-    transition: transform 0.3s ease-in-out;
-    border-left: 1px solid #e5e7eb;
+    display: none !important; /* Completely hide on mobile for simplicity */
   }
   
   .results-content-area {
-    flex-direction: column;
-    overflow: hidden;
+    display: block !important;
+    overflow: visible !important;
   }
   
   .results-main-panel {
     width: 100% !important;
-    padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* Space for floating button and safe area */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 20px));
+    overflow: visible !important;
   }
   
   /* Asegurar que el contenido principal sea scrolleable */
   .results-main-panel > div {
-    overflow-y: visible;
-    max-height: none;
+    overflow: visible !important;
+    max-height: none !important;
   }
 }
 
@@ -919,40 +910,42 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
+    width: 100vw;
     height: 100vh;
-    height: -webkit-fill-available;
-    overflow-y: auto !important;
+    height: 100dvh; /* Dynamic viewport height for iOS */
+    overflow-y: scroll !important;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
   
   .results-header-fixed {
-    height: 120px; /* Reduced height for mobile */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 60;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
   }
   
   .results-content-area {
-    flex-direction: column;
-    height: 100vh;
-    height: -webkit-fill-available;
+    display: block;
     padding-top: 120px;
-    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   .results-sidebar-panel {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid #e5e7eb;
-    max-height: 40vh;
-    max-height: calc(40 * (-webkit-fill-available / 100));
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    display: none; /* Hide sidebar on mobile */
   }
   
   .results-main-panel {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    width: 100%;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 20px));
+    overflow: visible;
   }
 }
 
@@ -971,34 +964,34 @@ body {
 
 /* iPhone specific fixes */
 @supports (-webkit-touch-callout: none) {
-  /* iPhone specific styles */
-  .results-fullscreen {
-    height: 100vh;
-    height: -webkit-fill-available;
-  }
-  
-  .results-header-fixed {
-    /* Account for iPhone notch and safe areas */
-    padding-top: env(safe-area-inset-top);
-    height: calc(120px + env(safe-area-inset-top));
-  }
-  
-  .results-content-area {
-    height: calc(100vh - 120px - env(safe-area-inset-top));
-    height: calc(-webkit-fill-available - 120px - env(safe-area-inset-top));
-    padding-top: calc(120px + env(safe-area-inset-top));
-  }
-  
-  .results-main-panel {
-    /* Add bottom padding for iPhone home indicator */
-    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
-  }
-  
-  /* Fix iOS scroll momentum */
-  .results-main-panel,
-  .results-sidebar-panel {
-    -webkit-overflow-scrolling: touch;
-    transform: translate3d(0, 0, 0); /* Hardware acceleration */
+  @media (max-width: 768px) {
+    /* iPhone specific styles */
+    .results-fullscreen {
+      height: 100vh !important;
+      height: 100dvh !important; /* Use dynamic viewport height */
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      transform: translate3d(0, 0, 0); /* Hardware acceleration */
+    }
+    
+    .results-header-fixed {
+      /* Account for iPhone notch and safe areas */
+      padding-top: env(safe-area-inset-top, 0px);
+      height: calc(120px + env(safe-area-inset-top, 0px));
+    }
+    
+    .results-content-area {
+      padding-top: calc(120px + env(safe-area-inset-top, 0px));
+      min-height: calc(100vh - 120px);
+      min-height: calc(100dvh - 120px);
+    }
+    
+    .results-main-panel {
+      /* Add bottom padding for iPhone home indicator */
+      padding-bottom: calc(2rem + env(safe-area-inset-bottom, 20px));
+      overflow: visible !important;
+    }
   }
 }
 
